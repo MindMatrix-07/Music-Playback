@@ -1720,15 +1720,20 @@
                 <label for="ytApiKeyInput">YouTube Data API Key</label>
                 <input type="password" id="ytApiKeyInput" placeholder="Paste your API Key here">
                 <p class="setting-hint">
-                    Required to play official music videos. A valid key is required for compliance.
+                    Required to play official music videos.
                     <br>
                     <a href="https://console.cloud.google.com/apis/credentials" target="_blank"
                         style="color:var(--spotify-green); text-decoration: none; display: inline-block; margin-top: 5px;">Get
                         a Key &#8599;</a>
                 </p>
+                <p style="font-size:0.75rem; color:var(--text-secondary); margin-top:8px; opacity: 0.7;">
+                    🔒 Key is stored <b>locally</b> on your device and never sent to our server.
+                </p>
             </div>
 
             <div class="settings-actions">
+                <button id="deleteKeyBtn" class="secondary-btn"
+                    style="margin-right: auto; color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3);">Delete</button>
                 <button id="closeSettingsBtn" class="secondary-btn">Cancel</button>
                 <button id="saveSettingsBtn" class="primary-btn">Save Key</button>
             </div>
@@ -2323,6 +2328,7 @@
             const ytInput = document.getElementById('ytApiKeyInput');
             const saveBtn = document.getElementById('saveSettingsBtn');
             const closeBtn = document.getElementById('closeSettingsBtn');
+            const deleteBtn = document.getElementById('deleteKeyBtn');
 
             if (!settingsBtn) return;
 
@@ -2333,6 +2339,7 @@
 
             closeBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
 
+            // Save functionality
             saveBtn.addEventListener('click', () => {
                 const key = ytInput.value.trim();
                 if (key) {
@@ -2342,14 +2349,27 @@
                     if (selectedTrack) {
                         const ytContainer = document.getElementById('youtubeContainer');
                         const ytEmbed = document.getElementById('youtubeEmbed');
-                        if (ytContainer && !ytContainer.classList.contains('hidden') && ytEmbed.src === "") {
-                            fetchMetadata(selectedTrack); // Re-fetch to trigger video load
+                        // If container is visible but empty/error, retry
+                        if (ytContainer && !ytContainer.classList.contains('hidden')) {
+                            fetchMetadata(selectedTrack);
                         }
                     }
                 } else {
                     alert('Please enter a valid key.');
                 }
             });
+
+            // Delete functionality
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to remove your API Key from this device?')) {
+                        localStorage.removeItem('yt_api_key');
+                        ytInput.value = '';
+                        alert('Key removed from local storage.');
+                        settingsModal.classList.add('hidden');
+                    }
+                });
+            }
         }
 
         // Official YouTube Search (Client-Side)
