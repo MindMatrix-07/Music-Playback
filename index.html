@@ -1533,33 +1533,35 @@
 
                     <!-- Links Row -->
                     <div class="meta-links-row">
-                        <a href="#" target="_blank" class="meta-link" id="metaAppleLink">-</a>
+                        <a href="#" target="_blank" class="meta-link" id="metaSpotifyLink">View on Spotify</a>
+                        <a href="#" target="_blank" class="meta-link" id="metaAppleLink">View on Apple Music</a>
+                        <a href="#" target="_blank" class="meta-link" id="metaMusixmatch">View Lyrics</a>
+                        <a href="#" class="meta-link" id="refLyricsBtn" style="color: #fb923c;">Reference Lyrics</a>
+                    </div>
+                </div>
+
+                <!-- Right Column: Media (Artists + YouTube) -->
+                <div class="meta-media-col">
+                    <!-- Artist Images -->
+                    <div id="artistImagesContainer" class="artist-images-area">
+                        <div class="artist-image-container">
+                            <img id="metaArtistImage" class="artist-image" src="" alt="Artist"
+                                onerror="this.style.display='none'">
+                        </div>
+                        <div class="artist-label">Artist</div>
+                    </div>
+
+                    <!-- YouTube Embed -->
+                    <div class="youtube-container" id="youtubeContainer">
+                        <div class="yt-label">Official Video</div>
+                        <iframe id="youtubeEmbed" width="100%" height="150" src="" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
                     </div>
                 </div>
             </div>
-
-            <!-- Right Column: Media (Artists + YouTube) -->
-            <div class="meta-media-col">
-                <!-- Artist Images -->
-                <div id="artistImagesContainer" class="artist-images-area">
-                    <div class="artist-image-container">
-                        <img id="metaArtistImage" class="artist-image" src="" alt="Artist"
-                            onerror="this.style.display='none'">
-                    </div>
-                    <div class="artist-label">Artist</div>
-                </div>
-
-                <!-- YouTube Embed -->
-                <div class="youtube-container" id="youtubeContainer">
-                    <div class="yt-label">Official Video</div>
-                    <iframe id="youtubeEmbed" width="100%" height="150" src="" frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                    </iframe>
-                </div>
-            </div>
-    </div>
-    </section>
+        </section>
     </div>
 
     <!-- Hidden Audio Element for Preview -->
