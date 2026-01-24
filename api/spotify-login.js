@@ -2,7 +2,7 @@
       const CLIENT_ID = '1cc98da5d08742df809c8b0724725d0b';
       
       export default function handler(req, res) {
-          const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
+          const redirectUri = process.env.SPOTIFY_REDIRECT_URI || 'http://localhost:3000/api/spotify-callback';
           
           const scope = 'user-read-private user-read-email streaming user-read-playback-state user-modify-playback-state';
           
