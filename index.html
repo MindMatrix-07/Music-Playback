@@ -1940,6 +1940,16 @@
                     }
                 }
 
+                // YouTube Embed (No API - Search List)
+                const ytEmbed = document.getElementById('youtubeEmbed');
+                const ytContainer = document.getElementById('youtubeContainer');
+                if (ytEmbed) {
+                    const primaryArtist = track.artist ? track.artist.split(',')[0].trim() : '';
+                    const ytQuery = `${track.name} ${primaryArtist} official video`;
+                    ytEmbed.src = `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(ytQuery)}`;
+                    if (ytContainer) ytContainer.classList.remove('hidden');
+                }
+
                 // Links
                 if (data.crossLinks.spotify && spoLink) {
                     spoLink.textContent = 'View on Spotify';
