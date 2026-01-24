@@ -1292,32 +1292,55 @@
 
         <!-- Metadata Section -->
         <section class="metadata-section hidden" id="metadataSection">
-            <h2 class="player-title">Track Details</h2>
+            <h2 class="player-title">Metadata</h2>
             <div class="metadata-grid">
+                <div class="meta-item">
+                    <span class="meta-label">Track Title</span>
+                    <span class="meta-value" id="metaTitle">-</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Artist</span>
+                    <span class="meta-value" id="metaArtist">-</span>
+                </div>
                 <div class="meta-item">
                     <span class="meta-label">Album</span>
                     <span class="meta-value" id="metaAlbum">-</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Genre</span>
-                    <span class="meta-value" id="metaGenre">-</span>
                 </div>
                 <div class="meta-item">
                     <span class="meta-label">Release Date</span>
                     <span class="meta-value" id="metaReleased">-</span>
                 </div>
                 <div class="meta-item">
-                    <span class="meta-label">BPM / Key</span>
-                    <span class="meta-value" id="metaBPM">-</span>
+                    <span class="meta-label">Duration</span>
+                    <span class="meta-value" id="metaDuration">-</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Genre</span>
+                    <span class="meta-value" id="metaGenre">Loading...</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Language</span>
+                    <span class="meta-value" id="metaLanguage">-</span>
                 </div>
                 <div class="meta-item">
                     <span class="meta-label">Label</span>
                     <span class="meta-value" id="metaLabel">-</span>
                 </div>
-                <!-- MBID Hidden as requested -->
-                <div class="meta-item full-width" id="crossLinkContainer">
-                    <span class="meta-label">Listen on</span>
-                    <a href="#" target="_blank" class="meta-link" id="metaCrossLink">Loading other platform...</a>
+                <div class="meta-item">
+                    <span class="meta-label">ISRC</span>
+                    <span class="meta-value" id="metaISRC">-</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">BPM / Key</span>
+                    <span class="meta-value" id="metaBPM">-</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Spotify</span>
+                    <a href="#" target="_blank" class="meta-link" id="metaSpotifyLink">-</a>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Apple Music</span>
+                    <a href="#" target="_blank" class="meta-link" id="metaAppleLink">-</a>
                 </div>
             </div>
         </section>
@@ -1638,18 +1661,30 @@
             const metaSection = document.getElementById('metadataSection');
             metaSection.classList.remove('hidden');
 
-            // Set basic info immediately
-            document.getElementById('metaAlbum').textContent = track.album || '-';
-            document.getElementById('metaGenre').textContent = 'Loading...';
-            document.getElementById('metaReleased').textContent = 'Loading...';
-            document.getElementById('metaISRC').textContent = 'Loading...';
-            document.getElementById('metaCrossLink').textContent = 'Searching...';
-            document.getElementById('metaCrossLink').href = '#';
+            // Reset UI with loaders
+            const setLoad = (id) => document.getElementById(id).textContent = 'Loading...';
+            setLoad('metaTitle');
+            setLoad('metaArtist');
+            setLoad('metaAlbum');
+            setLoad('metaReleased');
+            setLoad('metaDuration');
+            setLoad('metaGenre');
+            setLoad('metaLanguage');
+            setLoad('metaLabel');
+            setLoad('metaISRC');
+            setLoad('metaBPM');
+            document.getElementById('metaSpotifyLink').textContent = 'Loading...';
+            document.getElementById('metaAppleLink').textContent = 'Loading...';
+
+            // Set immediate values if available from the track object
+            if (track.name) document.getElementById('metaTitle').textContent = track.name;
+            if (track.artist) document.getElementById('metaArtist').textContent = track.artist;
+            if (track.album) document.getElementById('metaAlbum').textContent = track.album;
 
             try {
-                // Add 8s timeout
+                // Add 10s timeout
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
 
                 const response = await fetch(`/api/get-metadata?id=${track.id}&platform=${currentPlatform}`, {
                     signal: controller.signal
@@ -1662,43 +1697,66 @@
                     throw new Error(data.error || 'Failed to fetch metadata');
                 }
 
+                // Populate Fields
+                document.getElementById('metaTitle').textContent = data.title || track.name || 'N/A';
+                document.getElementById('metaArtist').textContent = data.artist || track.artist || 'N/A';
+                document.getElementById('metaAlbum').textContent = data.album || 'N/A';
+
+                // Format Date (show year separately if requested, code requested "Release Date / Year")
+                // We'll show full date then year in parens if available
+                let dateStr = data.releaseDate || 'N/A';
+                if (data.year && data.releaseDate && !data.releaseDate.includes(data.year)) {
+                    dateStr += ` (${data.year})`;
+                }
+                document.getElementById('metaReleased').textContent = dateStr;
+
+                // Duration
+                document.getElementById('metaDuration').textContent = data.duration ? formatDuration(data.duration) : 'N/A';
+
+                // Genre
                 if (data.genre && data.genre.length > 0) {
                     document.getElementById('metaGenre').textContent = data.genre.slice(0, 3).join(', ');
                 } else {
                     document.getElementById('metaGenre').textContent = 'N/A';
                 }
 
-                document.getElementById('metaReleased').textContent = data.releaseDate || 'N/A';
+                document.getElementById('metaLanguage').textContent = data.language || 'N/A';
+                document.getElementById('metaLabel').textContent = data.recordLabel || 'N/A';
                 document.getElementById('metaISRC').textContent = data.isrc || 'N/A';
 
-                // Format BPM/Key
+                // BPM / Key
                 const bpm = data.bpm ? `${data.bpm} BPM` : '';
                 const key = data.key ? ` • ${data.key}` : '';
                 document.getElementById('metaBPM').textContent = (bpm || key) ? `${bpm}${key}` : 'N/A';
-                document.getElementById('metaLabel').textContent = data.recordLabel || 'N/A';
 
-                const crossLink = currentPlatform === 'spotify' ? data.crossLinks.apple : data.crossLinks.spotify;
-                const crossLabel = currentPlatform === 'spotify' ? 'Apple Music' : 'Spotify';
+                // Links
+                const spoLink = document.getElementById('metaSpotifyLink');
+                const appLink = document.getElementById('metaAppleLink');
 
-                const linkEl = document.getElementById('metaCrossLink');
-                if (crossLink) {
-                    linkEl.textContent = `Open in ${crossLabel}`;
-                    linkEl.href = crossLink;
+                // My Spotify Link
+                if (data.crossLinks.spotify) {
+                    spoLink.textContent = 'View on Spotify';
+                    spoLink.href = data.crossLinks.spotify;
                 } else {
-                    linkEl.textContent = `Not found on ${crossLabel}`;
-                    linkEl.href = '#';
+                    spoLink.textContent = 'Not found';
+                    spoLink.href = '#';
+                }
+
+                // Apple Music Link
+                if (data.crossLinks.apple) {
+                    appLink.textContent = 'View on Apple Music';
+                    appLink.href = data.crossLinks.apple;
+                } else {
+                    appLink.textContent = 'Not found';
+                    appLink.href = '#';
                 }
 
             } catch (error) {
                 console.error('Metadata error:', error);
-                document.getElementById('metaGenre').textContent = 'Error loading';
-                document.getElementById('metaReleased').textContent = '-';
-                document.getElementById('metaBPM').textContent = '-';
-                document.getElementById('metaLabel').textContent = '-';
-
-                const linkEl = document.getElementById('metaCrossLink');
-                linkEl.textContent = 'Retry';
-                linkEl.href = `javascript:fetchMetadata(${JSON.stringify(track).replace(/"/g, '&quot;')})`; // Simple retry
+                const els = ['metaGenre', 'metaReleased', 'metaDuration', 'metaLanguage', 'metaLabel', 'metaISRC', 'metaBPM'];
+                els.forEach(id => document.getElementById(id).textContent = '-');
+                document.getElementById('metaSpotifyLink').textContent = '-';
+                document.getElementById('metaAppleLink').textContent = '-';
             }
         }
 
