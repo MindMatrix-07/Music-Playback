@@ -1647,8 +1647,20 @@
             document.getElementById('metaCrossLink').href = '#';
 
             try {
-                const response = await fetch(`/api/get-metadata?id=${track.id}&platform=${currentPlatform}`);
+                // Add 8s timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                const response = await fetch(`/api/get-metadata?id=${track.id}&platform=${currentPlatform}`, {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+
                 const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch metadata');
+                }
 
                 if (data.genre && data.genre.length > 0) {
                     document.getElementById('metaGenre').textContent = data.genre.slice(0, 3).join(', ');
@@ -1679,7 +1691,14 @@
 
             } catch (error) {
                 console.error('Metadata error:', error);
-                document.getElementById('metaGenre').textContent = 'Failed to load';
+                document.getElementById('metaGenre').textContent = 'Error loading';
+                document.getElementById('metaReleased').textContent = '-';
+                document.getElementById('metaBPM').textContent = '-';
+                document.getElementById('metaLabel').textContent = '-';
+
+                const linkEl = document.getElementById('metaCrossLink');
+                linkEl.textContent = 'Retry';
+                linkEl.href = `javascript:fetchMetadata(${JSON.stringify(track).replace(/"/g, '&quot;')})`; // Simple retry
             }
         }
 

@@ -18,6 +18,11 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'ID and platform are required' });
     }
 
+    if (!process.env.SPOTIFY_CLIENT_SECRET) {
+        console.error('Missing SPOTIFY_CLIENT_SECRET');
+        return res.status(500).json({ error: 'Server configuration error: Missing Spotify Secret' });
+    }
+
     try {
         let metadata = {
             isrc: null,
