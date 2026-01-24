@@ -1,27 +1,47 @@
 import { MusicBrainzClient } from '../../lib/musicbrainz.js';
 
-export default async function handler(req, res) {
-    const { type, q } = req.query;
+export const config = {
+    runtime: 'edge', // Using Edge runtime for speed if possible, but fetchWithRetry uses Node APIs? Checked lib: uses 'fetch', URL, Map, setTimeout. Should be Edge compatible.
+    // However, the user asked for caching. Vercel Edge caching is done via headers.
+};
 
-    if (!q || !type) {
-        return res.status(400).json({ error: 'Missing query (q) or type' });
+export default async function handler(req) {
+    const { searchParams } = new URL(req.url);
+    const type = searchParams.get('type'); // 'artist' or 'recording'
+    const query = searchParams.get('query');
+
+    if (!type || !query) {
+        return new Response(JSON.stringify({ error: 'Type and query are required' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 
-    if (!['recording', 'artist'].includes(type)) {
-        return res.status(400).json({ error: 'Invalid type. Use "recording" or "artist"' });
+    if (!['artist', 'recording'].includes(type)) {
+        return new Response(JSON.stringify({ error: 'Invalid type. Use "artist" or "recording".' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
-
-    const client = new MusicBrainzClient();
-    const query = encodeURIComponent(q);
-
-    // Cache for 24 hours
-    res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate');
 
     try {
-        const data = await client.fetchWithRetry(`/${type}?query=${query}&limit=10`);
-        res.status(200).json(data);
+        const client = new MusicBrainzClient();
+        // Construct Lucene query based on type
+        // Simple query mapping: just pass the string to the 'query' param
+        // MusicBrainz search needs 'query' param.
+        const data = await client.fetchWithRetry(`/${type}`, { query });
+
+        return new Response(JSON.stringify(data), {
+            status: 200,
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600' // Cache for 24h
+            }
+        });
     } catch (error) {
-        console.error('Search API Error:', error);
-        res.status(500).json({ error: 'Search failed' });
+        return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 }

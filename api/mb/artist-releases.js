@@ -1,23 +1,40 @@
 import { MusicBrainzClient } from '../../lib/musicbrainz.js';
 
-export default async function handler(req, res) {
-    const { mbid } = req.query;
+export const config = {
+    runtime: 'edge'
+};
+
+export default async function handler(req) {
+    const { searchParams } = new URL(req.url);
+    const mbid = searchParams.get('mbid');
 
     if (!mbid) {
-        return res.status(400).json({ error: 'Missing MBID' });
+        return new Response(JSON.stringify({ error: 'Artist MBID is required' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 
-    const client = new MusicBrainzClient();
-
-    // Cache for 24 hours
-    res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate');
-
     try {
-        // Fetch release groups (Albums, Singles, EPs)
-        const data = await client.fetchWithRetry(`/release-group?artist=${mbid}&type=album|single|ep&limit=50`);
-        res.status(200).json(data);
+        const client = new MusicBrainzClient();
+        const data = await client.fetchWithRetry('/release-group', {
+            artist: mbid,
+            type: 'album|single', // Filter slightly to relevant types
+            limit: 20 // Reasonable limit
+        });
+
+        // Add cover art place holders or lookups if needed, but for now just raw data + attribution
+        return new Response(JSON.stringify(data), {
+            status: 200,
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600'
+            }
+        });
     } catch (error) {
-        console.error('Artist Releases API Error:', error);
-        res.status(500).json({ error: 'Failed to fetch releases' });
+        return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 }

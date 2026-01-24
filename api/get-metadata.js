@@ -146,10 +146,24 @@ export default async function handler(req, res) {
                 // We use fetchWithRetry from the library
                 const mbData = await mbClient.fetchWithRetry(`/recording?query=isrc:${metadata.isrc}&limit=1`);
 
-                if (mbData.recordings?.[0]?.tags) {
-                    const tags = mbData.recordings[0].tags.map(t => t.name);
-                    const uniqueGenres = new Set([...metadata.genre, ...tags]);
-                    metadata.genre = Array.from(uniqueGenres);
+                if (mbData.recordings?.[0]) {
+                    const recording = mbData.recordings[0];
+                    metadata.musicBrainzId = recording.id;
+
+                    // Tags/Genres
+                    if (recording.tags) {
+                        const tags = recording.tags.map(t => t.name);
+                        const uniqueGenres = new Set([...metadata.genre, ...tags]);
+                        metadata.genre = Array.from(uniqueGenres);
+                    }
+
+                    // Try to get Cover Art from the first release if available
+                    if (recording.releases?.[0]) {
+                        metadata.coverArt = mbClient.getCoverArtUrl(recording.releases[0].id);
+                    }
+
+                    // Attribution
+                    metadata._attribution = mbData._attribution;
                 }
             } catch (e) {
                 console.error('MusicBrainz fetch failed:', e);
