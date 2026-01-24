@@ -172,10 +172,10 @@ export default async function handler(req, res) {
         // 5. Smart Language Detection (Heuristic)
         metadata.language = detectLanguage(metadata.title, metadata.genre, metadata.artist);
 
-        // 6. Musixmatch Link
+        // 6. Musixmatch Link (Google Search)
         if (metadata.title && metadata.artist) {
-            const query = `${metadata.title} ${metadata.artist}`;
-            metadata.musixmatch = `https://www.musixmatch.com/search/${encodeURIComponent(query)}/tracks`;
+            const query = `${metadata.title} ${metadata.artist} musixmatch lyrics`;
+            metadata.musixmatch = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
         }
 
         res.status(200).json(metadata);
