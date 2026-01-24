@@ -5,7 +5,11 @@ A sophisticated web application that integrates music streaming (Spotify & Apple
 ## 🎵 Key Features
 
 ### 🎧 Dual Platform Streaming
+<<<<<<< HEAD
 - **Spotify Integration**: Full searching and playback capability with secure authentication.
+=======
+- **Spotify Integration**: Full searching and playback capability. Implicit Grant flow for secure client-side authentication.
+>>>>>>> 0856dd2b80fdbd93c8c7f12ea1f4311c574918c9
 - **Apple Music**: Direct search and embed integration.
 - **Smart Switching**: Seamlessly toggle between platforms while maintaining context.
 
