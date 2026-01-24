@@ -201,7 +201,8 @@ export default async function handler(req, res) {
 
         // 6. Musixmatch Link (Google Search)
         if (metadata.title && metadata.artist) {
-            const query = `${metadata.title} ${metadata.artist} musixmatch lyrics`;
+            const primaryArtist = metadata.artist.split(',')[0].trim();
+            const query = `${metadata.title} ${primaryArtist} musixmatch lyrics`;
             metadata.musixmatch = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
         }
 
