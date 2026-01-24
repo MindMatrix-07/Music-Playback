@@ -1310,6 +1310,10 @@
                     <span class="meta-label">ISRC</span>
                     <span class="meta-value" id="metaISRC">-</span>
                 </div>
+                <div class="meta-item">
+                    <span class="meta-label">MusicBrainz ID</span>
+                    <span class="meta-value" id="metaMBID">-</span>
+                </div>
                 <div class="meta-item full-width" id="crossLinkContainer">
                     <span class="meta-label">Listen on</span>
                     <a href="#" target="_blank" class="meta-link" id="metaCrossLink">Loading other platform...</a>
@@ -1653,6 +1657,7 @@
 
                 document.getElementById('metaReleased').textContent = data.releaseDate || 'N/A';
                 document.getElementById('metaISRC').textContent = data.isrc || 'N/A';
+                document.getElementById('metaMBID').textContent = data.musicBrainzId || 'N/A';
 
                 const crossLink = currentPlatform === 'spotify' ? data.crossLinks.apple : data.crossLinks.spotify;
                 const crossLabel = currentPlatform === 'spotify' ? 'Apple Music' : 'Spotify';

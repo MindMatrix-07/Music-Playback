@@ -39,7 +39,7 @@ export default async function handler(req, res) {
             },
             body: 'grant_type=client_credentials'
         });
-        
+
         if (!tokenResponse.ok) throw new Error('Spotify Auth Failed');
         const { access_token } = await tokenResponse.json();
 
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
                 headers: { 'Authorization': `Bearer ${access_token}` }
             });
             const track = await trackResp.json();
-            
+
             metadata.isrc = track.external_ids?.isrc;
             metadata.releaseDate = track.album?.release_date;
             metadata.crossLinks.spotify = track.external_urls?.spotify;
@@ -83,30 +83,55 @@ export default async function handler(req, res) {
             // Apple IDs are numeric, usually passed as is.
             const appleLookup = await fetch(`https://itunes.apple.com/lookup?id=${id}`);
             const appleData = await appleLookup.json();
-            
+
             if (appleData.results?.[0]) {
                 const track = appleData.results[0];
                 metadata.crossLinks.apple = track.trackViewUrl;
                 metadata.genre = [track.primaryGenreName];
                 metadata.releaseDate = track.releaseDate;
-                
+
                 // Note: iTunes public API doesn't always strictly return ISRC on the lookup endpoint for all regions/files,
                 // but usually it does. If not, we iterate.
                 // Actually, iTunes Lookup often DOES NOT return ISRC publicly reliably.
                 // We might have to search by title/artist on Spotify if ISRC is missing.
-                
+
                 // Let's try to search Spotify by Title + Artist as a fallback or primary match
                 const query = `track:${track.trackName} artist:${track.artistName}`;
                 const spotifySearch = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=1`, {
                     headers: { 'Authorization': `Bearer ${access_token}` }
                 });
                 const spotifyData = await spotifySearch.json();
-                
+
                 if (spotifyData.tracks?.items?.[0]) {
                     const match = spotifyData.tracks.items[0];
                     metadata.crossLinks.spotify = match.external_urls.spotify;
                     metadata.isrc = match.external_ids?.isrc; // Get ISRC from Spotify match
                 }
+            }
+        }
+
+        // 4. Enrich with MusicBrainz (if ISRC exists)
+        if (metadata.isrc) {
+            try {
+                // MusicBrainz requires a User-Agent
+                const mbUrl = `https://musicbrainz.org/ws/2/recording?query=isrc:${metadata.isrc}&fmt=json`;
+                const mbResp = await fetch(mbUrl, {
+                    headers: { 'User-Agent': 'MusicPlaybackTool/1.0 ( your@email.com )' }
+                });
+
+                if (mbResp.ok) {
+                    const mbData = await mbResp.json();
+                    if (mbData.count > 0 && mbData.recordings?.[0]) {
+                        const rec = mbData.recordings[0];
+                        metadata.musicBrainzId = rec.id;
+                        // Merge tags if we don't have genres
+                        if ((!metadata.genre || metadata.genre.length === 0) && rec.tags) {
+                            metadata.genre = rec.tags.map(t => t.name);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('MusicBrainz fetch failed:', err);
             }
         }
 
