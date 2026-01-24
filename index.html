@@ -1071,20 +1071,54 @@
             align-content: start;
         }
 
-        .meta-image-col {
+        .meta-media-col {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .artist-images-area {
             display: flex;
             flex-direction: column;
             gap: 15px;
             align-items: center;
             width: 100%;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        /* Grid mode for multiple artists */
-        .meta-image-col.multi-grid {
+        .artist-images-area.multi-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             align-content: start;
+        }
+
+        .artist-images-area::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .artist-images-area::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 2px;
+        }
+
+        .youtube-container {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: black;
+            border: 1px solid var(--border-color);
+        }
+
+        .yt-label {
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .meta-image-col::-webkit-scrollbar {
@@ -1452,13 +1486,25 @@
                     </div>
                 </div>
 
-                <!-- Right Column: Artist Images -->
-                <div class="meta-image-col" id="artistImagesContainer">
-                    <div class="artist-image-container">
-                        <img id="metaArtistImage" class="artist-image" src="" alt="Artist"
-                            onerror="this.style.display='none'">
+                <!-- Right Column: Media (Artists + YouTube) -->
+                <div class="meta-media-col">
+                    <!-- Artist Images -->
+                    <div id="artistImagesContainer" class="artist-images-area">
+                        <div class="artist-image-container">
+                            <img id="metaArtistImage" class="artist-image" src="" alt="Artist"
+                                onerror="this.style.display='none'">
+                        </div>
+                        <div class="artist-label">Artist</div>
                     </div>
-                    <div class="artist-label">Artist</div>
+
+                    <!-- YouTube Embed -->
+                    <div class="youtube-container" id="youtubeContainer">
+                        <div class="yt-label">Official Video</div>
+                        <iframe id="youtubeEmbed" width="100%" height="150" src="" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
                 </div>
             </div>
         </section>
