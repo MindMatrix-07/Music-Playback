@@ -1296,34 +1296,13 @@
             document.getElementById('errorMessage').classList.remove('active');
 
             if (currentPlatform === 'spotify') {
-                if (spotifyUser) {
-                    // Logged in - show full embed
-                    const spotifyEmbed = document.getElementById('spotifyEmbed');
-                    spotifyEmbed.src = `https://open.spotify.com/embed/track/${track.id}?utm_source=generator&theme=0`;
-                    document.getElementById('openSpotifyBtn').href = track.spotifyUrl || `https://open.spotify.com/track/${track.id}`;
-                    document.getElementById('appleWrapper').classList.remove('active');
-                    document.getElementById('previewPlayer').classList.remove('active');
-                    document.getElementById('spotifyWrapper').classList.add('active');
-                } else {
-                    // Not logged in - show preview player
-                    document.getElementById('previewAlbumArt').src = track.image || '';
-                    document.getElementById('previewTrackName').textContent = track.name;
-                    document.getElementById('previewArtist').textContent = track.artist;
-                    document.getElementById('previewOpenBtn').href = track.spotifyUrl || `https://open.spotify.com/track/${track.id}`;
-                    
-                    if (track.previewUrl) {
-                        previewAudio.src = track.previewUrl;
-                    } else {
-                        previewAudio.src = '';
-                    }
-                    
-                    document.getElementById('previewProgressBar').style.width = '0%';
-                    document.getElementById('previewTime').textContent = '0:00 / 0:30';
-                    
-                    document.getElementById('spotifyWrapper').classList.remove('active');
-                    document.getElementById('appleWrapper').classList.remove('active');
-                    document.getElementById('previewPlayer').classList.add('active');
-                }
+                // Always show full embed (it handles auth internally)
+                const spotifyEmbed = document.getElementById('spotifyEmbed');
+                spotifyEmbed.src = `https://open.spotify.com/embed/track/${track.id}?utm_source=generator&theme=0`;
+                document.getElementById('openSpotifyBtn').href = track.spotifyUrl || `https://open.spotify.com/track/${track.id}`;
+                document.getElementById('appleWrapper').classList.remove('active');
+                document.getElementById('previewPlayer').classList.remove('active');
+                document.getElementById('spotifyWrapper').classList.add('active');
             } else {
                 // Apple Music
                 const appleEmbed = document.getElementById('appleEmbed');
