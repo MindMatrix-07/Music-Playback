@@ -13,9 +13,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const protocol = req.headers['x-forwarded-proto'] || 'https';
-        const host = req.headers.host;
-        const redirectUri = `${protocol}://${host}/api/spotify-callback`;
+        const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
 
         // Exchange code for tokens
         const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {

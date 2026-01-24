@@ -1,3 +1,6 @@
 {
-  "framework": null
+  "framework": null,
+  "env": {
+    "SPOTIFY_REDIRECT_URI": "http://localhost:3000/api/spotify-callback"
+  }
 }
