@@ -1851,9 +1851,11 @@
 
                 const langEl = document.getElementById('metaLanguage');
                 langEl.textContent = 'Click here'; // Keep text static as requested previously
-                // User requested google.com/ai but that is a landing page. 
-                // We use google.com/search with a question query to trigger AI Overview.
-                const langQuery = `${track.name} ${track.artist} which language?`;
+
+                // Use only primary artist to keep query short
+                const mainArtist = track.artist ? track.artist.split(',')[0].trim() : '';
+                const langQuery = `${track.name} ${mainArtist} which language?`;
+
                 langEl.href = `https://www.google.com/search?q=${encodeURIComponent(langQuery)}`;
                 document.getElementById('metaLabel').textContent = data.recordLabel || 'N/A';
                 document.getElementById('metaISRC').textContent = data.isrc || 'N/A';
