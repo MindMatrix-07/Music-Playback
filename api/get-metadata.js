@@ -204,6 +204,10 @@ export default async function handler(req, res) {
             const primaryArtist = metadata.artist.split(',')[0].trim();
             const query = `${metadata.title} ${primaryArtist} musixmatch lyrics`;
             metadata.musixmatch = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+
+            // 7. Get YouTube Video ID (Scrape)
+            const ytQuery = `${metadata.title} ${primaryArtist} official video`;
+            metadata.youtubeId = await fetchYouTubeId(ytQuery);
         }
 
         res.status(200).json(metadata);
@@ -211,6 +215,24 @@ export default async function handler(req, res) {
     } catch (error) {
         console.error('Metadata critical error:', error);
         res.status(500).json({ error: 'Failed to fetch metadata' });
+    }
+}
+
+// YouTube Scraper Helper (No API Key needed)
+async function fetchYouTubeId(term) {
+    try {
+        const res = await fetch(`https://www.youtube.com/results?search_query=${encodeURIComponent(term)}`, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+        });
+        const html = await res.text();
+        // Regex to find the first video ID in the initial data
+        const match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+        return match ? match[1] : null;
+    } catch (e) {
+        console.error('YouTube Scrape failed:', e);
+        return null;
     }
 }
 
@@ -242,11 +264,6 @@ async function getWikidataImage(artistName) {
         return null;
     }
 }
-
-// Needed because Wikimedia Special:FilePath is a redirect, handling that in frontend is fine,
-// but returning the direct redirect URL is better. 
-// Actually Special:FilePath returns the image directly or usage 302. 
-// Browsers handle 302 on img src fine.
 
 function detectLanguage(title, genres, artist) {
     if (!title) return 'International';
