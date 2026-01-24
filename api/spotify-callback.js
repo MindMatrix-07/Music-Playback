@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
+        const redirectUri = process.env.SPOTIFY_REDIRECT_URI || 'https://musicplaybacktool.vercel.app/api/spotify-callback';
 
         // Exchange code for tokens
         const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
