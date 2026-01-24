@@ -139,7 +139,7 @@
             width: fit-content;
             margin-left: auto;
             margin-right: auto;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--spotify-green);
         }
 
         .user-avatar {
@@ -153,6 +153,7 @@
         .user-name {
             font-weight: 600;
             font-size: 0.95rem;
+            color: var(--spotify-green);
         }
 
         .logout-btn {
@@ -204,6 +205,12 @@
         .login-btn svg {
             width: 24px;
             height: 24px;
+        }
+
+        .login-subtitle {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
         }
 
         /* Platform Toggle */
@@ -385,19 +392,9 @@
             padding-right: 5px;
         }
 
-        .track-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .track-list::-webkit-scrollbar-track {
-            background: var(--bg-card);
-            border-radius: 3px;
-        }
-
-        .track-list::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 3px;
-        }
+        .track-list::-webkit-scrollbar { width: 6px; }
+        .track-list::-webkit-scrollbar-track { background: var(--bg-card); border-radius: 3px; }
+        .track-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
 
         .track-item {
             display: flex;
@@ -432,10 +429,7 @@
             background: var(--border-color);
         }
 
-        .track-info {
-            flex: 1;
-            min-width: 0;
-        }
+        .track-info { flex: 1; min-width: 0; }
 
         .track-name {
             font-weight: 600;
@@ -460,9 +454,7 @@
         }
 
         /* Player Section */
-        .player-section {
-            margin-top: 30px;
-        }
+        .player-section { margin-top: 30px; }
 
         .player-title {
             font-size: 1.3rem;
@@ -513,6 +505,150 @@
         body.spotify-active .embed-placeholder-icon { color: var(--spotify-green); }
         body.apple-active .embed-placeholder-icon { color: var(--apple-pink); }
 
+        /* Preview Player (for non-logged-in Spotify users) */
+        .preview-player {
+            width: 100%;
+            display: none;
+        }
+
+        .preview-player.active { display: block; }
+
+        .preview-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .preview-album-art {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            object-fit: cover;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .preview-info { flex: 1; }
+
+        .preview-track-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .preview-artist {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .preview-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .preview-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .preview-play-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--spotify-green);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .preview-play-btn:hover {
+            transform: scale(1.1);
+            background: var(--spotify-green-light);
+        }
+
+        .preview-play-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .preview-progress {
+            flex: 1;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .preview-progress-bar {
+            height: 100%;
+            background: var(--spotify-green);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .preview-time {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            min-width: 45px;
+            text-align: right;
+        }
+
+        .preview-login-prompt {
+            text-align: center;
+            padding: 15px;
+            background: rgba(29, 185, 84, 0.1);
+            border: 1px solid rgba(29, 185, 84, 0.3);
+            border-radius: 12px;
+        }
+
+        .preview-login-prompt p {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .preview-login-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--spotify-gradient);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .preview-login-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .preview-login-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
         /* Embeds */
         .embed-wrapper {
             width: 100%;
@@ -560,10 +696,7 @@
             font-family: inherit;
         }
 
-        .open-btn svg {
-            width: 20px;
-            height: 20px;
-        }
+        .open-btn svg { width: 20px; height: 20px; }
 
         .open-btn.spotify:hover {
             border-color: var(--spotify-green);
@@ -599,10 +732,7 @@
         body.spotify-active .spinner { border-top-color: var(--spotify-green); }
         body.apple-active .spinner { border-top-color: var(--apple-pink); }
 
-        .loading-text {
-            color: var(--text-secondary);
-            font-size: 1rem;
-        }
+        .loading-text { color: var(--text-secondary); font-size: 1rem; }
 
         .loading-dots {
             display: flex;
@@ -644,7 +774,6 @@
         /* Mobile Styles */
         @media (max-width: 600px) {
             .container { padding: 30px 15px; }
-            
             .header h1 { font-size: 1.8rem; }
             .header p { font-size: 0.95rem; }
             
@@ -667,79 +796,35 @@
                 padding: 12px 15px;
             }
             
-            .search-input { 
-                width: 100%;
-                font-size: 1rem;
-                padding: 10px 0;
-            }
+            .search-input { width: 100%; font-size: 1rem; padding: 10px 0; }
+            .search-btn { width: 100%; padding: 14px; }
+            .track-list { max-height: 300px; }
+            .track-item { padding: 10px 12px; }
+            .track-image { width: 45px; height: 45px; }
+            .track-name { font-size: 0.95rem; }
+            .track-artist { font-size: 0.85rem; }
+            .embed-container { padding: 15px; min-height: 150px; }
+            .open-buttons { flex-direction: column; }
+            .open-btn { width: 100%; justify-content: center; }
+            .loading { padding: 30px; }
+            .spinner { width: 40px; height: 40px; }
+            .user-profile { padding: 10px 16px; }
+            .user-avatar { width: 32px; height: 32px; }
+            .user-name { font-size: 0.9rem; }
             
-            .search-btn { 
-                width: 100%;
-                padding: 14px;
-            }
-            
-            .track-list {
-                max-height: 300px;
-            }
-            
-            .track-item { 
-                padding: 10px 12px;
-            }
-            
-            .track-image { 
-                width: 45px; 
-                height: 45px;
-            }
-            
-            .track-name {
-                font-size: 0.95rem;
-            }
-            
-            .track-artist {
-                font-size: 0.85rem;
-            }
-            
-            .embed-container {
-                padding: 15px;
-                min-height: 150px;
-            }
-            
-            .open-buttons {
+            .preview-card {
                 flex-direction: column;
+                text-align: center;
             }
             
-            .open-btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .loading {
-                padding: 30px;
-            }
-            
-            .spinner {
-                width: 40px;
-                height: 40px;
-            }
-            
-            .user-profile {
-                padding: 10px 16px;
-            }
-            
-            .user-avatar {
-                width: 32px;
-                height: 32px;
-            }
-            
-            .user-name {
-                font-size: 0.9rem;
+            .preview-album-art {
+                width: 150px;
+                height: 150px;
             }
         }
 
         /* Hide class */
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body class="spotify-active">
@@ -757,7 +842,7 @@
             <p>Search and play music from your favorite platform</p>
         </header>
 
-        <!-- User Profile (shown when logged in) -->
+        <!-- User Profile (shown when logged in with Spotify) -->
         <div class="user-profile hidden" id="userProfile">
             <img class="user-avatar" id="userAvatar" src="" alt="Profile">
             <span class="user-name" id="userName">User</span>
@@ -770,14 +855,15 @@
             </button>
         </div>
 
-        <!-- Login Section (shown when not logged in) -->
-        <div class="login-section" id="loginSection">
+        <!-- Login Section (only shown for Spotify when not logged in) -->
+        <div class="login-section hidden" id="loginSection">
             <a href="/api/spotify-login" class="login-btn spotify">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
                 </svg>
                 Login with Spotify
             </a>
+            <p class="login-subtitle">Login to play full tracks</p>
         </div>
 
         <!-- Platform Toggle -->
@@ -842,7 +928,47 @@
                 <!-- Error -->
                 <div class="error-message" id="errorMessage"></div>
 
-                <!-- Spotify Embed Wrapper -->
+                <!-- Preview Player (for non-logged-in Spotify users) -->
+                <div class="preview-player" id="previewPlayer">
+                    <div class="preview-card">
+                        <img class="preview-album-art" id="previewAlbumArt" src="" alt="Album Art">
+                        <div class="preview-info">
+                            <div class="preview-track-name" id="previewTrackName">Track Name</div>
+                            <div class="preview-artist" id="previewArtist">Artist</div>
+                            <span class="preview-badge">30s Preview</span>
+                        </div>
+                    </div>
+                    <div class="preview-controls">
+                        <button class="preview-play-btn" id="previewPlayBtn" onclick="togglePreview()">
+                            <svg id="previewPlayIcon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </button>
+                        <div class="preview-progress" id="previewProgress" onclick="seekPreview(event)">
+                            <div class="preview-progress-bar" id="previewProgressBar"></div>
+                        </div>
+                        <span class="preview-time" id="previewTime">0:00 / 0:30</span>
+                    </div>
+                    <div class="preview-login-prompt">
+                        <p>Login with your Spotify account to play full tracks</p>
+                        <a href="/api/spotify-login" class="preview-login-btn">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                            </svg>
+                            Login with Spotify
+                        </a>
+                    </div>
+                    <div class="open-buttons">
+                        <a href="#" class="open-btn spotify" id="previewOpenBtn" target="_blank">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                            </svg>
+                            Open in Spotify
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Spotify Embed Wrapper (for logged-in users) -->
                 <div class="embed-wrapper" id="spotifyWrapper">
                     <iframe 
                         id="spotifyEmbed"
@@ -892,10 +1018,15 @@
         </section>
     </div>
 
+    <!-- Hidden Audio Element for Preview -->
+    <audio id="previewAudio" preload="none"></audio>
+
     <script>
         let currentPlatform = 'spotify';
         let selectedTrack = null;
         let spotifyUser = null;
+        let previewAudio = null;
+        let isPlaying = false;
 
         // Check for OAuth callback tokens in URL hash
         function checkAuthCallback() {
@@ -915,41 +1046,40 @@
                         image: userImage || ''
                     };
                     
-                    // Store in localStorage
                     localStorage.setItem('spotify_user', JSON.stringify(spotifyUser));
-                    
-                    // Clear the hash
                     history.replaceState(null, '', window.location.pathname);
-                    
-                    updateUserUI();
+                    updateUI();
                 }
             }
         }
 
-        // Check for stored user
         function checkStoredUser() {
             const stored = localStorage.getItem('spotify_user');
             if (stored) {
                 spotifyUser = JSON.parse(stored);
-                updateUserUI();
+                updateUI();
             }
         }
 
-        function updateUserUI() {
+        function updateUI() {
             const loginSection = document.getElementById('loginSection');
             const userProfile = document.getElementById('userProfile');
             
-            if (spotifyUser) {
-                loginSection.classList.add('hidden');
-                userProfile.classList.remove('hidden');
-                document.getElementById('userName').textContent = spotifyUser.name;
-                if (spotifyUser.image) {
-                    document.getElementById('userAvatar').src = spotifyUser.image;
+            // Only show login/profile for Spotify
+            if (currentPlatform === 'spotify') {
+                if (spotifyUser) {
+                    loginSection.classList.add('hidden');
+                    userProfile.classList.remove('hidden');
+                    document.getElementById('userName').textContent = spotifyUser.name;
+                    document.getElementById('userAvatar').src = spotifyUser.image || 
+                        'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"><circle cx="12" cy="8" r="4"/><path d="M12 14c-6 0-8 3-8 6v2h16v-2c0-3-2-6-8-6z"/></svg>';
                 } else {
-                    document.getElementById('userAvatar').src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"><circle cx="12" cy="8" r="4"/><path d="M12 14c-6 0-8 3-8 6v2h16v-2c0-3-2-6-8-6z"/></svg>';
+                    loginSection.classList.remove('hidden');
+                    userProfile.classList.add('hidden');
                 }
             } else {
-                loginSection.classList.remove('hidden');
+                // Hide both for Apple Music
+                loginSection.classList.add('hidden');
                 userProfile.classList.add('hidden');
             }
         }
@@ -957,26 +1087,33 @@
         function logout() {
             spotifyUser = null;
             localStorage.removeItem('spotify_user');
-            updateUserUI();
+            updateUI();
+            // Reset player if showing Spotify content
+            if (currentPlatform === 'spotify') {
+                hideAllEmbeds();
+                showPlaceholder('Search for music on Spotify');
+            }
         }
 
         function selectPlatform(platform) {
             currentPlatform = platform;
             selectedTrack = null;
             
-            // Update body class
+            // Stop any playing preview
+            stopPreview();
+            
             document.body.classList.remove('spotify-active', 'apple-active');
             document.body.classList.add(`${platform}-active`);
             
-            // Update button states
             document.querySelectorAll('.platform-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`.platform-btn.${platform}`).classList.add('active');
             
-            // Update search placeholder
             document.getElementById('searchInput').placeholder = 
                 `Search ${platform === 'spotify' ? 'Spotify' : 'Apple Music'} for songs, artists, albums...`;
             
-            // Reset UI
+            // Update login section visibility
+            updateUI();
+            
             hideSearchResults();
             hideAllEmbeds();
             showPlaceholder(`Search for music on ${platform === 'spotify' ? 'Spotify' : 'Apple Music'}`);
@@ -995,8 +1132,10 @@
         function hideAllEmbeds() {
             document.getElementById('spotifyWrapper').classList.remove('active');
             document.getElementById('appleWrapper').classList.remove('active');
+            document.getElementById('previewPlayer').classList.remove('active');
             document.getElementById('loading').classList.remove('active');
             document.getElementById('errorMessage').classList.remove('active');
+            stopPreview();
         }
 
         function hideSearchResults() {
@@ -1025,11 +1164,68 @@
             errorEl.classList.add('active');
         }
 
+        // Preview Player Functions
+        function initPreviewAudio() {
+            previewAudio = document.getElementById('previewAudio');
+            previewAudio.addEventListener('timeupdate', updatePreviewProgress);
+            previewAudio.addEventListener('ended', () => {
+                isPlaying = false;
+                updatePlayButton();
+            });
+        }
+
+        function togglePreview() {
+            if (!previewAudio || !previewAudio.src) return;
+            
+            if (isPlaying) {
+                previewAudio.pause();
+            } else {
+                previewAudio.play();
+            }
+            isPlaying = !isPlaying;
+            updatePlayButton();
+        }
+
+        function stopPreview() {
+            if (previewAudio) {
+                previewAudio.pause();
+                previewAudio.currentTime = 0;
+                isPlaying = false;
+                updatePlayButton();
+            }
+        }
+
+        function updatePlayButton() {
+            const icon = document.getElementById('previewPlayIcon');
+            if (isPlaying) {
+                icon.innerHTML = '<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>';
+            } else {
+                icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            }
+        }
+
+        function updatePreviewProgress() {
+            if (!previewAudio) return;
+            const progress = (previewAudio.currentTime / previewAudio.duration) * 100;
+            document.getElementById('previewProgressBar').style.width = progress + '%';
+            
+            const current = Math.floor(previewAudio.currentTime);
+            const total = Math.floor(previewAudio.duration) || 30;
+            document.getElementById('previewTime').textContent = 
+                `0:${current.toString().padStart(2, '0')} / 0:${total.toString().padStart(2, '0')}`;
+        }
+
+        function seekPreview(event) {
+            if (!previewAudio || !previewAudio.duration) return;
+            const rect = event.target.getBoundingClientRect();
+            const percent = (event.clientX - rect.left) / rect.width;
+            previewAudio.currentTime = percent * previewAudio.duration;
+        }
+
         async function searchMusic() {
             const query = document.getElementById('searchInput').value.trim();
             if (!query) return;
 
-            // Show loading
             hideAllEmbeds();
             hidePlaceholder();
             document.getElementById('loading').classList.add('active');
@@ -1090,41 +1286,58 @@
 
         function selectTrack(track) {
             selectedTrack = track;
+            stopPreview();
 
-            // Update selected state
             document.querySelectorAll('.track-item').forEach(el => el.classList.remove('selected'));
             document.querySelector(`.track-item[data-track-id="${track.id}"]`)?.classList.add('selected');
 
-            // Hide search results after selection
             hideSearchResults();
-
-            // Hide placeholder and show embed
             hidePlaceholder();
             document.getElementById('errorMessage').classList.remove('active');
 
             if (currentPlatform === 'spotify') {
-                const spotifyEmbed = document.getElementById('spotifyEmbed');
-                spotifyEmbed.src = `https://open.spotify.com/embed/track/${track.id}?utm_source=generator&theme=0`;
-                
-                // Update open button
-                document.getElementById('openSpotifyBtn').href = track.spotifyUrl || `https://open.spotify.com/track/${track.id}`;
-                
-                document.getElementById('appleWrapper').classList.remove('active');
-                document.getElementById('spotifyWrapper').classList.add('active');
+                if (spotifyUser) {
+                    // Logged in - show full embed
+                    const spotifyEmbed = document.getElementById('spotifyEmbed');
+                    spotifyEmbed.src = `https://open.spotify.com/embed/track/${track.id}?utm_source=generator&theme=0`;
+                    document.getElementById('openSpotifyBtn').href = track.spotifyUrl || `https://open.spotify.com/track/${track.id}`;
+                    document.getElementById('appleWrapper').classList.remove('active');
+                    document.getElementById('previewPlayer').classList.remove('active');
+                    document.getElementById('spotifyWrapper').classList.add('active');
+                } else {
+                    // Not logged in - show preview player
+                    document.getElementById('previewAlbumArt').src = track.image || '';
+                    document.getElementById('previewTrackName').textContent = track.name;
+                    document.getElementById('previewArtist').textContent = track.artist;
+                    document.getElementById('previewOpenBtn').href = track.spotifyUrl || `https://open.spotify.com/track/${track.id}`;
+                    
+                    if (track.previewUrl) {
+                        previewAudio.src = track.previewUrl;
+                    } else {
+                        previewAudio.src = '';
+                    }
+                    
+                    document.getElementById('previewProgressBar').style.width = '0%';
+                    document.getElementById('previewTime').textContent = '0:00 / 0:30';
+                    
+                    document.getElementById('spotifyWrapper').classList.remove('active');
+                    document.getElementById('appleWrapper').classList.remove('active');
+                    document.getElementById('previewPlayer').classList.add('active');
+                }
             } else {
+                // Apple Music
                 const appleEmbed = document.getElementById('appleEmbed');
                 appleEmbed.src = `https://embed.music.apple.com/us/song/${track.id}`;
-                
-                // Update open button
                 document.getElementById('openAppleBtn').href = track.appleUrl || `https://music.apple.com/song/${track.id}`;
-                
                 document.getElementById('spotifyWrapper').classList.remove('active');
+                document.getElementById('previewPlayer').classList.remove('active');
                 document.getElementById('appleWrapper').classList.add('active');
             }
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            initPreviewAudio();
             checkAuthCallback();
             checkStoredUser();
             selectPlatform('spotify');
