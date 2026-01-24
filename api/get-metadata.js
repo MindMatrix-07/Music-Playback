@@ -178,8 +178,8 @@ export default async function handler(req, res) {
         if (metadata.artist) {
             const artists = metadata.artist.split(',').map(s => s.trim());
 
-            // Limit to 4 artists
-            const targetArtists = artists.slice(0, 4);
+            // Limit to 8 artists to ensure full coverage
+            const targetArtists = artists.slice(0, 8);
 
             const imagePromises = targetArtists.map(async (name) => {
                 const url = await getWikidataImage(name);
