@@ -22,6 +22,12 @@ export default async function handler(req, res) {
 
     try {
         let metadata = {
+            title: null,
+            artist: null,
+            album: null,
+            duration: null, // in ms
+            year: null,
+            language: null,
             isrc: null,
             genre: [],
             releaseDate: null,
@@ -70,8 +76,13 @@ export default async function handler(req, res) {
 
             if (trackResp.ok) {
                 const track = await trackResp.json();
+                metadata.title = track.name;
+                metadata.artist = track.artists.map(a => a.name).join(', '); // Primary artist(s)
+                metadata.album = track.album?.name;
+                metadata.duration = track.duration_ms;
                 metadata.isrc = track.external_ids?.isrc;
                 metadata.releaseDate = track.album?.release_date;
+                metadata.year = metadata.releaseDate ? metadata.releaseDate.split('-')[0] : null;
                 metadata.popularity = track.popularity;
                 metadata.crossLinks.spotify = track.external_urls?.spotify;
                 metadata.coverArt = track.album?.images?.[0]?.url;
@@ -99,11 +110,17 @@ export default async function handler(req, res) {
 
             if (appleData.results?.[0]) {
                 const track = appleData.results[0];
+                metadata.title = track.trackName;
+                metadata.artist = track.artistName;
+                metadata.album = track.collectionName;
+                metadata.duration = track.trackTimeMillis;
                 metadata.crossLinks.apple = track.trackViewUrl;
                 metadata.genre = [track.primaryGenreName];
                 metadata.releaseDate = track.releaseDate;
+                metadata.year = track.releaseDate ? new Date(track.releaseDate).getFullYear().toString() : null;
                 metadata.recordLabel = track.collectionCensoredName; // Apple's copyright/label info
                 metadata.coverArt = track.artworkUrl100?.replace('100x100', '600x600');
+                metadata.language = track.country; // Best approximation for "Language" from standard fields
 
                 searchQuery.title = track.trackName;
                 searchQuery.artist = track.artistName;
@@ -127,8 +144,12 @@ export default async function handler(req, res) {
                     // Merge Metadata - Apple often has better Genre/Label info if Spotify's was generic
                     if (!metadata.recordLabel) metadata.recordLabel = match.collectionCensoredName;
                     if (metadata.genre.length === 0) metadata.genre = [match.primaryGenreName];
-                    if (!metadata.releaseDate) metadata.releaseDate = match.releaseDate;
+                    if (!metadata.releaseDate) {
+                        metadata.releaseDate = match.releaseDate;
+                        metadata.year = new Date(match.releaseDate).getFullYear().toString();
+                    }
                     if (!metadata.coverArt) metadata.coverArt = match.artworkUrl100?.replace('100x100', '600x600');
+                    if (!metadata.language) metadata.language = match.country;
                 }
             } catch (e) {
                 console.error('Apple Music cross-reference failed:', e);
@@ -141,7 +162,7 @@ export default async function handler(req, res) {
                 let query = '';
                 if (searchQuery.isrc) { // Apple doesn't easily give ISRC via public lookup, but if we had it... 
                     // Actually, public iTunes Search API DOES NOT return ISRC. So we rely on text search.
-                    query = `track:${searchQuery.title} artist:${searchQuery.artist}`;
+                    query = `isrc:${searchQuery.isrc}`;
                 } else {
                     query = `track:${searchQuery.title} artist:${searchQuery.artist}`;
                 }
@@ -156,11 +177,17 @@ export default async function handler(req, res) {
                         const match = spotifyData.tracks.items[0];
                         spotifyTrackId = match.id;
                         metadata.crossLinks.spotify = match.external_urls.spotify;
-                        metadata.isrc = match.external_ids?.isrc;
+                        if (!metadata.isrc) metadata.isrc = match.external_ids?.isrc;
                         metadata.popularity = match.popularity;
 
+                        // Merge missing fields
+                        if (!metadata.album) metadata.album = match.album?.name;
+                        if (!metadata.duration) metadata.duration = match.duration_ms;
                         if (!metadata.coverArt) metadata.coverArt = match.album?.images?.[0]?.url;
-                        if (!metadata.releaseDate) metadata.releaseDate = match.album?.release_date; // Spotify dates are usually ISO compliant
+                        if (!metadata.releaseDate) {
+                            metadata.releaseDate = match.album?.release_date;
+                            metadata.year = match.album?.release_date.split('-')[0];
+                        }
                     }
                 }
             } catch (e) {
