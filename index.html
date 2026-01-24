@@ -1350,6 +1350,67 @@
             animation: slideDown 0.3s ease;
         }
 
+        /* Settings Guide */
+        .guide-collapsible {
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .guide-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--spotify-green);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.9rem;
+            font-weight: 600;
+            align-items: center;
+            padding: 5px 0;
+        }
+
+        .guide-toggle-btn:hover {
+            opacity: 0.9;
+        }
+
+        .guide-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .guide-content.expanded {
+            max-height: 400px;
+            margin-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .steps-list {
+            padding-left: 20px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .steps-list li {
+            margin-bottom: 8px;
+        }
+
+        .steps-list b {
+            color: var(--text-primary);
+        }
+
+        .guide-note {
+            margin-top: 10px;
+            font-style: italic;
+            opacity: 0.8;
+            font-size: 0.8rem;
+        }
+
+
         .setting-item {
             margin-bottom: 25px;
         }
@@ -1729,6 +1790,25 @@
                 <p style="font-size:0.75rem; color:var(--text-secondary); margin-top:8px; opacity: 0.7;">
                     🔒 Key is stored <b>locally</b> on your device and never sent to our server.
                 </p>
+            </div>
+
+            <div class="guide-collapsible">
+                <button id="toggleGuideBtn" class="guide-toggle-btn">
+                    <span>❓ How to get a YouTube API Key</span>
+                    <span id="guideArrow" style="transition: transform 0.3s;">▼</span>
+                </button>
+                <div id="guideContent" class="guide-content">
+                    <ol class="steps-list">
+                        <li>Go to <a href="https://console.cloud.google.com/" target="_blank"
+                                style="color:var(--spotify-green)">Google Cloud Console</a>.</li>
+                        <li>Create a new <b>Project</b> (e.g., "Music App").</li>
+                        <li>Go to <b>APIs & Services > Library</b>.</li>
+                        <li>Search for "YouTube Data API v3" and click <b>Enable</b>.</li>
+                        <li>Go to <b>Credentials > Create Credentials > API Key</b>.</li>
+                        <li>Copy the key and paste it above!</li>
+                    </ol>
+                    <p class="guide-note">✨ It's free (10k daily quota) and requires no approval.</p>
+                </div>
             </div>
 
             <div class="settings-actions">
