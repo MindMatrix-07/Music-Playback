@@ -153,11 +153,32 @@ export default async function handler(req, res) {
             } catch (e) { console.error('Spotify Search failed', e); }
         }
 
-        // 4. Wikidata Artist Images (Parallel Fetch for all artists)
+        // 4. Wikidata Artist Images (Parallel Fetch) + Spotify Fallback
+
+        // Fetch Spotify Artist Image first (as backup)
+        let spotifyArtistImg = null;
+        if (searchQuery.primaryArtistId && access_token) {
+            try {
+                const artistResp = await fetch(`https://api.spotify.com/v1/artists/${searchQuery.primaryArtistId}`, {
+                    headers: { 'Authorization': `Bearer ${access_token}` }
+                });
+                if (artistResp.ok) {
+                    const artistData = await artistResp.json();
+                    if (artistData.images?.length > 0) {
+                        spotifyArtistImg = artistData.images[0].url;
+                    }
+                    // Append genres if missing
+                    if (metadata.genre.length === 0 && artistData.genres) {
+                        metadata.genre = artistData.genres;
+                    }
+                }
+            } catch (e) { console.error('Spotify Artist fetch failed', e); }
+        }
+
         if (metadata.artist) {
             const artists = metadata.artist.split(',').map(s => s.trim());
 
-            // Limit to 4 artists to prevent excessive calls
+            // Limit to 4 artists
             const targetArtists = artists.slice(0, 4);
 
             const imagePromises = targetArtists.map(async (name) => {
@@ -167,6 +188,12 @@ export default async function handler(req, res) {
 
             const results = await Promise.all(imagePromises);
             metadata.artistImages = results.filter(item => item.url !== null);
+        }
+
+        // FALLBACK: If Wikidata found nothing, use Spotify Image for primary artist
+        if (metadata.artistImages.length === 0 && spotifyArtistImg && metadata.artist) {
+            const primaryName = metadata.artist.split(',')[0].trim();
+            metadata.artistImages.push({ name: primaryName, url: spotifyArtistImg });
         }
 
         // 5. Smart Language Detection (Heuristic)
