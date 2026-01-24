@@ -1050,9 +1050,9 @@
 
         /* Metadata Styles */
         .metadata-section {
-            padding: 20px;
+            padding: 30px;
             background: var(--bg-card);
-            border-radius: 16px;
+            border-radius: 20px;
             border: 1px solid var(--border-color);
             margin-top: 30px;
             animation: fadeIn 0.5s ease;
@@ -1060,45 +1060,117 @@
 
         .metadata-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: 1fr 280px;
+            gap: 40px;
+        }
+
+        .meta-info-col {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 24px;
+            align-content: start;
+        }
+
+        .meta-image-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .artist-image-container {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            background: var(--bg-dark);
+            margin-bottom: 12px;
+        }
+
+        .artist-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .artist-image:hover {
+            transform: scale(1.05);
+        }
+
+        .artist-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .meta-links-row {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
         }
 
         .meta-item {
             display: flex;
             flex-direction: column;
-            gap: 5px;
-        }
-
-        .meta-item.full-width {
-            grid-column: 1 / -1;
+            gap: 6px;
         }
 
         .meta-label {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
         .meta-value {
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 500;
             color: var(--text-primary);
+            line-height: 1.4;
         }
 
         .meta-link {
             color: var(--spotify-green);
             text-decoration: none;
             font-weight: 600;
+            font-size: 1rem;
+            transition: opacity 0.2s;
         }
 
         .meta-link:hover {
+            opacity: 0.8;
             text-decoration: underline;
         }
 
         body.apple-active .meta-link {
             color: var(--apple-pink);
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .metadata-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .meta-image-col {
+                order: -1;
+                /* Show image first on mobile */
+                max-width: 200px;
+                margin: 0 auto;
+            }
+
+            .meta-links-row {
+                flex-direction: column;
+                gap: 20px;
+            }
         }
     </style>
 </head>
@@ -1294,53 +1366,69 @@
         <section class="metadata-section hidden" id="metadataSection">
             <h2 class="player-title">Metadata</h2>
             <div class="metadata-grid">
-                <div class="meta-item">
-                    <span class="meta-label">Track Title</span>
-                    <span class="meta-value" id="metaTitle">-</span>
+                <!-- Left Column: Info -->
+                <div class="meta-info-col">
+                    <div class="meta-item">
+                        <span class="meta-label">Track Title</span>
+                        <span class="meta-value" id="metaTitle">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Artist</span>
+                        <span class="meta-value" id="metaArtist">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Album</span>
+                        <span class="meta-value" id="metaAlbum">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Duration</span>
+                        <span class="meta-value" id="metaDuration">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Release Date</span>
+                        <span class="meta-value" id="metaReleased">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Genre</span>
+                        <span class="meta-value" id="metaGenre">Loading...</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Language</span>
+                        <span class="meta-value" id="metaLanguage">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Label</span>
+                        <span class="meta-value" id="metaLabel">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">ISRC</span>
+                        <span class="meta-value" id="metaISRC">-</span>
+                    </div>
+
+                    <!-- Links Row -->
+                    <div class="meta-links-row">
+                        <div class="meta-item">
+                            <span class="meta-label">Lyrics</span>
+                            <a href="#" target="_blank" class="meta-link" id="metaMusixmatch">View Lyrics</a>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Spotify</span>
+                            <a href="#" target="_blank" class="meta-link" id="metaSpotifyLink">-</a>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Apple Music</span>
+                            <a href="#" target="_blank" class="meta-link" id="metaAppleLink">-</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="meta-item">
-                    <span class="meta-label">Artist</span>
-                    <span class="meta-value" id="metaArtist">-</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Album</span>
-                    <span class="meta-value" id="metaAlbum">-</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Release Date</span>
-                    <span class="meta-value" id="metaReleased">-</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Duration</span>
-                    <span class="meta-value" id="metaDuration">-</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Genre</span>
-                    <span class="meta-value" id="metaGenre">Loading...</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Language</span>
-                    <span class="meta-value" id="metaLanguage">-</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Label</span>
-                    <span class="meta-value" id="metaLabel">-</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">ISRC</span>
-                    <span class="meta-value" id="metaISRC">-</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">BPM / Key</span>
-                    <span class="meta-value" id="metaBPM">-</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Spotify</span>
-                    <a href="#" target="_blank" class="meta-link" id="metaSpotifyLink">-</a>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Apple Music</span>
-                    <a href="#" target="_blank" class="meta-link" id="metaAppleLink">-</a>
+
+                <!-- Right Column: Artist Image -->
+                <div class="meta-image-col">
+                    <div class="artist-image-container">
+                        <img id="metaArtistImage" class="artist-image" src="" alt="Artist"
+                            onerror="this.style.display='none'">
+                    </div>
+                    <div class="artist-label">Artist</div>
                 </div>
             </div>
         </section>
