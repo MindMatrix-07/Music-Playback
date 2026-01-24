@@ -206,7 +206,8 @@ export default async function handler(req, res) {
             metadata.musixmatch = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
 
             // 7. Get YouTube Video ID (Scrape)
-            const ytQuery = `${metadata.title} ${primaryArtist} official video`;
+            // User requested ALL artists to be included for video search accuracy
+            const ytQuery = `${metadata.title} ${metadata.artist} official video`;
             metadata.youtubeId = await fetchYouTubeId(ytQuery);
         }
 

@@ -1950,8 +1950,8 @@
                         ytEmbed.src = `https://www.youtube.com/embed/${data.youtubeId}`;
                     } else {
                         // Fallback to Search List
-                        const primaryArtist = track.artist ? track.artist.split(',')[0].trim() : '';
-                        const ytQuery = `${track.name} ${primaryArtist} official video`;
+                        // Include ALL artists in search for better match
+                        const ytQuery = `${track.name} ${track.artist} official video`;
                         ytEmbed.src = `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(ytQuery)}`;
                     }
                     if (ytContainer) ytContainer.classList.remove('hidden');
