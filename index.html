@@ -1394,7 +1394,7 @@
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Language</span>
-                        <span class="meta-value" id="metaLanguage">-</span>
+                        <a href="#" target="_blank" class="meta-link" id="metaLanguage">-</a>
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Label</span>
@@ -1810,7 +1810,7 @@
                 document.getElementById('metaReleased').textContent = dateStr;
 
                 document.getElementById('metaDuration').textContent = data.duration ? formatDuration(data.duration) : 'N/A';
-
+                // Genre
                 if (data.genre && data.genre.length > 0) {
                     document.getElementById('metaGenre').textContent = data.genre.slice(0, 3).map(g =>
                         g.charAt(0).toUpperCase() + g.slice(1)
@@ -1819,7 +1819,11 @@
                     document.getElementById('metaGenre').textContent = 'N/A';
                 }
 
-                document.getElementById('metaLanguage').textContent = data.language || 'International';
+                const langEl = document.getElementById('metaLanguage');
+                langEl.textContent = data.language || 'International';
+                const langQuery = `${track.name} ${track.artist} language`;
+                langEl.href = `https://www.google.com/search?q=${encodeURIComponent(langQuery)}`;
+
                 document.getElementById('metaLabel').textContent = data.recordLabel || 'N/A';
                 document.getElementById('metaISRC').textContent = data.isrc || 'N/A';
 
