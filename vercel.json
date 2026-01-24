@@ -2,20 +2,8 @@
   "framework": null,
   "rewrites": [
     {
-      "source": "/search/:type",
-      "destination": "/api/mb/search?type=:type"
-    },
-    {
-      "source": "/artist/:mbid/releases",
-      "destination": "/api/mb/artist-releases?mbid=:mbid"
-    },
-    {
-      "source": "/release/:mbid/tracks",
-      "destination": "/api/mb/release-tracks?mbid=:mbid"
-    },
-    {
-      "source": "/recording/:mbid/credits",
-      "destination": "/api/mb/recording-credits?mbid=:mbid"
+      "source": "/callback",
+      "destination": "/api/spotify-callback"
     }
   ]
 }
