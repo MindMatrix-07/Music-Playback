@@ -1307,13 +1307,14 @@
                     <span class="meta-value" id="metaReleased">-</span>
                 </div>
                 <div class="meta-item">
-                    <span class="meta-label">ISRC</span>
-                    <span class="meta-value" id="metaISRC">-</span>
+                    <span class="meta-label">BPM / Key</span>
+                    <span class="meta-value" id="metaBPM">-</span>
                 </div>
                 <div class="meta-item">
-                    <span class="meta-label">MusicBrainz ID</span>
-                    <span class="meta-value" id="metaMBID">-</span>
+                    <span class="meta-label">Label</span>
+                    <span class="meta-value" id="metaLabel">-</span>
                 </div>
+                <!-- MBID Hidden as requested -->
                 <div class="meta-item full-width" id="crossLinkContainer">
                     <span class="meta-label">Listen on</span>
                     <a href="#" target="_blank" class="meta-link" id="metaCrossLink">Loading other platform...</a>
@@ -1657,7 +1658,12 @@
 
                 document.getElementById('metaReleased').textContent = data.releaseDate || 'N/A';
                 document.getElementById('metaISRC').textContent = data.isrc || 'N/A';
-                document.getElementById('metaMBID').textContent = data.musicBrainzId || 'N/A';
+
+                // Format BPM/Key
+                const bpm = data.bpm ? `${data.bpm} BPM` : '';
+                const key = data.key ? ` • ${data.key}` : '';
+                document.getElementById('metaBPM').textContent = (bpm || key) ? `${bpm}${key}` : 'N/A';
+                document.getElementById('metaLabel').textContent = data.recordLabel || 'N/A';
 
                 const crossLink = currentPlatform === 'spotify' ? data.crossLinks.apple : data.crossLinks.spotify;
                 const crossLabel = currentPlatform === 'spotify' ? 'Apple Music' : 'Spotify';
