@@ -1850,8 +1850,10 @@
                 }
 
                 const langEl = document.getElementById('metaLanguage');
-                langEl.textContent = data.language || 'International';
-                const langQuery = `${track.name} ${track.artist} language`;
+                langEl.textContent = 'Click here'; // Keep text static as requested previously
+                // User requested google.com/ai but that is a landing page. 
+                // We use google.com/search with a question query to trigger AI Overview.
+                const langQuery = `${track.name} ${track.artist} which language?`;
                 langEl.href = `https://www.google.com/search?q=${encodeURIComponent(langQuery)}`;
                 document.getElementById('metaLabel').textContent = data.recordLabel || 'N/A';
                 document.getElementById('metaISRC').textContent = data.isrc || 'N/A';
