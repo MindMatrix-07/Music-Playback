@@ -1750,7 +1750,10 @@
             metaSection.classList.remove('hidden');
 
             // Reset UI with loaders
-            const setLoad = (id) => document.getElementById(id).textContent = 'Loading...';
+            const setLoad = (id) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = 'Loading...';
+            };
             setLoad('metaTitle');
             setLoad('metaArtist');
             setLoad('metaAlbum');
@@ -1760,9 +1763,20 @@
             setLoad('metaLanguage');
             setLoad('metaLabel');
             setLoad('metaISRC');
-            setLoad('metaBPM');
-            document.getElementById('metaSpotifyLink').textContent = 'Loading...';
-            document.getElementById('metaAppleLink').textContent = 'Loading...';
+
+            const spoLink = document.getElementById('metaSpotifyLink');
+            const appLink = document.getElementById('metaAppleLink');
+            const lyricLink = document.getElementById('metaMusixmatch');
+            const img = document.getElementById('metaArtistImage');
+
+            if (spoLink) spoLink.textContent = 'Loading...';
+            if (appLink) appLink.textContent = 'Loading...';
+            if (lyricLink) lyricLink.textContent = 'Loading...';
+
+            if (img) {
+                img.src = '';
+                img.style.display = 'none';
+            }
 
             // Set immediate values if available from the track object
             if (track.name) document.getElementById('metaTitle').textContent = track.name;
@@ -1770,7 +1784,6 @@
             if (track.album) document.getElementById('metaAlbum').textContent = track.album;
 
             try {
-                // Add 10s timeout
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 10000);
 
@@ -1790,61 +1803,67 @@
                 document.getElementById('metaArtist').textContent = data.artist || track.artist || 'N/A';
                 document.getElementById('metaAlbum').textContent = data.album || 'N/A';
 
-                // Format Date (show year separately if requested, code requested "Release Date / Year")
-                // We'll show full date then year in parens if available
                 let dateStr = data.releaseDate || 'N/A';
                 if (data.year && data.releaseDate && !data.releaseDate.includes(data.year)) {
                     dateStr += ` (${data.year})`;
                 }
                 document.getElementById('metaReleased').textContent = dateStr;
 
-                // Duration
                 document.getElementById('metaDuration').textContent = data.duration ? formatDuration(data.duration) : 'N/A';
 
-                // Genre
                 if (data.genre && data.genre.length > 0) {
-                    document.getElementById('metaGenre').textContent = data.genre.slice(0, 3).join(', ');
+                    document.getElementById('metaGenre').textContent = data.genre.slice(0, 3).map(g =>
+                        g.charAt(0).toUpperCase() + g.slice(1)
+                    ).join(', ');
                 } else {
                     document.getElementById('metaGenre').textContent = 'N/A';
                 }
 
-                document.getElementById('metaLanguage').textContent = data.language || 'N/A';
+                document.getElementById('metaLanguage').textContent = data.language || 'International';
                 document.getElementById('metaLabel').textContent = data.recordLabel || 'N/A';
                 document.getElementById('metaISRC').textContent = data.isrc || 'N/A';
 
-                // BPM / Key
-                const bpm = data.bpm ? `${data.bpm} BPM` : '';
-                const key = data.key ? ` • ${data.key}` : '';
-                document.getElementById('metaBPM').textContent = (bpm || key) ? `${bpm}${key}` : 'N/A';
+                // Artist Image
+                if (data.artistImage && img) {
+                    img.src = data.artistImage;
+                    img.style.display = 'block';
+                }
 
                 // Links
-                const spoLink = document.getElementById('metaSpotifyLink');
-                const appLink = document.getElementById('metaAppleLink');
-
-                // My Spotify Link
-                if (data.crossLinks.spotify) {
+                if (data.crossLinks.spotify && spoLink) {
                     spoLink.textContent = 'View on Spotify';
                     spoLink.href = data.crossLinks.spotify;
-                } else {
+                } else if (spoLink) {
                     spoLink.textContent = 'Not found';
                     spoLink.href = '#';
                 }
 
-                // Apple Music Link
-                if (data.crossLinks.apple) {
+                if (data.crossLinks.apple && appLink) {
                     appLink.textContent = 'View on Apple Music';
                     appLink.href = data.crossLinks.apple;
-                } else {
+                } else if (appLink) {
                     appLink.textContent = 'Not found';
                     appLink.href = '#';
                 }
 
+                if (data.musixmatch && lyricLink) {
+                    lyricLink.textContent = 'View Lyrics';
+                    lyricLink.href = data.musixmatch;
+                } else if (lyricLink) {
+                    lyricLink.textContent = 'N/A';
+                    lyricLink.href = '#';
+                }
+
             } catch (error) {
                 console.error('Metadata error:', error);
-                const els = ['metaGenre', 'metaReleased', 'metaDuration', 'metaLanguage', 'metaLabel', 'metaISRC', 'metaBPM'];
-                els.forEach(id => document.getElementById(id).textContent = '-');
-                document.getElementById('metaSpotifyLink').textContent = '-';
-                document.getElementById('metaAppleLink').textContent = '-';
+                const els = ['metaGenre', 'metaReleased', 'metaDuration', 'metaLanguage', 'metaLabel', 'metaISRC'];
+                els.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = '-';
+                });
+                if (spoLink) spoLink.textContent = '-';
+                if (appLink) appLink.textContent = '-';
+                if (lyricLink) lyricLink.textContent = '-';
             }
         }
 
