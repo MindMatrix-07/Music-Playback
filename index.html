@@ -1298,6 +1298,128 @@
                 gap: 20px;
             }
         }
+
+        /* Settings UI */
+        .settings-icon-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            z-index: 100;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .settings-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .settings-icon-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.2s ease;
+        }
+
+        .settings-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 450px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: slideDown 0.3s ease;
+        }
+
+        .setting-item {
+            margin-bottom: 25px;
+        }
+
+        .setting-item label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .setting-item input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .setting-item input:focus {
+            border-color: var(--spotify-green);
+            outline: none;
+        }
+
+        .setting-hint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .settings-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .primary-btn {
+            background: var(--spotify-green);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .primary-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .secondary-btn:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
     </style>
 </head>
 
@@ -1310,6 +1432,16 @@
     </div>
 
     <div class="container">
+        <!-- Settings Button -->
+        <button id="settingsBtn" class="settings-icon-btn" title="Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73L12.22 2z">
+                </path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        </button>
+
         <!-- Header -->
         <header class="header">
             <h1>Music Playback</h1>
@@ -1575,6 +1707,33 @@
 
     <!-- Hidden Audio Element for Preview -->
     <audio id="previewAudio" preload="none"></audio>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay hidden">
+        <div class="settings-card">
+            <h3 style="font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+                ⚙️ Playback Settings
+            </h3>
+            <div style="height: 1px; background: var(--border-color); margin: 15px 0 20px;"></div>
+
+            <div class="setting-item">
+                <label for="ytApiKeyInput">YouTube Data API Key</label>
+                <input type="password" id="ytApiKeyInput" placeholder="Paste your API Key here">
+                <p class="setting-hint">
+                    Required to play official music videos. A valid key is required for compliance.
+                    <br>
+                    <a href="https://console.cloud.google.com/apis/credentials" target="_blank"
+                        style="color:var(--spotify-green); text-decoration: none; display: inline-block; margin-top: 5px;">Get
+                        a Key &#8599;</a>
+                </p>
+            </div>
+
+            <div class="settings-actions">
+                <button id="closeSettingsBtn" class="secondary-btn">Cancel</button>
+                <button id="saveSettingsBtn" class="primary-btn">Save Key</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         let currentPlatform = 'spotify';
@@ -2003,21 +2162,46 @@
                     }
                 }
 
-                // YouTube Embed
-                const ytEmbed = document.getElementById('youtubeEmbed');
+                // YouTube Embed (BYOK)
                 const ytContainer = document.getElementById('youtubeContainer');
 
-                if (ytEmbed) {
-                    if (data.youtubeId) {
-                        // Direct embed via ID (Robust)
-                        ytEmbed.src = `https://www.youtube.com/embed/${data.youtubeId}`;
+                if (ytContainer) {
+                    ytContainer.classList.remove('hidden');
+
+                    // Client-side search (requires User Key)
+                    const query = `${track.name} ${track.artist} official video`;
+                    const ytResult = await searchYouTubeClient(query);
+
+                    if (ytResult.error === 'missing_key') {
+                        ytContainer.innerHTML = `
+                            <div class="yt-label">Official Video</div>
+                            <div style="height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:#000; color:var(--text-secondary); text-align:center; padding:15px;">
+                                <span style="font-size:0.85rem;">API Key required for playback</span>
+                                <button onclick="document.getElementById('settingsBtn').click()" class="secondary-btn" style="padding:4px 12px; font-size:0.8rem;">Add Key</button>
+                            </div>
+                        `;
+                    } else if (ytResult.error) {
+                        ytContainer.innerHTML = `
+                            <div class="yt-label">Video Error</div>
+                            <div style="height:150px; display:flex; align-items:center; justify-content:center; background:#000; color:#ff6b6b; padding:20px; text-align:center;">
+                                <p style="font-size:0.8rem;">${ytResult.message.includes('quota') ? 'Daily Quota Exceeded' : 'Connection Error'}</p>
+                            </div>
+                        `;
+                    } else if (ytResult.id) {
+                        ytContainer.innerHTML = `
+                            <div class="yt-label">Official Video</div>
+                            <iframe id="youtubeEmbed" width="100%" height="150" src="https://www.youtube.com/embed/${ytResult.id}" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                        `;
                     } else {
-                        // Fallback to Search List
-                        // Include ALL artists in search for better match
-                        const ytQuery = `${track.name} ${track.artist} official video`;
-                        ytEmbed.src = `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(ytQuery)}`;
+                        ytContainer.innerHTML = `
+                            <div class="yt-label">Official Video</div>
+                            <div style="height:150px; display:flex; align-items:center; justify-content:center; background:#000; color:var(--text-secondary);">
+                                <p style="font-size:0.9rem;">No video found</p>
+                            </div>
+                        `;
                     }
-                    if (ytContainer) ytContainer.classList.remove('hidden');
                 }
 
                 // Links
@@ -2132,10 +2316,68 @@
             }
         }
 
+        // Settings Logic
+        function initSettings() {
+            const settingsModal = document.getElementById('settingsModal');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const ytInput = document.getElementById('ytApiKeyInput');
+            const saveBtn = document.getElementById('saveSettingsBtn');
+            const closeBtn = document.getElementById('closeSettingsBtn');
+
+            if (!settingsBtn) return;
+
+            settingsBtn.addEventListener('click', () => {
+                ytInput.value = localStorage.getItem('yt_api_key') || '';
+                settingsModal.classList.remove('hidden');
+            });
+
+            closeBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+            saveBtn.addEventListener('click', () => {
+                const key = ytInput.value.trim();
+                if (key) {
+                    localStorage.setItem('yt_api_key', key);
+                    settingsModal.classList.add('hidden');
+                    // Retry video if track selected
+                    if (selectedTrack) {
+                        const ytContainer = document.getElementById('youtubeContainer');
+                        const ytEmbed = document.getElementById('youtubeEmbed');
+                        if (ytContainer && !ytContainer.classList.contains('hidden') && ytEmbed.src === "") {
+                            fetchMetadata(selectedTrack); // Re-fetch to trigger video load
+                        }
+                    }
+                } else {
+                    alert('Please enter a valid key.');
+                }
+            });
+        }
+
+        // Official YouTube Search (Client-Side)
+        async function searchYouTubeClient(query) {
+            const apiKey = localStorage.getItem('yt_api_key');
+            if (!apiKey) return { error: 'missing_key' };
+
+            try {
+                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&key=${apiKey}`);
+                const data = await res.json();
+
+                if (data.error) throw new Error(data.error.message);
+
+                if (data.items && data.items.length > 0) {
+                    return { id: data.items[0].id.videoId };
+                }
+                return { id: null };
+            } catch (err) {
+                console.error('YouTube API Error:', err);
+                return { error: 'api_error', message: err.message };
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initPreviewAudio();
             initLyricsFeature();
+            initSettings();
             checkAuthCallback();
             checkStoredUser();
             selectPlatform('spotify');

@@ -205,10 +205,7 @@ export default async function handler(req, res) {
             const query = `${metadata.title} ${primaryArtist} musixmatch lyrics`;
             metadata.musixmatch = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
 
-            // 7. Get YouTube Video ID (Scrape)
-            // User requested ALL artists to be included for video search accuracy
-            const ytQuery = `${metadata.title} ${metadata.artist} official video`;
-            metadata.youtubeId = await fetchYouTubeId(ytQuery);
+            // NOTE: YouTube search is now handled client-side with user API Key
         }
 
         res.status(200).json(metadata);
@@ -219,23 +216,7 @@ export default async function handler(req, res) {
     }
 }
 
-// YouTube Scraper Helper (No API Key needed)
-async function fetchYouTubeId(term) {
-    try {
-        const res = await fetch(`https://www.youtube.com/results?search_query=${encodeURIComponent(term)}`, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
-        });
-        const html = await res.text();
-        // Regex to find the first video ID in the initial data
-        const match = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
-        return match ? match[1] : null;
-    } catch (e) {
-        console.error('YouTube Scrape failed:', e);
-        return null;
-    }
-}
+
 
 // Wikidata Helper
 async function getWikidataImage(artistName) {
