@@ -1047,6 +1047,59 @@
         .hidden {
             display: none !important;
         }
+
+        /* Metadata Styles */
+        .metadata-section {
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .meta-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .meta-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .meta-link {
+            color: var(--spotify-green);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .meta-link:hover {
+            text-decoration: underline;
+        }
+
+        body.apple-active .meta-link {
+            color: var(--apple-pink);
+        }
     </style>
 </head>
 
@@ -1233,6 +1286,33 @@
                             Open in Apple Music
                         </a>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metadata Section -->
+        <section class="metadata-section hidden" id="metadataSection">
+            <h2 class="player-title">Track Details</h2>
+            <div class="metadata-grid">
+                <div class="meta-item">
+                    <span class="meta-label">Album</span>
+                    <span class="meta-value" id="metaAlbum">-</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Genre</span>
+                    <span class="meta-value" id="metaGenre">-</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Release Date</span>
+                    <span class="meta-value" id="metaReleased">-</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">ISRC</span>
+                    <span class="meta-value" id="metaISRC">-</span>
+                </div>
+                <div class="meta-item full-width" id="crossLinkContainer">
+                    <span class="meta-label">Listen on</span>
+                    <a href="#" target="_blank" class="meta-link" id="metaCrossLink">Loading other platform...</a>
                 </div>
             </div>
         </section>
@@ -1543,6 +1623,52 @@
                 document.getElementById('spotifyWrapper').classList.remove('active');
                 document.getElementById('previewPlayer').classList.remove('active');
                 document.getElementById('appleWrapper').classList.add('active');
+            }
+
+            // Fetch and show metadata
+            fetchMetadata(track);
+        }
+
+        async function fetchMetadata(track) {
+            const metaSection = document.getElementById('metadataSection');
+            metaSection.classList.remove('hidden');
+
+            // Set basic info immediately
+            document.getElementById('metaAlbum').textContent = track.album || '-';
+            document.getElementById('metaGenre').textContent = 'Loading...';
+            document.getElementById('metaReleased').textContent = 'Loading...';
+            document.getElementById('metaISRC').textContent = 'Loading...';
+            document.getElementById('metaCrossLink').textContent = 'Searching...';
+            document.getElementById('metaCrossLink').href = '#';
+
+            try {
+                const response = await fetch(`/api/get-metadata?id=${track.id}&platform=${currentPlatform}`);
+                const data = await response.json();
+
+                if (data.genre && data.genre.length > 0) {
+                    document.getElementById('metaGenre').textContent = data.genre.slice(0, 3).join(', ');
+                } else {
+                    document.getElementById('metaGenre').textContent = 'N/A';
+                }
+
+                document.getElementById('metaReleased').textContent = data.releaseDate || 'N/A';
+                document.getElementById('metaISRC').textContent = data.isrc || 'N/A';
+
+                const crossLink = currentPlatform === 'spotify' ? data.crossLinks.apple : data.crossLinks.spotify;
+                const crossLabel = currentPlatform === 'spotify' ? 'Apple Music' : 'Spotify';
+
+                const linkEl = document.getElementById('metaCrossLink');
+                if (crossLink) {
+                    linkEl.textContent = `Open in ${crossLabel}`;
+                    linkEl.href = crossLink;
+                } else {
+                    linkEl.textContent = `Not found on ${crossLabel}`;
+                    linkEl.href = '#';
+                }
+
+            } catch (error) {
+                console.error('Metadata error:', error);
+                document.getElementById('metaGenre').textContent = 'Failed to load';
             }
         }
 
