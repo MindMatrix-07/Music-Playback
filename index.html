@@ -108,7 +108,7 @@
         /* Header */
         .header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
         .header h1 {
@@ -124,6 +124,86 @@
         .header p {
             color: var(--text-secondary);
             font-size: 1.1rem;
+        }
+
+        /* User Profile */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border-radius: 50px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--border-color);
+            object-fit: cover;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+
+        .logout-btn:hover {
+            color: var(--apple-pink);
+        }
+
+        /* Login Button */
+        .login-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .login-btn.spotify {
+            background: var(--spotify-gradient);
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(29, 185, 84, 0.3);
+        }
+
+        .login-btn svg {
+            width: 24px;
+            height: 24px;
         }
 
         /* Platform Toggle */
@@ -269,6 +349,12 @@
         /* Search Results */
         .search-results {
             margin-bottom: 40px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .results-header {
@@ -294,6 +380,23 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .track-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .track-list::-webkit-scrollbar-track {
+            background: var(--bg-card);
+            border-radius: 3px;
+        }
+
+        .track-list::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
         }
 
         .track-item {
@@ -316,9 +419,7 @@
         body.spotify-active .track-item:hover { border-color: var(--spotify-green); }
         body.apple-active .track-item:hover { border-color: var(--apple-pink); }
 
-        .track-item.selected {
-            border-width: 2px;
-        }
+        .track-item.selected { border-width: 2px; }
 
         body.spotify-active .track-item.selected { border-color: var(--spotify-green); background: rgba(29, 185, 84, 0.1); }
         body.apple-active .track-item.selected { border-color: var(--apple-pink); background: rgba(252, 60, 68, 0.1); }
@@ -389,6 +490,7 @@
             border: 1px solid var(--border-color);
             min-height: 180px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
@@ -412,13 +514,68 @@
         body.apple-active .embed-placeholder-icon { color: var(--apple-pink); }
 
         /* Embeds */
-        .spotify-embed, .apple-embed {
+        .embed-wrapper {
             width: 100%;
-            border-radius: 12px;
             display: none;
         }
 
-        .spotify-embed.active, .apple-embed.active { display: block; }
+        .embed-wrapper.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .spotify-embed, .apple-embed {
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        /* Open in App Buttons */
+        .open-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .open-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .open-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .open-btn.spotify:hover {
+            border-color: var(--spotify-green);
+            background: rgba(29, 185, 84, 0.1);
+            color: var(--spotify-green);
+        }
+
+        .open-btn.apple:hover {
+            border-color: var(--apple-pink);
+            background: rgba(252, 60, 68, 0.1);
+            color: var(--apple-pink);
+        }
 
         /* Loading */
         .loading {
@@ -426,20 +583,51 @@
             flex-direction: column;
             align-items: center;
             gap: 15px;
+            padding: 40px;
         }
 
         .loading.active { display: flex; }
 
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border-color);
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
 
         body.spotify-active .spinner { border-top-color: var(--spotify-green); }
         body.apple-active .spinner { border-top-color: var(--apple-pink); }
+
+        .loading-text {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            animation: bounce 1.4s ease-in-out infinite both;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        body.spotify-active .loading-dot { background: var(--spotify-green); }
+        body.apple-active .loading-dot { background: var(--apple-pink); }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -453,17 +641,104 @@
 
         .error-message.active { display: block; }
 
-        /* Responsive */
+        /* Mobile Styles */
         @media (max-width: 600px) {
-            .container { padding: 40px 15px; }
+            .container { padding: 30px 15px; }
+            
             .header h1 { font-size: 1.8rem; }
-            .platform-toggle { flex-direction: column; align-items: center; }
-            .platform-btn { width: 100%; max-width: 250px; justify-content: center; }
-            .search-inner { flex-wrap: wrap; gap: 10px; }
-            .search-input { width: 100%; }
-            .search-btn { width: 100%; }
-            .track-item { padding: 10px; }
-            .track-image { width: 45px; height: 45px; }
+            .header p { font-size: 0.95rem; }
+            
+            .platform-toggle { 
+                flex-direction: column; 
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .platform-btn { 
+                width: 100%; 
+                max-width: 280px; 
+                justify-content: center;
+                padding: 14px 24px;
+            }
+            
+            .search-inner { 
+                flex-wrap: wrap; 
+                gap: 10px;
+                padding: 12px 15px;
+            }
+            
+            .search-input { 
+                width: 100%;
+                font-size: 1rem;
+                padding: 10px 0;
+            }
+            
+            .search-btn { 
+                width: 100%;
+                padding: 14px;
+            }
+            
+            .track-list {
+                max-height: 300px;
+            }
+            
+            .track-item { 
+                padding: 10px 12px;
+            }
+            
+            .track-image { 
+                width: 45px; 
+                height: 45px;
+            }
+            
+            .track-name {
+                font-size: 0.95rem;
+            }
+            
+            .track-artist {
+                font-size: 0.85rem;
+            }
+            
+            .embed-container {
+                padding: 15px;
+                min-height: 150px;
+            }
+            
+            .open-buttons {
+                flex-direction: column;
+            }
+            
+            .open-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .loading {
+                padding: 30px;
+            }
+            
+            .spinner {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .user-profile {
+                padding: 10px 16px;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .user-name {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Hide class */
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
@@ -481,6 +756,29 @@
             <h1>Music Playback</h1>
             <p>Search and play music from your favorite platform</p>
         </header>
+
+        <!-- User Profile (shown when logged in) -->
+        <div class="user-profile hidden" id="userProfile">
+            <img class="user-avatar" id="userAvatar" src="" alt="Profile">
+            <span class="user-name" id="userName">User</span>
+            <button class="logout-btn" onclick="logout()" title="Logout">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Login Section (shown when not logged in) -->
+        <div class="login-section" id="loginSection">
+            <a href="/api/spotify-login" class="login-btn spotify">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                </svg>
+                Login with Spotify
+            </a>
+        </div>
 
         <!-- Platform Toggle -->
         <div class="platform-toggle">
@@ -513,7 +811,7 @@
         </div>
 
         <!-- Search Results -->
-        <div class="search-results" id="searchResults" style="display: none;">
+        <div class="search-results hidden" id="searchResults">
             <h3 class="results-header">Search Results</h3>
             <div class="track-list" id="trackList"></div>
         </div>
@@ -533,49 +831,138 @@
                 <!-- Loading -->
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
-                    <p>Searching...</p>
+                    <p class="loading-text">Finding your music...</p>
+                    <div class="loading-dots">
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                    </div>
                 </div>
 
                 <!-- Error -->
                 <div class="error-message" id="errorMessage"></div>
 
-                <!-- Spotify Embed -->
-                <iframe 
-                    id="spotifyEmbed"
-                    class="spotify-embed"
-                    style="border-radius:12px" 
-                    src="" 
-                    width="100%" 
-                    height="352" 
-                    frameBorder="0" 
-                    allowfullscreen="" 
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                    loading="lazy">
-                </iframe>
+                <!-- Spotify Embed Wrapper -->
+                <div class="embed-wrapper" id="spotifyWrapper">
+                    <iframe 
+                        id="spotifyEmbed"
+                        class="spotify-embed"
+                        style="border-radius:12px" 
+                        src="" 
+                        width="100%" 
+                        height="352" 
+                        frameBorder="0" 
+                        allowfullscreen="" 
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                        loading="lazy">
+                    </iframe>
+                    <div class="open-buttons">
+                        <a href="#" class="open-btn spotify" id="openSpotifyBtn" target="_blank">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                            </svg>
+                            Open in Spotify
+                        </a>
+                    </div>
+                </div>
 
-                <!-- Apple Music Embed -->
-                <iframe 
-                    id="appleEmbed"
-                    class="apple-embed"
-                    src=""
-                    width="100%" 
-                    height="175" 
-                    frameBorder="0"
-                    allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" 
-                    style="border-radius: 12px; overflow: hidden; background: transparent;"
-                    sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation">
-                </iframe>
+                <!-- Apple Music Embed Wrapper -->
+                <div class="embed-wrapper" id="appleWrapper">
+                    <iframe 
+                        id="appleEmbed"
+                        class="apple-embed"
+                        src=""
+                        width="100%" 
+                        height="175" 
+                        frameBorder="0"
+                        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" 
+                        style="border-radius: 12px; overflow: hidden; background: transparent;"
+                        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation">
+                    </iframe>
+                    <div class="open-buttons">
+                        <a href="#" class="open-btn apple" id="openAppleBtn" target="_blank">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 00-1.877-.726 10.496 10.496 0 00-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.802.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 001.57-.1c.822-.106 1.596-.35 2.295-.81a5.046 5.046 0 001.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.09-.46-.827-.19-1.94.69-2.53.38-.254.82-.385 1.264-.497.378-.095.762-.163 1.14-.254.33-.08.53-.29.617-.613.03-.11.04-.225.04-.34-.002-1.633 0-3.265 0-4.898v-.163c-.035.018-.058.027-.078.04l-5.317 1.396v.124c0 2.57 0 5.14-.002 7.71 0 .403-.047.8-.204 1.175-.264.63-.72 1.054-1.378 1.266-.35.113-.72.18-1.09.21-.87.067-1.65-.17-2.2-.86-.67-.84-.52-2.19.32-2.9.394-.327.856-.5 1.34-.613.478-.11.96-.195 1.44-.3.328-.072.538-.27.64-.59.04-.12.06-.25.06-.38V7.47c0-.16.03-.31.1-.46.1-.2.26-.33.47-.39.16-.04.32-.07.48-.1 1.9-.39 3.8-.79 5.69-1.18.21-.05.42-.08.63-.08.38.01.65.25.72.64.02.1.03.2.03.31v3.9z"/>
+                            </svg>
+                            Open in Apple Music
+                        </a>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
 
     <script>
         let currentPlatform = 'spotify';
-        let selectedTrackId = null;
+        let selectedTrack = null;
+        let spotifyUser = null;
+
+        // Check for OAuth callback tokens in URL hash
+        function checkAuthCallback() {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                const params = new URLSearchParams(hash);
+                const accessToken = params.get('access_token');
+                const userName = params.get('user_name');
+                const userImage = params.get('user_image');
+                
+                if (accessToken) {
+                    spotifyUser = {
+                        accessToken,
+                        refreshToken: params.get('refresh_token'),
+                        expiresIn: params.get('expires_in'),
+                        name: userName || 'User',
+                        image: userImage || ''
+                    };
+                    
+                    // Store in localStorage
+                    localStorage.setItem('spotify_user', JSON.stringify(spotifyUser));
+                    
+                    // Clear the hash
+                    history.replaceState(null, '', window.location.pathname);
+                    
+                    updateUserUI();
+                }
+            }
+        }
+
+        // Check for stored user
+        function checkStoredUser() {
+            const stored = localStorage.getItem('spotify_user');
+            if (stored) {
+                spotifyUser = JSON.parse(stored);
+                updateUserUI();
+            }
+        }
+
+        function updateUserUI() {
+            const loginSection = document.getElementById('loginSection');
+            const userProfile = document.getElementById('userProfile');
+            
+            if (spotifyUser) {
+                loginSection.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                document.getElementById('userName').textContent = spotifyUser.name;
+                if (spotifyUser.image) {
+                    document.getElementById('userAvatar').src = spotifyUser.image;
+                } else {
+                    document.getElementById('userAvatar').src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"><circle cx="12" cy="8" r="4"/><path d="M12 14c-6 0-8 3-8 6v2h16v-2c0-3-2-6-8-6z"/></svg>';
+                }
+            } else {
+                loginSection.classList.remove('hidden');
+                userProfile.classList.add('hidden');
+            }
+        }
+
+        function logout() {
+            spotifyUser = null;
+            localStorage.removeItem('spotify_user');
+            updateUserUI();
+        }
 
         function selectPlatform(platform) {
             currentPlatform = platform;
-            selectedTrackId = null;
+            selectedTrack = null;
             
             // Update body class
             document.body.classList.remove('spotify-active', 'apple-active');
@@ -590,8 +977,7 @@
                 `Search ${platform === 'spotify' ? 'Spotify' : 'Apple Music'} for songs, artists, albums...`;
             
             // Reset UI
-            document.getElementById('searchResults').style.display = 'none';
-            document.getElementById('trackList').innerHTML = '';
+            hideSearchResults();
             hideAllEmbeds();
             showPlaceholder(`Search for music on ${platform === 'spotify' ? 'Spotify' : 'Apple Music'}`);
         }
@@ -607,10 +993,18 @@
         }
 
         function hideAllEmbeds() {
-            document.getElementById('spotifyEmbed').classList.remove('active');
-            document.getElementById('appleEmbed').classList.remove('active');
+            document.getElementById('spotifyWrapper').classList.remove('active');
+            document.getElementById('appleWrapper').classList.remove('active');
             document.getElementById('loading').classList.remove('active');
             document.getElementById('errorMessage').classList.remove('active');
+        }
+
+        function hideSearchResults() {
+            document.getElementById('searchResults').classList.add('hidden');
+        }
+
+        function showSearchResults() {
+            document.getElementById('searchResults').classList.remove('hidden');
         }
 
         function showPlaceholder(message) {
@@ -619,9 +1013,13 @@
             placeholder.style.display = 'block';
         }
 
+        function hidePlaceholder() {
+            document.getElementById('placeholder').style.display = 'none';
+        }
+
         function showError(message) {
             hideAllEmbeds();
-            document.getElementById('placeholder').style.display = 'none';
+            hidePlaceholder();
             const errorEl = document.getElementById('errorMessage');
             errorEl.textContent = message;
             errorEl.classList.add('active');
@@ -633,9 +1031,9 @@
 
             // Show loading
             hideAllEmbeds();
-            document.getElementById('placeholder').style.display = 'none';
+            hidePlaceholder();
             document.getElementById('loading').classList.add('active');
-            document.getElementById('searchResults').style.display = 'none';
+            hideSearchResults();
 
             try {
                 const apiEndpoint = currentPlatform === 'spotify' 
@@ -673,7 +1071,6 @@
                 const trackEl = document.createElement('div');
                 trackEl.className = 'track-item';
                 trackEl.dataset.trackId = track.id;
-                trackEl.dataset.embedUrl = track.embedUrl;
                 
                 trackEl.innerHTML = `
                     <img class="track-image" src="${track.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%232a2a2a%22 width=%22100%22 height=%22100%22/></svg>'}" alt="${track.name}">
@@ -688,36 +1085,48 @@
                 trackList.appendChild(trackEl);
             });
 
-            document.getElementById('searchResults').style.display = 'block';
+            showSearchResults();
         }
 
         function selectTrack(track) {
-            selectedTrackId = track.id;
+            selectedTrack = track;
 
             // Update selected state
             document.querySelectorAll('.track-item').forEach(el => el.classList.remove('selected'));
             document.querySelector(`.track-item[data-track-id="${track.id}"]`)?.classList.add('selected');
 
+            // Hide search results after selection
+            hideSearchResults();
+
             // Hide placeholder and show embed
-            document.getElementById('placeholder').style.display = 'none';
+            hidePlaceholder();
             document.getElementById('errorMessage').classList.remove('active');
 
             if (currentPlatform === 'spotify') {
                 const spotifyEmbed = document.getElementById('spotifyEmbed');
                 spotifyEmbed.src = `https://open.spotify.com/embed/track/${track.id}?utm_source=generator&theme=0`;
-                document.getElementById('appleEmbed').classList.remove('active');
-                spotifyEmbed.classList.add('active');
+                
+                // Update open button
+                document.getElementById('openSpotifyBtn').href = track.spotifyUrl || `https://open.spotify.com/track/${track.id}`;
+                
+                document.getElementById('appleWrapper').classList.remove('active');
+                document.getElementById('spotifyWrapper').classList.add('active');
             } else {
                 const appleEmbed = document.getElementById('appleEmbed');
-                // Apple Music embed URL format
                 appleEmbed.src = `https://embed.music.apple.com/us/song/${track.id}`;
-                document.getElementById('spotifyEmbed').classList.remove('active');
-                appleEmbed.classList.add('active');
+                
+                // Update open button
+                document.getElementById('openAppleBtn').href = track.appleUrl || `https://music.apple.com/song/${track.id}`;
+                
+                document.getElementById('spotifyWrapper').classList.remove('active');
+                document.getElementById('appleWrapper').classList.add('active');
             }
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            checkAuthCallback();
+            checkStoredUser();
             selectPlatform('spotify');
         });
     </script>
