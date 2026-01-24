@@ -15,11 +15,11 @@ A sophisticated web application that integrates music streaming (Spotify & Apple
 - **Technical Details**: Displays ISRC, Record Label, Release Date, and Genre tags.
 
 ### 📺 Intelligent Video Matching
-- **Official YouTube Embed**: Uses a custom backend scraper to find the exact "Official Video" for the currently selected track, ensuring accuracy even for collaborations.
-- **No API Key Required**: Implements a robust scraping fallback strategy to avoid quota limits.
+- **Official YouTube Embed**: Utilizes advanced video matching to find and display the correct official video for the currently selected track, ensuring seamless playback.
+- **Smart Fallback**: Automatically handles cases where direct video matching might need alternative search criteria.
 
 ### 📝 Reference Lyrics
-- **Integrated Lyrics Viewer**: Fetches accurate synchronous/plain lyrics from **LRCLIB**.
+- **Integrated Lyrics Viewer**: Displays accurate synchronous or plain text lyrics sourced from open community databases.
 - **User Friendly**: Dedicated section with a "Copy" button and a clear "Reference Only" disclaimer.
 - **Isolated UI**: Clean, non-intrusive layout located below the main media player.
 
@@ -33,16 +33,16 @@ A sophisticated web application that integrates music streaming (Spotify & Apple
 ### Backend (Serverless)
 - **Vercel Functions**: API routes handling secure communication and data aggregation.
     - `/api/spotify-login`: Handles OAuth authentication.
-    - `/api/get-metadata`: central aggregator fetching from MusicBrainz/WikiData.
-    - `/api/get-lyrics`: Proxies requests to LRCLIB.
-    - `/api/mb/*`: Wrappers for MusicBrainz API interactions.
+    - `/api/get-metadata`: Central aggregator for track information.
+    - `/api/get-lyrics`: Fetches lyrics from external providers.
+    - `/api/mb/*`: Database interactions.
 
-## 🔌 APIs Used
+## 🔌 Integration & Data
 - **Spotify Web API**: Search, Auth, Playback.
 - **Apple MusicKit JS**: Embeds and Search.
-- **MusicBrainz**: Core metadata (Relationships, Releases).
-- **Wikidata / Wikimedia**: Media assets (Artist images).
-- **LRCLIB**: Open-source lyrics.
+- **MusicBrainz**: Core metadata relationships.
+- **Wikidata**: Media assets.
+- **LRCLIB**: Lyrics integration.
 - **YouTube**: Video sourcing.
 
 ## 🚀 Getting Started
