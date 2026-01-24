@@ -1213,6 +1213,68 @@
             text-decoration: underline;
         }
 
+        /* Lyrics Styles (Fresh) */
+        .lyrics-container {
+            margin-top: 30px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .lyrics-container.hidden {
+            display: none;
+        }
+
+        .lyrics-header {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .warning-banner {
+            background: rgba(251, 146, 60, 0.1);
+            color: #fb923c;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(251, 146, 60, 0.3);
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .lyrics-content {
+            white-space: pre-wrap;
+            font-family: inherit;
+            line-height: 1.8;
+            color: var(--text-primary);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+        }
+
         body.apple-active .meta-link {
             color: var(--apple-pink);
         }
@@ -1471,43 +1533,33 @@
 
                     <!-- Links Row -->
                     <div class="meta-links-row">
-                        <div class="meta-item">
-                            <span class="meta-label">Lyrics</span>
-                            <a href="#" target="_blank" class="meta-link" id="metaMusixmatch">View Lyrics</a>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Spotify</span>
-                            <a href="#" target="_blank" class="meta-link" id="metaSpotifyLink">-</a>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Apple Music</span>
-                            <a href="#" target="_blank" class="meta-link" id="metaAppleLink">-</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column: Media (Artists + YouTube) -->
-                <div class="meta-media-col">
-                    <!-- Artist Images -->
-                    <div id="artistImagesContainer" class="artist-images-area">
-                        <div class="artist-image-container">
-                            <img id="metaArtistImage" class="artist-image" src="" alt="Artist"
-                                onerror="this.style.display='none'">
-                        </div>
-                        <div class="artist-label">Artist</div>
-                    </div>
-
-                    <!-- YouTube Embed -->
-                    <div class="youtube-container" id="youtubeContainer">
-                        <div class="yt-label">Official Video</div>
-                        <iframe id="youtubeEmbed" width="100%" height="150" src="" frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen>
-                        </iframe>
+                        <a href="#" target="_blank" class="meta-link" id="metaAppleLink">-</a>
                     </div>
                 </div>
             </div>
-        </section>
+
+            <!-- Right Column: Media (Artists + YouTube) -->
+            <div class="meta-media-col">
+                <!-- Artist Images -->
+                <div id="artistImagesContainer" class="artist-images-area">
+                    <div class="artist-image-container">
+                        <img id="metaArtistImage" class="artist-image" src="" alt="Artist"
+                            onerror="this.style.display='none'">
+                    </div>
+                    <div class="artist-label">Artist</div>
+                </div>
+
+                <!-- YouTube Embed -->
+                <div class="youtube-container" id="youtubeContainer">
+                    <div class="yt-label">Official Video</div>
+                    <iframe id="youtubeEmbed" width="100%" height="150" src="" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+    </div>
+    </section>
     </div>
 
     <!-- Hidden Audio Element for Preview -->
@@ -2000,9 +2052,79 @@
             }
         }
 
+        // Lyrics Feature Logic (Fresh)
+        function initLyricsFeature() {
+            const btn = document.getElementById('refLyricsBtn');
+            const container = document.getElementById('lyricsContainer');
+            const content = document.getElementById('lyricsText');
+            const copyBtn = document.getElementById('copyLyricsBtn');
+
+            if (!btn || !container) return;
+
+            // Toggle
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+
+                if (!container.classList.contains('hidden')) {
+                    container.classList.add('hidden');
+                    return;
+                }
+
+                container.classList.remove('hidden');
+
+                // Scroll to view
+                setTimeout(() => {
+                    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+
+                if (!selectedTrack) {
+                    content.textContent = 'Please select a track first.';
+                    return;
+                }
+
+                content.textContent = 'Fetching lyrics from LRCLIB...';
+
+                try {
+                    const artistName = selectedTrack.artist.split(',')[0].trim();
+                    const query = new URLSearchParams({
+                        title: selectedTrack.name,
+                        artist: artistName,
+                        duration: selectedTrack.duration
+                    });
+
+                    const res = await fetch(`/api/get-lyrics?${query.toString()}`);
+                    const data = await res.json();
+
+                    if (res.ok && data.plainLyrics) {
+                        content.textContent = data.plainLyrics;
+                    } else {
+                        content.textContent = 'Lyrics not found for this track.';
+                    }
+                } catch (err) {
+                    console.error('Lyrics error:', err);
+                    content.textContent = 'Failed to load lyrics.';
+                }
+            });
+
+            // Copy
+            if (copyBtn) {
+                copyBtn.addEventListener('click', () => {
+                    const text = content.textContent;
+                    if (!text || text.includes('Loading...')) return;
+
+                    navigator.clipboard.writeText(text).then(() => {
+                        const originalText = copyBtn.textContent;
+                        copyBtn.textContent = 'Copied!';
+                        setTimeout(() => copyBtn.textContent = originalText, 2000);
+                    }).catch(err => console.error('Copy failed:', err));
+                });
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initPreviewAudio();
+            initLyricsFeature();
             checkAuthCallback();
             checkStoredUser();
             selectPlatform('spotify');
