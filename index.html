@@ -1141,11 +1141,24 @@
                 height: 200px;
             }
 
-            /* Force Spotify to maintain "Desktop-like" size on mobile */
+            /* Force Spotify to maintain "Desktop-like" size on mobile using scaling hack */
+            .embed-wrapper {
+                overflow: hidden;
+                /* Clip the layout overflow from width 180% */
+                border-radius: 12px;
+            }
+
             .spotify-embed {
                 height: 352px !important;
-                max-width: 100% !important;
-                width: 100% !important;
+                width: 180% !important;
+                max-width: none !important;
+                transform: scale(0.555);
+                /* 1/1.8 */
+                transform-origin: top left;
+                margin-bottom: -156px;
+                /* Adjust layout height: 352 - (352 * 0.555) */
+                margin-right: -80%;
+                /* Avoid affecting parent width calculation if possible */
             }
         }
 
