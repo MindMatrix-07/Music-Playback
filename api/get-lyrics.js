@@ -5,6 +5,15 @@ export default async function handler(req, res) {
 
     if (req.method === 'OPTIONS') return res.status(200).end();
 
+    // Security Headers
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+
+    // Security: Referer Check
+    const referer = req.headers.referer || req.headers.origin;
+    if (!referer || (!referer.includes('musicplaybacktool.vercel.app') && !referer.includes('localhost'))) {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+
     const { title, artist, album, duration } = req.query;
 
     if (!title || !artist) {

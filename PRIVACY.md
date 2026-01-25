@@ -31,6 +31,9 @@ We do not use tracking cookies or analytics software. Third-party embeds (Spotif
 ## 5. Security
 - **No Server Storage**: We do not have a database. We cannot lose or leak your data because we do not have it.
 - **Client-Side Requests**: API requests are primarily made from your browser to the service provider.
+- **Data Hardening**: We employ strict **Anti-Theft** and **Anti-Caching** protocols.
+    - All API responses are sent with `Cache-Control: no-store` headers, ensuring your data is not saved by browsers or intermediate proxies.
+    - Requests are validated to ensure they originate only from our authentic website.
 
 ## 6. Your Rights
 Since we do not store your data, there is nothing for us to delete or export. You can clear your data at any time by:
@@ -41,5 +44,3 @@ Since we do not store your data, there is nothing for us to delete or export. Yo
 ## 7. Changes to This Policy
 We may update this policy to reflect changes in our features or legal requirements. Updates will be posted here.
 
----
-**Contact:** [Insert Contact Info]

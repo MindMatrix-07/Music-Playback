@@ -13,6 +13,16 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
+    // Security Headers
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+
+    // Security: Referer Check
+    const referer = req.headers.referer || req.headers.origin;
+    const allowedDomains = ['musicplaybacktool.vercel.app', 'localhost', '127.0.0.1'];
+    if (!referer || !allowedDomains.some(d => referer.includes(d))) {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+
     const { q, type = 'track', limit = 10 } = req.query;
 
     if (!q) {
@@ -39,7 +49,7 @@ export default async function handler(req, res) {
 
         // Search Spotify
         const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=${type}&limit=${limit}`;
-        
+
         const searchResponse = await fetch(searchUrl, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -51,7 +61,7 @@ export default async function handler(req, res) {
         }
 
         const searchData = await searchResponse.json();
-        
+
         // Format response
         const tracks = searchData.tracks?.items?.map(track => ({
             id: track.id,

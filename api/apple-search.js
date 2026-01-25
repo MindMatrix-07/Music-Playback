@@ -11,6 +11,16 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
+    // Security Headers
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+
+    // Security: Referer Check
+    const referer = req.headers.referer || req.headers.origin;
+    const allowedDomains = ['musicplaybacktool.vercel.app', 'localhost', '127.0.0.1'];
+    if (!referer || !allowedDomains.some(d => referer.includes(d))) {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+
     const { q, limit = 10, country = 'us' } = req.query;
 
     if (!q) {
@@ -20,7 +30,7 @@ export default async function handler(req, res) {
     try {
         // Use iTunes Search API (free, no auth required)
         const searchUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&entity=song&limit=${limit}&country=${country}`;
-        
+
         const searchResponse = await fetch(searchUrl);
 
         if (!searchResponse.ok) {
@@ -28,7 +38,7 @@ export default async function handler(req, res) {
         }
 
         const searchData = await searchResponse.json();
-        
+
         // Format response
         const tracks = searchData.results?.map(track => ({
             id: track.trackId,

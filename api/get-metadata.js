@@ -10,6 +10,20 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     const { id, platform } = req.query;
+
+    // Security: Anti-Theft & Anti-Caching
+    const referer = req.headers.referer || req.headers.origin;
+    const allowedDomains = ['musicplaybacktool.vercel.app', 'localhost', '127.0.0.1'];
+    const isAllowed = referer && allowedDomains.some(d => referer.includes(d));
+
+    if (!isAllowed) {
+        return res.status(403).json({ error: 'Unauthorized access' });
+    }
+
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     if (!id || !platform) return res.status(400).json({ error: 'ID and platform are required' });
 
     try {
