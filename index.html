@@ -1645,10 +1645,96 @@
             font-size: 2rem;
             margin-bottom: 20px;
         }
+
+        /* Access Lock Overlay */
+        .lock-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            /* Higher than spam overlay */
+            text-align: center;
+        }
+
+        .lock-input {
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 10px 15px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            width: 200px;
+            text-align: center;
+            outline: none;
+        }
+
+        .lock-input:focus {
+            border-color: #1DB954;
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 
 <body class="spotify-active">
+    <!-- Access Lock -->
+    <div id="accessLock" class="lock-overlay">
+        <h2 style="margin-bottom: 20px;">🔒 Protected Site</h2>
+        <p style="color: #bbb; margin-bottom: 30px;">Enter your one-time access code.</p>
+        <input type="text" id="accessCode" class="lock-input" placeholder="12345" maxlength="5">
+        <button onclick="verifyAccess()" class="primary-btn">Unlock</button>
+        <p id="lockError" style="color: #ff6b6b; margin-top: 15px; font-size: 0.9rem;"></p>
+    </div>
+
+    <script>
+        // Access Control Logic
+        async function verifyAccess() {
+            const input = document.getElementById('accessCode');
+            const errorEl = document.getElementById('lockError');
+            const code = input.value.trim();
+
+            if (!code) return;
+
+            errorEl.textContent = 'Verifying...';
+
+            try {
+                const res = await fetch('/api/verify-access', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    localStorage.setItem('device_token', data.token);
+                    document.getElementById('accessLock').classList.add('hidden');
+                } else {
+                    errorEl.textContent = data.error || 'Invalid code';
+                }
+            } catch (err) {
+                errorEl.textContent = 'Connection failed';
+            }
+        }
+
+        // Check on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('device_token');
+            if (token) {
+                document.getElementById('accessLock').classList.add('hidden');
+            }
+        });
+    </script>
     <div id="spamOverlay" class="spam-overlay">
         <div class="spam-title">⚠️ Too Many Clicks</div>
         <p style="color: var(--text-secondary);">Please slow down. Access paused for <span id="spamTimer">10</span>s.
