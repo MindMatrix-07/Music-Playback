@@ -126,6 +126,8 @@
             max-width: 900px;
             margin: 0 auto;
             padding: 60px 20px;
+            position: relative;
+            z-index: 1;
         }
 
         /* Header */
@@ -2026,11 +2028,11 @@
                 // Switching TO Spotify -> Stop Apple Music
                 const appleEmbed = document.getElementById('appleEmbed');
                 // Store src if needed later, but for now just clear to stop playback
-                appleEmbed.src = '';
+                if (appleEmbed) appleEmbed.src = '';
             } else {
                 // Switching TO Apple Music -> Stop Spotify
                 const spotifyEmbed = document.getElementById('spotifyEmbed');
-                spotifyEmbed.src = '';
+                if (spotifyEmbed) spotifyEmbed.src = '';
             }
 
             document.body.classList.remove('spotify-active', 'apple-active');
