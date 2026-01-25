@@ -940,7 +940,6 @@
 
             .header h1 {
                 font-size: 1.8rem;
-                /* Keep the gradient if supported, or fallback gracefully */
             }
 
             .header p {
@@ -969,13 +968,32 @@
                 font-size: 0.95rem;
             }
 
-            /* Search */
+            /* Integrated Search Bar on Mobile */
             .search-container {
                 margin-bottom: 25px;
             }
 
+            .search-wrapper {
+                border-radius: 50px;
+                /* More rounded on mobile for "app" feel */
+                padding: 2px;
+            }
+
             .search-inner {
-                padding: 6px 15px;
+                padding: 4px 6px 4px 15px;
+                /* Less padding right for button */
+                border-radius: 48px;
+                display: flex;
+                flex-wrap: nowrap;
+                /* Force single line */
+                gap: 0;
+                /* Remove gap, we'll space with padding */
+            }
+
+            .search-icon {
+                width: 20px;
+                height: 20px;
+                margin-right: 10px;
             }
 
             .search-input {
@@ -984,14 +1002,17 @@
             }
 
             .search-btn {
-                padding: 10px 20px;
+                padding: 8px 16px;
                 font-size: 0.9rem;
+                margin-left: 8px;
+                border-radius: 40px;
+                /* Optional: make it look like an icon button or smaller pill */
+                flex-shrink: 0;
             }
 
             /* Compact Track Items */
             .track-list {
                 max-height: 50vh;
-                /* dynamic height */
             }
 
             .track-item {
@@ -1058,7 +1079,6 @@
 
             .meta-info-col {
                 grid-template-columns: 1fr 1fr;
-                /* 2 columns for data on mobile */
                 gap: 15px;
             }
 
@@ -1066,7 +1086,6 @@
                 gap: 4px;
             }
 
-            /* Make link row stack */
             .meta-links-row {
                 flex-direction: column;
                 gap: 15px;
@@ -1075,12 +1094,39 @@
 
             .meta-media-col {
                 order: -1;
-                /* Show media first */
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            /* Fix Artist Image Visibility */
+            .artist-images-area {
+                width: 100%;
+                max-height: none;
+                /* Let it flow */
+                overflow: visible;
+            }
+
+            .artist-image-container {
+                width: 200px;
+                /* Fixed width for better visibility control */
+                max-width: 100%;
+                aspect-ratio: 1;
+                margin: 0 auto;
+                /* Center it */
+                display: block;
+                /* Ensure block level */
+            }
+
+            .artist-card {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
 
             .youtube-container iframe {
                 height: 200px;
-                /* Better height for video on mobile */
             }
         }
 
@@ -1088,18 +1134,21 @@
         @media (max-width: 480px) {
             .meta-info-col {
                 grid-template-columns: 1fr;
-                /* Back to 1 column for very small screens */
             }
 
             .platform-toggle {
                 flex-wrap: wrap;
-                /* Allow wrapping if needed, though flex:1 should handle it */
             }
 
+            /* Even tighter search on small screens */
             .search-btn {
-                /* On very small screens, maybe hide text or make icon only? 
-                   For now, just reduce padding further */
-                padding: 10px 15px;
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
+            .artist-image-container {
+                width: 160px;
+                /* Smaller image on very small screens */
             }
         }
 
