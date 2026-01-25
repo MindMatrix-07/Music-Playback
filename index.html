@@ -1886,6 +1886,15 @@
             </div>
             <div id="lyricsText" class="lyrics-content">Loading...</div>
         </section>
+        <!-- Footer -->
+        <footer
+            style="margin-top: 60px; padding-bottom: 20px; text-align: center; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <a href="privacy.html"
+                style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; margin-bottom: 10px; display: inline-block;">Privacy
+                Policy</a>
+            <p style="color: var(--text-secondary); font-size: 0.75rem; opacity: 0.5;">&copy; 2026 Music Playback. All
+                rights reserved.</p>
+        </footer>
     </div>
 
     <!-- Hidden Audio Element for Preview -->
@@ -2192,6 +2201,17 @@
             }
         }
 
+        // Security: Prevent XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         function renderTrackList(tracks) {
             const trackList = document.getElementById('trackList');
             trackList.innerHTML = '';
@@ -2201,11 +2221,12 @@
                 trackEl.className = 'track-item';
                 trackEl.dataset.trackId = track.id;
 
+                // Use escapeHtml for all dynamic text to prevent XSS
                 trackEl.innerHTML = `
-                    <img class="track-image" src="${track.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%232a2a2a%22 width=%22100%22 height=%22100%22/></svg>'}" alt="${track.name}">
+                    <img class="track-image" src="${track.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%232a2a2a%22 width=%22100%22 height=%22100%22/></svg>'}" alt="${escapeHtml(track.name)}">
                     <div class="track-info">
-                        <div class="track-name">${track.name}</div>
-                        <div class="track-artist">${track.artist}</div>
+                        <div class="track-name">${escapeHtml(track.name)}</div>
+                        <div class="track-artist">${escapeHtml(track.artist)}</div>
                     </div>
                     <div class="track-duration">${formatDuration(track.duration)}</div>
                 `;
@@ -2362,9 +2383,9 @@
                             card.className = 'artist-card';
                             card.innerHTML = `
                                 <div class="artist-image-container">
-                                    <img class="artist-image" src="${artist.url}" alt="${artist.name}" onerror="this.src='data:image/svg+xml;base64,...'">
+                                    <img class="artist-image" src="${artist.url}" alt="${escapeHtml(artist.name)}" onerror="this.src='data:image/svg+xml;base64,...'">
                                 </div>
-                                <div class="artist-label">${artist.name}</div>
+                                <div class="artist-label">${escapeHtml(artist.name)}</div>
                             `;
                             artistContainer.appendChild(card);
                         });
