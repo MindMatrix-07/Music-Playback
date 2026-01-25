@@ -2409,6 +2409,9 @@
             const saveBtn = document.getElementById('saveSettingsBtn');
             const closeBtn = document.getElementById('closeSettingsBtn');
             const deleteBtn = document.getElementById('deleteKeyBtn');
+            const toggleGuideBtn = document.getElementById('toggleGuideBtn');
+            const guideContent = document.getElementById('guideContent');
+            const guideArrow = document.getElementById('guideArrow');
 
             if (!settingsBtn) return;
 
@@ -2418,6 +2421,15 @@
             });
 
             closeBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+            // Guide Toggle
+            if (toggleGuideBtn && guideContent && guideArrow) {
+                toggleGuideBtn.addEventListener('click', () => {
+                    guideContent.classList.toggle('expanded');
+                    const isExpanded = guideContent.classList.contains('expanded');
+                    guideArrow.style.transform = isExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+                });
+            }
 
             // Save functionality
             saveBtn.addEventListener('click', () => {
