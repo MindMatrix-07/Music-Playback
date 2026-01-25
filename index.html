@@ -2228,13 +2228,26 @@
             document.getElementById('errorMessage').classList.remove('active');
 
             if (currentPlatform === 'spotify') {
-                // Always show full embed (it handles auth internally)
-                const spotifyEmbed = document.getElementById('spotifyEmbed');
-                spotifyEmbed.src = `https://open.spotify.com/embed/track/${track.id}?utm_source=generator&theme=0&autoplay=1`;
+                // Use Iframe API if available
+                if (embedController) {
+                    embedController.loadUri(`spotify:track:${track.id}`);
+                    document.getElementById('spotifyWrapper').classList.add('active');
+
+                    // "Trigger autoclick once after 2 seconds" logic
+                    setTimeout(() => {
+                        console.log('Triggering auto-play via Iframe API...');
+                        embedController.play();
+                    }, 2000);
+                } else {
+                    // Fallback to standard embed if API failed
+                    const spotifyEmbed = document.getElementById('spotifyEmbed');
+                    spotifyEmbed.src = `https://open.spotify.com/embed/track/${track.id}?utm_source=generator&theme=0&autoplay=1`;
+                }
+
                 document.getElementById('openSpotifyBtn').href = track.spotifyUrl || `https://open.spotify.com/track/${track.id}`;
                 document.getElementById('appleWrapper').classList.remove('active');
                 document.getElementById('previewPlayer').classList.remove('active');
-                document.getElementById('spotifyWrapper').classList.add('active');
+                if (!embedController) document.getElementById('spotifyWrapper').classList.add('active'); // Added in if-else above for controller
             } else {
                 // Apple Music
                 const appleEmbed = document.getElementById('appleEmbed');
@@ -2606,6 +2619,23 @@
             }
         }
 
+        // Spotify Iframe API
+        let embedController = null;
+
+        window.onSpotifyIframeApiReady = (IFrameAPI) => {
+            const element = document.getElementById('spotifyEmbed');
+            const options = {
+                uri: 'spotify:track:4cOdK2wGLETKBW3PvgPWqT', // Placeholder
+                width: '100%',
+                height: '152',
+                theme: '0'
+            };
+            const callback = (EmbedController) => {
+                embedController = EmbedController;
+            };
+            IFrameAPI.createController(element, options, callback);
+        };
+
         // URL Parameters Handler (Auto-Search/Play)
         async function checkUrlParams() {
             const params = new URLSearchParams(window.location.search);
@@ -2639,6 +2669,7 @@
             checkUrlParams();
         });
     </script>
+    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 </body>
 
 </html>
