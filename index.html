@@ -58,10 +58,11 @@
             filter: blur(80px);
             opacity: 0.3;
             animation: float 20s ease-in-out infinite;
+            transition: background 0.8s ease, opacity 0.8s ease;
         }
 
         .bg-blob.spotify {
-            background: var(--spotify-green);
+            background: var(--spotify-gradient);
             width: 400px;
             height: 400px;
             top: -100px;
@@ -71,7 +72,7 @@
         }
 
         .bg-blob.apple {
-            background: var(--apple-pink);
+            background: var(--apple-gradient);
             width: 400px;
             height: 400px;
             top: -100px;
