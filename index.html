@@ -2230,7 +2230,7 @@
             if (currentPlatform === 'spotify') {
                 // Always show full embed (it handles auth internally)
                 const spotifyEmbed = document.getElementById('spotifyEmbed');
-                spotifyEmbed.src = `https://open.spotify.com/embed/track/${track.id}?utm_source=generator&theme=0`;
+                spotifyEmbed.src = `https://open.spotify.com/embed/track/${track.id}?utm_source=generator&theme=0&autoplay=1`;
                 document.getElementById('openSpotifyBtn').href = track.spotifyUrl || `https://open.spotify.com/track/${track.id}`;
                 document.getElementById('appleWrapper').classList.remove('active');
                 document.getElementById('previewPlayer').classList.remove('active');
@@ -2606,6 +2606,26 @@
             }
         }
 
+        // URL Parameters Handler (Auto-Search/Play)
+        async function checkUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            const query = params.get('q') || params.get('search');
+
+            if (query) {
+                const searchInput = document.getElementById('searchInput');
+                searchInput.value = query;
+
+                // Trigger search
+                await searchMusic();
+
+                // Auto-select first result if available
+                const trackList = document.getElementById('trackList');
+                if (trackList && trackList.firstChild) {
+                    trackList.firstChild.click();
+                }
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initPreviewAudio();
@@ -2614,6 +2634,9 @@
             checkAuthCallback();
             checkStoredUser();
             selectPlatform('spotify');
+
+            // Check for external search query
+            checkUrlParams();
         });
     </script>
 </body>
