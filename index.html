@@ -2617,13 +2617,7 @@
 
         // Debug Helper
         function debugLog(msg) {
-            const logEl = document.getElementById('debugLog');
-            if (logEl) {
-                const line = document.createElement('div');
-                line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-                logEl.appendChild(line);
-                logEl.scrollTop = logEl.scrollHeight;
-            }
+            // Visual log removed
             console.log(msg);
         }
 
@@ -2712,12 +2706,6 @@
         });
     </script>
     <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
-
-    <!-- Debug Log Element -->
-    <div id="debugLog"
-        style="position:fixed; bottom:10px; right:10px; width:300px; height:150px; background:rgba(0,0,0,0.8); color:#0f0; font-family:monospace; font-size:10px; padding:10px; overflow-y:auto; border-radius:8px; pointer-events:none; z-index:9999; border:1px solid #333;">
-        <div>Debug Log Init...</div>
-    </div>
 </body>
 
 </html>
