@@ -1140,29 +1140,6 @@
             .youtube-container iframe {
                 height: 200px;
             }
-
-            /* Force Spotify to maintain "Desktop-like" size on mobile using scaling hack */
-            .embed-wrapper {
-                overflow: hidden;
-                /* Clip the layout overflow */
-                border-radius: 12px;
-                /* Center the scaled element if needed, or keeping it left aligned is fine */
-            }
-
-            .spotify-embed {
-                height: 352px !important;
-                width: 800px !important;
-                /* Force desktop width */
-                min-width: 800px !important;
-                max-width: none !important;
-                transform: scale(0.45);
-                /* Scale down to fit ~360px */
-                transform-origin: top left;
-                margin-bottom: -190px;
-                /* Adjust layout height: 352 - (352 * 0.45) = 193.6px removed */
-                margin-right: -440px;
-                /* Adjust width reserve: 800 - (800 * 0.45) */
-            }
         }
 
         /* Small Phones */
