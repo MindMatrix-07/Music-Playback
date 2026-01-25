@@ -2230,16 +2230,11 @@
             if (currentPlatform === 'spotify') {
                 // Use Iframe API if available
                 if (embedController) {
-                    embedController.loadUri(`spotify:track:${track.id}`);
-                    document.getElementById('spotifyWrapper').classList.add('active');
-
-                    // "Trigger autoclick once after 2 seconds" logic
-                    setTimeout(() => {
-                        console.log('Triggering auto-play via Iframe API...');
-                        embedController.play();
-                    }, 2000);
+                    loadAndPlaySpotify(track.id);
                 } else {
-                    // Fallback to standard embed if API failed
+                    console.log('Controller not ready, queuing track...');
+                    pendingSpotifyTrack = track.id;
+                    // Fallback to standard embed temporarily so user sees something
                     const spotifyEmbed = document.getElementById('spotifyEmbed');
                     spotifyEmbed.src = `https://open.spotify.com/embed/track/${track.id}?utm_source=generator&theme=0&autoplay=1`;
                 }
@@ -2247,7 +2242,7 @@
                 document.getElementById('openSpotifyBtn').href = track.spotifyUrl || `https://open.spotify.com/track/${track.id}`;
                 document.getElementById('appleWrapper').classList.remove('active');
                 document.getElementById('previewPlayer').classList.remove('active');
-                if (!embedController) document.getElementById('spotifyWrapper').classList.add('active'); // Added in if-else above for controller
+                document.getElementById('spotifyWrapper').classList.add('active');
             } else {
                 // Apple Music
                 const appleEmbed = document.getElementById('appleEmbed');
@@ -2621,6 +2616,7 @@
 
         // Spotify Iframe API
         let embedController = null;
+        let pendingSpotifyTrack = null;
 
         window.onSpotifyIframeApiReady = (IFrameAPI) => {
             const element = document.getElementById('spotifyEmbed');
@@ -2632,9 +2628,29 @@
             };
             const callback = (EmbedController) => {
                 embedController = EmbedController;
+
+                // Check if a track was waiting for the controller
+                if (pendingSpotifyTrack) {
+                    console.log('Found pending track, loading via API...');
+                    loadAndPlaySpotify(pendingSpotifyTrack);
+                    pendingSpotifyTrack = null;
+                }
             };
             IFrameAPI.createController(element, options, callback);
         };
+
+        function loadAndPlaySpotify(trackId) {
+            if (!embedController) return;
+
+            embedController.loadUri(`spotify:track:${trackId}`);
+            document.getElementById('spotifyWrapper').classList.add('active');
+
+            // "Trigger autoclick once after 2 seconds" logic
+            setTimeout(() => {
+                console.log('Triggering auto-play via Iframe API...');
+                embedController.play();
+            }, 2000);
+        }
 
         // URL Parameters Handler (Auto-Search/Play)
         async function checkUrlParams() {
