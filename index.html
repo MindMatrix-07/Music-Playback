@@ -975,39 +975,51 @@
 
             .search-wrapper {
                 border-radius: 50px;
-                /* More rounded on mobile for "app" feel */
-                padding: 2px;
+                padding: 3px;
+                /* slight border effect */
             }
 
             .search-inner {
-                padding: 4px 6px 4px 15px;
-                /* Less padding right for button */
+                padding: 4px;
+                padding-left: 15px;
                 border-radius: 48px;
                 display: flex;
+                align-items: center;
                 flex-wrap: nowrap;
-                /* Force single line */
-                gap: 0;
-                /* Remove gap, we'll space with padding */
+                gap: 8px;
+                position: relative;
             }
 
             .search-icon {
                 width: 20px;
                 height: 20px;
-                margin-right: 10px;
+                margin-right: 5px;
             }
 
             .search-input {
-                font-size: 1rem;
+                flex: 1;
+                font-size: 0.95rem;
                 padding: 10px 0;
+                min-width: 0;
+                /* allows text truncation if needed */
             }
 
             .search-btn {
-                padding: 8px 16px;
-                font-size: 0.9rem;
-                margin-left: 8px;
-                border-radius: 40px;
-                /* Optional: make it look like an icon button or smaller pill */
+                padding: 8px 18px;
+                font-size: 0.85rem;
+                border-radius: 50px;
                 flex-shrink: 0;
+                margin: 0;
+                font-weight: 700;
+                /* Ensure it stands out as a button */
+                background: var(--spotify-green);
+                color: white;
+            }
+
+            /* Adjust button color dynamically via existing body classes if needed, 
+               but default inline style uses var(--spotify-active) etc. */
+            body.apple-active .search-btn {
+                background: var(--apple-gradient);
             }
 
             /* Compact Track Items */
