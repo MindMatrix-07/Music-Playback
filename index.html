@@ -929,63 +929,83 @@
         }
 
         /* Mobile Styles */
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .container {
-                padding: 30px 15px;
+                padding: 20px 15px;
+            }
+
+            .header {
+                margin-bottom: 25px;
             }
 
             .header h1 {
                 font-size: 1.8rem;
-                background: none;
-                -webkit-text-fill-color: #ffffff;
-                color: #ffffff;
+                /* Keep the gradient if supported, or fallback gracefully */
             }
 
             .header p {
                 font-size: 0.95rem;
             }
 
+            /* Compact Platform Toggle */
             .platform-toggle {
-                flex-direction: column;
-                align-items: center;
-                gap: 12px;
+                gap: 10px;
+                margin-bottom: 25px;
             }
 
             .platform-btn {
-                width: 100%;
-                max-width: 280px;
+                padding: 10px 16px;
+                border-radius: 12px;
+                flex: 1;
                 justify-content: center;
-                padding: 14px 24px;
+            }
+
+            .platform-logo {
+                width: 24px;
+                height: 24px;
+            }
+
+            .platform-name {
+                font-size: 0.95rem;
+            }
+
+            /* Search */
+            .search-container {
+                margin-bottom: 25px;
             }
 
             .search-inner {
-                flex-wrap: wrap;
-                gap: 10px;
-                padding: 12px 15px;
+                padding: 6px 15px;
             }
 
             .search-input {
-                width: 100%;
                 font-size: 1rem;
                 padding: 10px 0;
             }
 
             .search-btn {
-                width: 100%;
-                padding: 14px;
+                padding: 10px 20px;
+                font-size: 0.9rem;
             }
 
+            /* Compact Track Items */
             .track-list {
-                max-height: 300px;
+                max-height: 50vh;
+                /* dynamic height */
             }
 
             .track-item {
-                padding: 10px 12px;
+                padding: 10px;
+                gap: 12px;
             }
 
             .track-image {
-                width: 45px;
-                height: 45px;
+                width: 42px;
+                height: 42px;
+            }
+
+            .track-info {
+                gap: 2px;
             }
 
             .track-name {
@@ -996,6 +1016,7 @@
                 font-size: 0.85rem;
             }
 
+            /* Player & Embeds */
             .embed-container {
                 padding: 15px;
                 min-height: 150px;
@@ -1003,43 +1024,82 @@
 
             .open-buttons {
                 flex-direction: column;
+                gap: 10px;
             }
 
             .open-btn {
                 width: 100%;
                 justify-content: center;
+                padding: 10px 20px;
             }
 
-            .loading {
-                padding: 30px;
-            }
-
-            .spinner {
-                width: 40px;
-                height: 40px;
-            }
-
-            .user-profile {
-                padding: 10px 16px;
-            }
-
-            .user-avatar {
-                width: 32px;
-                height: 32px;
-            }
-
-            .user-name {
-                font-size: 0.9rem;
-            }
-
+            /* Preview Player */
             .preview-card {
                 flex-direction: column;
                 text-align: center;
+                padding: 15px;
             }
 
             .preview-album-art {
-                width: 150px;
-                height: 150px;
+                width: 140px;
+                height: 140px;
+                margin-bottom: 10px;
+            }
+
+            .preview-track-name {
+                font-size: 1.2rem;
+            }
+
+            /* Metadata Stack */
+            .metadata-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .meta-info-col {
+                grid-template-columns: 1fr 1fr;
+                /* 2 columns for data on mobile */
+                gap: 15px;
+            }
+
+            .meta-item {
+                gap: 4px;
+            }
+
+            /* Make link row stack */
+            .meta-links-row {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .meta-media-col {
+                order: -1;
+                /* Show media first */
+            }
+
+            .youtube-container iframe {
+                height: 200px;
+                /* Better height for video on mobile */
+            }
+        }
+
+        /* Small Phones */
+        @media (max-width: 480px) {
+            .meta-info-col {
+                grid-template-columns: 1fr;
+                /* Back to 1 column for very small screens */
+            }
+
+            .platform-toggle {
+                flex-wrap: wrap;
+                /* Allow wrapping if needed, though flex:1 should handle it */
+            }
+
+            .search-btn {
+                /* On very small screens, maybe hide text or make icon only? 
+                   For now, just reduce padding further */
+                padding: 10px 15px;
             }
         }
 
