@@ -2232,7 +2232,8 @@
                 if (embedController) {
                     loadAndPlaySpotify(track.id);
                 } else {
-                    console.log('Controller not ready, queuing track...');
+                    if (typeof debugLog === 'function') debugLog('Controller not ready, queuing track...');
+                    else console.log('Controller not ready, queuing track...');
                     pendingSpotifyTrack = track.id;
                     // Fallback to standard embed temporarily so user sees something
                     const spotifyEmbed = document.getElementById('spotifyEmbed');
@@ -2614,11 +2615,24 @@
             }
         }
 
+        // Debug Helper
+        function debugLog(msg) {
+            const logEl = document.getElementById('debugLog');
+            if (logEl) {
+                const line = document.createElement('div');
+                line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+                logEl.appendChild(line);
+                logEl.scrollTop = logEl.scrollHeight;
+            }
+            console.log(msg);
+        }
+
         // Spotify Iframe API
         let embedController = null;
         let pendingSpotifyTrack = null;
 
         window.onSpotifyIframeApiReady = (IFrameAPI) => {
+            debugLog('Spotify API Ready');
             const element = document.getElementById('spotifyEmbed');
             const options = {
                 uri: 'spotify:track:4cOdK2wGLETKBW3PvgPWqT', // Placeholder
@@ -2627,11 +2641,12 @@
                 theme: '0'
             };
             const callback = (EmbedController) => {
+                debugLog('EmbedController Created');
                 embedController = EmbedController;
 
                 // Check if a track was waiting for the controller
                 if (pendingSpotifyTrack) {
-                    console.log('Found pending track, loading via API...');
+                    debugLog('Found pending track, loading...');
                     loadAndPlaySpotify(pendingSpotifyTrack);
                     pendingSpotifyTrack = null;
                 }
@@ -2640,15 +2655,22 @@
         };
 
         function loadAndPlaySpotify(trackId) {
-            if (!embedController) return;
+            if (!embedController) {
+                debugLog('Error: Controller missing during load attempt');
+                return;
+            }
 
+            debugLog(`Loading URI: spotify:track:${trackId}`);
             embedController.loadUri(`spotify:track:${trackId}`);
             document.getElementById('spotifyWrapper').classList.add('active');
 
             // "Trigger autoclick once after 2 seconds" logic
+            debugLog('Scheduling play in 2s...');
             setTimeout(() => {
-                console.log('Triggering auto-play via Iframe API...');
-                embedController.play();
+                debugLog('Attempting embedController.play()...');
+                embedController.play(); // No promise returned by this API usually, but we capture flow
+                // Add a follow-up check
+                setTimeout(() => debugLog('Play command sent. If no sound, Browser Policy likely blocked it.'), 500);
             }, 2000);
         }
 
@@ -2658,6 +2680,7 @@
             const query = params.get('q') || params.get('search');
 
             if (query) {
+                debugLog(`Found query: ${query}`);
                 const searchInput = document.getElementById('searchInput');
                 searchInput.value = query;
 
@@ -2667,7 +2690,10 @@
                 // Auto-select first result if available
                 const trackList = document.getElementById('trackList');
                 if (trackList && trackList.firstChild) {
+                    debugLog('Auto-selecting first result');
                     trackList.firstChild.click();
+                } else {
+                    debugLog('No results found to select');
                 }
             }
         }
@@ -2686,6 +2712,12 @@
         });
     </script>
     <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+
+    <!-- Debug Log Element -->
+    <div id="debugLog"
+        style="position:fixed; bottom:10px; right:10px; width:300px; height:150px; background:rgba(0,0,0,0.8); color:#0f0; font-family:monospace; font-size:10px; padding:10px; overflow-y:auto; border-radius:8px; pointer-events:none; z-index:9999; border:1px solid #333;">
+        <div>Debug Log Init...</div>
+    </div>
 </body>
 
 </html>
