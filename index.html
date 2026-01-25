@@ -1618,10 +1618,91 @@
             pointer-events: auto;
             /* Allow clicks but not drags/selects */
         }
+
+        /* Spam Protection Overlay */
+        .spam-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            text-align: center;
+            display: none;
+        }
+
+        .spam-overlay.active {
+            display: flex;
+        }
+
+        .spam-title {
+            color: #ff6b6b;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 
 <body class="spotify-active">
+    <div id="spamOverlay" class="spam-overlay">
+        <div class="spam-title">⚠️ Too Many Clicks</div>
+        <p style="color: var(--text-secondary);">Please slow down. Access paused for <span id="spamTimer">10</span>s.
+        </p>
+    </div>
+    <script>
+        // Spam Click Detection
+        (function () {
+            let clickCount = 0;
+            const LIMIT = 15;
+            const TIME_FRAME = 3000; // 3 secs
+            const LOCKOUT_TIME = 10000; // 10 secs
+            let resetTimer;
+
+            document.addEventListener('click', (e) => {
+                // Ignore clicks inside the overlay itself
+                if (e.target.closest('#spamOverlay')) return;
+
+                clickCount++;
+
+                if (clickCount >= LIMIT) {
+                    lockoutUser();
+                }
+
+                // Reset count if no spam detected within timeframe
+                clearTimeout(resetTimer);
+                resetTimer = setTimeout(() => {
+                    clickCount = 0;
+                }, TIME_FRAME);
+            }, true);
+
+            function lockoutUser() {
+                console.warn('Spam clicks detected');
+                const overlay = document.getElementById('spamOverlay');
+                const timerEl = document.getElementById('spamTimer');
+                if (overlay.classList.contains('active')) return;
+
+                overlay.classList.add('active');
+
+                let remaining = LOCKOUT_TIME / 1000;
+                timerEl.textContent = remaining;
+
+                const interval = setInterval(() => {
+                    remaining--;
+                    timerEl.textContent = remaining;
+                    if (remaining <= 0) {
+                        clearInterval(interval);
+                        overlay.classList.remove('active');
+                        clickCount = 0;
+                    }
+                }, 1000);
+            }
+        })();
+    </script>
     <!-- Animated Background -->
     <div class="background-animation">
         <div class="bg-blob spotify"></div>
@@ -2756,6 +2837,10 @@
         });
     </script>
     <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
 </body>
 
 </html>
