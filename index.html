@@ -1606,6 +1606,18 @@
             border-color: var(--text-primary);
             color: var(--text-primary);
         }
+
+        /* Copyright Protection */
+        .protected-img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            user-select: none;
+            pointer-events: auto;
+            /* Allow clicks but not drags/selects */
+        }
     </style>
 </head>
 
@@ -1729,7 +1741,8 @@
                 <!-- Preview Player (for non-logged-in Spotify users) -->
                 <div class="preview-player" id="previewPlayer">
                     <div class="preview-card">
-                        <img class="preview-album-art" id="previewAlbumArt" src="" alt="Album Art">
+                        <img class="preview-album-art protected-img" id="previewAlbumArt" src="" alt="Album Art"
+                            draggable="false" oncontextmenu="return false;">
                         <div class="preview-info">
                             <div class="preview-track-name" id="previewTrackName">Track Name</div>
                             <div class="preview-artist" id="previewArtist">Artist</div>
@@ -1863,8 +1876,8 @@
                     <!-- Artist Images -->
                     <div id="artistImagesContainer" class="artist-images-area">
                         <div class="artist-image-container">
-                            <img id="metaArtistImage" class="artist-image" src="" alt="Artist"
-                                onerror="this.style.display='none'">
+                            <img id="metaArtistImage" class="artist-image protected-img" src="" alt="Artist"
+                                onerror="this.style.display='none'" draggable="false" oncontextmenu="return false;">
                         </div>
                         <div class="artist-label">Artist</div>
                     </div>
@@ -2231,7 +2244,10 @@
 
                 // Use escapeHtml for all dynamic text to prevent XSS
                 trackEl.innerHTML = `
-                    <img class="track-image" src="${track.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%232a2a2a%22 width=%22100%22 height=%22100%22/></svg>'}" alt="${escapeHtml(track.name)}">
+                    <img class="track-image protected-img" src="${track.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%232a2a2a%22 width=%22100%22 height=%22100%22/></svg>'}" 
+                        alt="${escapeHtml(track.name)}"
+                        draggable="false"
+                        oncontextmenu="return false;">
                     <div class="track-info">
                         <div class="track-name">${escapeHtml(track.name)}</div>
                         <div class="track-artist">${escapeHtml(track.artist)}</div>
@@ -2391,7 +2407,11 @@
                             card.className = 'artist-card';
                             card.innerHTML = `
                                 <div class="artist-image-container">
-                                    <img class="artist-image" src="${artist.url}" alt="${escapeHtml(artist.name)}" onerror="this.src='data:image/svg+xml;base64,...'">
+                                    <img class="artist-image protected-img" src="${artist.url}" 
+                                        alt="${escapeHtml(artist.name)}" 
+                                        onerror="this.src='data:image/svg+xml;base64,...'"
+                                        draggable="false"
+                                        oncontextmenu="return false;">
                                 </div>
                                 <div class="artist-label">${escapeHtml(artist.name)}</div>
                             `;

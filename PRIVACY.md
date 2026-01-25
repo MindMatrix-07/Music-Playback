@@ -34,6 +34,7 @@ We do not use tracking cookies or analytics software. Third-party embeds (Spotif
 - **Data Hardening**: We employ strict **Anti-Theft** and **Anti-Caching** protocols.
     - All API responses are sent with `Cache-Control: no-store` headers, ensuring your data is not saved by browsers or intermediate proxies.
     - Requests are validated to ensure they originate only from our authentic website.
+    - **Content Protection**: We implement technical measures to prevent the unauthorized downloading of copyrighted assets (images, audio) to comply with third-party licensing agreements.
 
 ## 6. Your Rights
 Since we do not store your data, there is nothing for us to delete or export. You can clear your data at any time by:
