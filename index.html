@@ -2935,6 +2935,21 @@
                     </svg>
                     Login with Discord
                 </a>
+
+                <div style="margin-top: 25px; border-top: 1px solid #333; padding-top: 20px;">
+                    <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">
+                        Or continue without Discord (Device Only)
+                    </p>
+                    <button id="skipDiscordBtn" class="secondary-btn small"
+                        style="background: transparent; border: 1px solid #555; font-size: 0.9rem; width: 100%;">
+                        Continue without Discord
+                    </button>
+                    <p style="font-size: 0.75rem; color: #666; margin-top: 10px; line-height: 1.4;">
+                        <span style="color: #ffaa00;">Warning:</span> Access and API Keys entered later will be stored
+                        in this browser only.
+                        You will lose access if you clear data or uninstall the browser.
+                    </p>
+                </div>
             </div>
 
             <!-- Step 2: Code Entry -->
@@ -3165,6 +3180,24 @@
             const errorMsg = document.getElementById('accessError');
             const copyBtn = document.getElementById('copyLogBtn');
             const clipConfirm = document.getElementById('clipConfirm');
+            const skipBtn = document.getElementById('skipDiscordBtn');
+
+            // 1. Get/Create Persistent Device ID
+            let deviceId = localStorage.getItem('device_binding_id');
+            if (!deviceId) {
+                deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+                localStorage.setItem('device_binding_id', deviceId);
+            }
+
+            // Skip handler
+            if (skipBtn) {
+                skipBtn.addEventListener('click', () => {
+                    discordStep.classList.add('hidden');
+                    codeStep.classList.remove('hidden');
+                    // Hide avatar
+                    document.querySelector('.user-preview').style.display = 'none';
+                });
+            }
 
             // ... (Error Logging Logic Same as Before) ...
             let lastErrorLog = { timestamp: '', browser: navigator.userAgent, error: '', details: null };
@@ -3243,7 +3276,11 @@
                         method: 'POST',
                         credentials: 'include', // Force sending cookies
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ code: code, name: name }) // No deviceId sent, cookie is used
+                        body: JSON.stringify({
+                            code: code,
+                            name: name,
+                            deviceId: deviceId // Send logic for fallback
+                        })
                     });
 
                     let data;

@@ -8,34 +8,43 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { code, name } = req.body;
+    const { code, name, deviceId } = req.body;
 
-    // 1. Validate Discord Session
+    // 1. Identify User (Discord OR Device)
     const cookies = parse(req.headers.cookie || '');
     const discordSessionStr = cookies.discord_session;
 
-    if (!discordSessionStr) {
+    let discordUser = null;
+    let userId = null;
+    let authType = null; // 'DISCORD' or 'DEVICE'
+
+    // A. Check Discord
+    if (discordSessionStr) {
+        try {
+            discordUser = JSON.parse(discordSessionStr);
+            userId = discordUser.id;
+            authType = 'DISCORD';
+        } catch (e) { console.error('Invalid Discord Session'); }
+    }
+
+    // B. Check Device ID (Fallback)
+    if (!userId && deviceId) {
+        userId = deviceId;
+        authType = 'DEVICE';
+    }
+
+    if (!userId) {
         return res.status(401).json({
-            error: 'Please login with Discord first.',
-            debugCookies: Object.keys(cookies),
-            debugHeaders: req.headers['content-type']
+            error: 'Authentication failed. Please Login with Discord OR enable cookies.',
+            debug: 'No Discord Session and No Device ID provided.'
         });
     }
 
-    let discordUser;
-    try {
-        discordUser = JSON.parse(discordSessionStr);
-    } catch (e) {
-        return res.status(401).json({ error: 'Invalid Discord session.' });
-    }
-
-    const discordId = discordUser.id;
-    const discordName = discordUser.username;
+    // Determine Name
+    const discordName = discordUser ? discordUser.username : null;
+    const finalName = name && name.trim() ? name.trim() : (discordName || 'Anonymous Device');
 
     if (!code) return res.status(400).json({ error: 'Code required' });
-
-    // Use manual name if provided, else Discord username
-    const finalName = name && name.trim() ? name.trim() : discordName;
 
     const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
     if (!GOOGLE_SHEET_ID) {
@@ -48,7 +57,6 @@ export default async function handler(req, res) {
         const sheets = await getGoogleSheetClient();
         const row = await findCodeRow(sheets, GOOGLE_SHEET_ID, code);
 
-        // Debug info handling
         if (!row || row.error) {
             return res.status(401).json({
                 error: 'Invalid access code',
@@ -57,29 +65,28 @@ export default async function handler(req, res) {
         }
 
         // 3. Logic: Check Status & Binding
-        // row.spotifyId checks Column C (we reuse this column for Discord ID now)
-        const storedDiscordId = row.spotifyId;
+        const storedId = row.spotifyId; // Column C
 
         if (row.status === 'USED') {
-            // Already Used: Check if it belongs to THIS Discord Account
-            if (storedDiscordId === discordId) {
-                // MATCH: Grant Access (Returning User)
+            // Already Used: Check if it matches OUR userId
+            if (storedId === userId) {
+                // MATCH: Grant Access
             } else {
-                // MISMATCH: Code linked to another account
+                // MISMATCH
                 return res.status(403).json({
-                    error: `This code is linked to another Discord account.`
+                    error: `This code is linked to another ${authType === 'DISCORD' ? 'Discord Account' : 'Browser/Device'}.`
                 });
             }
         } else {
-            // New Code: Bind it to THIS Discord ID
-            // We use the Manual Name (if typed) or Discord Username
-            await markCodeAsUsed(sheets, GOOGLE_SHEET_ID, row.index, discordId, finalName);
+            // New Code: Bind to this User ID
+            await markCodeAsUsed(sheets, GOOGLE_SHEET_ID, row.index, userId, finalName);
         }
 
-        // 4. Issue Lifetime Session
+        // 4. Issue Session
         const token = await signSession({
             code: row.code,
-            discordId: discordId
+            userId: userId,
+            authType: authType
         });
 
         const cookie = serialize('auth_token', token, {
