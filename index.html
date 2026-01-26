@@ -3158,7 +3158,9 @@
                         // Keep values so they can fix typose
                     }
                 } catch (e) {
-                    errorMsg.textContent = 'Connection error. Try again.';
+                    console.error(e);
+                    // Show actual error for debugging
+                    errorMsg.textContent = 'Connection Error: ' + (e.message || 'Unknown');
                 } finally {
                     btn.disabled = false;
                     btn.style.opacity = '1';
