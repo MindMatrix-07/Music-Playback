@@ -3136,75 +3136,72 @@
         // Auth Logic
         (async function checkAuth() {
             const overlay = document.getElementById('accessOverlay');
+            const discordStep = document.getElementById('discordLoginStep');
+            const codeStep = document.getElementById('codeEntryStep');
+
             const codeInput = document.getElementById('accessCodeInput');
-            const nameInput = document.getElementById('accessNameInput');
             const btn = document.getElementById('accessSubmitBtn');
             const errorMsg = document.getElementById('accessError');
             const copyBtn = document.getElementById('copyLogBtn');
             const clipConfirm = document.getElementById('clipConfirm');
 
-            let lastErrorLog = {
-                timestamp: '',
-                browser: navigator.userAgent,
-                error: '',
-                details: null
-            };
+            // Elements for Discord User Preview
+            const discordAvatar = document.getElementById('discordAvatar');
+            const discordUsername = document.getElementById('discordUsername');
 
+            // ... (Error Logging Logic Same as Before) ...
+            let lastErrorLog = { timestamp: '', browser: navigator.userAgent, error: '', details: null };
             function showError(msg, details = null) {
-                // Update UI
                 errorMsg.textContent = msg;
                 copyBtn.classList.remove('hidden');
-
-                // Update Log
-                lastErrorLog.timestamp = new Date().toISOString();
-                lastErrorLog.error = msg;
-                lastErrorLog.details = details;
-
+                lastErrorLog = { timestamp: new Date().toISOString(), error: msg, details };
                 console.error('Captured Error:', lastErrorLog);
             }
-
             copyBtn.addEventListener('click', () => {
-                const logText = JSON.stringify(lastErrorLog, null, 2);
-                navigator.clipboard.writeText(logText).then(() => {
-                    clipConfirm.style.opacity = '1';
-                    setTimeout(() => clipConfirm.style.opacity = '0', 2000);
-                }).catch(err => {
-                    alert('Failed to copy: ' + err);
-                });
+                navigator.clipboard.writeText(JSON.stringify(lastErrorLog, null, 2));
+                clipConfirm.style.opacity = '1';
+                setTimeout(() => clipConfirm.style.opacity = '0', 2000);
             });
 
-            // 1. Get/Create Persistent Device ID
-            let deviceId = localStorage.getItem('device_binding_id');
-            if (!deviceId) {
-                // Generate a random UUID-like string
-                deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
-                localStorage.setItem('device_binding_id', deviceId);
-            }
-
-            // 2. Check Auth Status
+            // 1. Check Auth Status
             try {
                 const res = await fetch('/api/auth/status');
                 const data = await res.json();
 
                 if (data.authenticated) {
+                    // Fully Authorized
                     overlay.classList.add('hidden');
-                    document.getElementById('appContent').style.display = 'block'; // Reveal App
-                    return; // Access Granted
+                    document.getElementById('appContent').style.display = 'block';
+                    return;
                 }
+
+                // Not authorized, but maybe logged in to Discord?
+                if (data.discordUser) {
+                    // Show Code Entry Step
+                    discordStep.classList.add('hidden');
+                    codeStep.classList.remove('hidden');
+
+                    discordUsername.textContent = data.discordUser.username;
+                    if (data.discordUser.avatar) {
+                        discordAvatar.src = `https://cdn.discordapp.com/avatars/${data.discordUser.id}/${data.discordUser.avatar}.png`;
+                    } else {
+                        // Default avatar
+                        discordAvatar.src = 'https://cdn.discordapp.com/embed/avatars/0.png';
+                    }
+                } else {
+                    // Not logged in at all -> Show Discord Login Button (Default)
+                    discordStep.classList.remove('hidden');
+                    codeStep.classList.add('hidden');
+                }
+
             } catch (e) {
                 console.error('Auth Check Failed', e);
             }
 
-            // 3. Login Flow
+            // 2. Login Flow (Code Submission only)
             async function attemptLogin() {
                 const code = codeInput.value.trim();
-                const name = nameInput.value.trim();
 
-                if (!name) {
-                    errorMsg.textContent = 'Please enter your name.';
-                    nameInput.focus();
-                    return;
-                }
                 if (!code) {
                     errorMsg.textContent = 'Please enter the code.';
                     codeInput.focus();
@@ -3213,18 +3210,14 @@
 
                 btn.disabled = true;
                 btn.style.opacity = '0.5';
-                errorMsg.textContent = 'Verifying...';
-                copyBtn.classList.add('hidden'); // Hide copy button during new attempt
+                errorMsg.textContent = 'Linking Account...';
+                copyBtn.classList.add('hidden');
 
                 try {
                     const res = await fetch('/api/verify-access', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            code: code,
-                            deviceId: deviceId,
-                            name: name
-                        })
+                        body: JSON.stringify({ code: code }) // No deviceId sent, cookie is used
                     });
 
                     let data;
