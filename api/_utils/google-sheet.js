@@ -20,8 +20,17 @@ export async function getGoogleSheetClient() {
     return google.sheets({ version: 'v4', auth });
 }
 
+export async function getFirstSheetName(sheets, spreadsheetId) {
+    const output = await sheets.spreadsheets.get({
+        spreadsheetId
+    });
+    return output.data.sheets[0].properties.title;
+}
+
 export async function findCodeRow(sheets, spreadsheetId, code) {
-    const range = 'Sheet1!A:C'; // Col A: Code, Col B: Status, Col C: SpotifyID
+    const sheetName = await getFirstSheetName(sheets, spreadsheetId);
+    // Use encoding for safety (though usually not needed if simple name)
+    const range = `'${sheetName}'!A:D`; // Read expected columns
     const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
         range,
@@ -46,7 +55,8 @@ export async function findCodeRow(sheets, spreadsheetId, code) {
 }
 
 export async function markCodeAsUsed(sheets, spreadsheetId, rowIndex, deviceId, name) {
-    const range = `Sheet1!B${rowIndex}:D${rowIndex}`; // Update Cols B, C, D
+    const sheetName = await getFirstSheetName(sheets, spreadsheetId);
+    const range = `'${sheetName}'!B${rowIndex}:D${rowIndex}`; // Update Cols B, C, D
     await sheets.spreadsheets.values.update({
         spreadsheetId,
         range,
