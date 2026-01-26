@@ -77,7 +77,7 @@ export async function findUserRow(sheets, spreadsheetId, userId) {
     }
 
     // Find row where Column C (Index 2) matches userId
-    const rowIndex = rows.findIndex(row => row[2] && row[2].trim() === userId);
+    const rowIndex = rows.findIndex(row => row[2] && String(row[2]).trim() === String(userId));
 
     if (rowIndex === -1) {
         return null;
