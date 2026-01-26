@@ -2132,28 +2132,28 @@
                     <p class="guide-note">✨ It's free (10k daily quota) and requires no approval.</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Diagnostics Section -->
-        <div class="setting-item"
-            style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 15px;">
-            <label style="color: var(--text-secondary); font-size: 0.85rem;">Troubleshooting</label>
-            <button id="internalCopyLogBtn" class="secondary-btn"
-                style="width: 100%; font-size: 0.85rem; padding: 8px;">
-                📋 Copy Diagnostic Info
-            </button>
-            <p id="internalClipConfirm"
-                style="color: var(--spotify-green); font-size: 0.8rem; height: 1.2em; opacity: 0; text-align: center; margin-top: 5px; transition: opacity 0.3s;">
-                Copied to clipboard!</p>
-        </div>
+            <!-- Actions Row -->
+            <div class="settings-actions" style="margin-top: 30px; margin-bottom: 20px;">
+                <button id="deleteKeyBtn" class="secondary-btn"
+                    style="margin-right: auto; color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3);">Delete</button>
+                <button id="closeSettingsBtn" class="secondary-btn">Cancel</button>
+                <button id="saveSettingsBtn" class="primary-btn">Save Key</button>
+            </div>
 
-        <div class="settings-actions">
-            <button id="deleteKeyBtn" class="secondary-btn"
-                style="margin-right: auto; color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3);">Delete</button>
-            <button id="closeSettingsBtn" class="secondary-btn">Cancel</button>
-            <button id="saveSettingsBtn" class="primary-btn">Save Key</button>
+            <!-- Diagnostics Section (Footer) -->
+            <div class="setting-item"
+                style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-bottom: 0;">
+                <label style="color: var(--text-secondary); font-size: 0.85rem;">Troubleshooting</label>
+                <button id="internalCopyLogBtn" class="secondary-btn"
+                    style="width: 100%; font-size: 0.85rem; padding: 8px;">
+                    📋 Copy Diagnostic Info
+                </button>
+                <p id="internalClipConfirm"
+                    style="color: var(--spotify-green); font-size: 0.8rem; height: 1.2em; opacity: 0; text-align: center; margin-top: 5px; transition: opacity 0.3s;">
+                    Copied to clipboard!</p>
+            </div>
         </div>
-    </div>
     </div>
 
     <script>
