@@ -3188,6 +3188,7 @@
 
                 if (data.authenticated) {
                     overlay.classList.add('hidden');
+                    document.getElementById('appContent').style.display = 'block'; // Reveal App
                     return; // Access Granted
                 }
             } catch (e) {
