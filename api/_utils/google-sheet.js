@@ -27,15 +27,6 @@ export async function getFirstSheetName(sheets, spreadsheetId) {
     return output.data.sheets[0].properties.title;
 }
 
-// Revert to simple hardcoded sheet for stability
-const sheetName = 'Sheet1';
-const range = 'Sheet1!A:D';
-
-const response = await sheets.spreadsheets.values.get({
-    spreadsheetId,
-    range,
-});
-
 const rows = response.data.values;
 if (!rows || rows.length === 0) {
     return { error: true, msg: 'Sheet is empty' };
