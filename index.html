@@ -3108,6 +3108,25 @@
                 }
             }
 
+            // Fallback: Check if main app already grabbed the token (Race condition fix)
+            if (!spotifyToken) {
+                const stored = localStorage.getItem('spotify_user');
+                if (stored) {
+                    try {
+                        const user = JSON.parse(stored);
+                        if (user.accessToken) {
+                            spotifyToken = user.accessToken;
+                            // Show Code Step
+                            stepLogin.classList.add('hidden');
+                            stepCode.classList.remove('hidden');
+
+                            document.getElementById('accessUserName').textContent = user.name || 'Spotify User';
+                            if (user.image) document.getElementById('accessUserImg').src = user.image;
+                        }
+                    } catch (e) { }
+                }
+            }
+
             // Spotify Login Click
             spotifyBtn.addEventListener('click', () => {
                 window.location.href = '/api/spotify-login';
