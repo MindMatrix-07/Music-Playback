@@ -27,36 +27,45 @@ export async function getFirstSheetName(sheets, spreadsheetId) {
     return output.data.sheets[0].properties.title;
 }
 
-export async function findCodeRow(sheets, spreadsheetId, code) {
-    const sheetName = await getFirstSheetName(sheets, spreadsheetId);
-    // Use encoding for safety (though usually not needed if simple name)
-    const range = `'${sheetName}'!A:D`; // Read expected columns
-    const response = await sheets.spreadsheets.values.get({
-        spreadsheetId,
-        range,
-    });
+// Revert to simple hardcoded sheet for stability
+const sheetName = 'Sheet1';
+const range = 'Sheet1!A:D';
 
-    const rows = response.data.values;
-    if (!rows || rows.length === 0) return null;
+const response = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range,
+});
 
-    // Find index (1-based for Sheets API range updates)
-    // Case-insensitive search
-    const cleanCode = code.trim().toLowerCase();
-    const rowIndex = rows.findIndex(row => row[0] && row[0].trim().toLowerCase() === cleanCode);
+const rows = response.data.values;
+if (!rows || rows.length === 0) {
+    return { error: true, msg: 'Sheet is empty' };
+}
 
-    if (rowIndex === -1) return null;
+// Find index
+const cleanCode = code.trim().toLowerCase();
+const rowIndex = rows.findIndex(row => row[0] && row[0].trim().toLowerCase() === cleanCode);
 
+if (rowIndex === -1) {
+    // DEBUG: Return info about what we saw
     return {
-        index: rowIndex + 1, // 1-based index
-        code: rows[rowIndex][0],
-        status: rows[rowIndex][1], // "USED" or undefined/empty
-        spotifyId: rows[rowIndex][2] // Linked Spotify ID
+        error: true,
+        debugRows: rows.length,
+        debugFirst: rows[0],
+        debugCodeSeen: cleanCode
     };
 }
 
+return {
+    index: rowIndex + 1, // 1-based index
+    code: rows[rowIndex][0],
+    status: rows[rowIndex][1], // "USED" or undefined/empty
+    spotifyId: rows[rowIndex][2] // Linked Spotify ID
+};
+}
+
 export async function markCodeAsUsed(sheets, spreadsheetId, rowIndex, deviceId, name) {
-    const sheetName = await getFirstSheetName(sheets, spreadsheetId);
-    const range = `'${sheetName}'!B${rowIndex}:D${rowIndex}`; // Update Cols B, C, D
+    // const sheetName = await getFirstSheetName(sheets, spreadsheetId);
+    const range = `Sheet1!B${rowIndex}:D${rowIndex}`; // Hardcoded for stability
     await sheets.spreadsheets.values.update({
         spreadsheetId,
         range,

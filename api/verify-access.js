@@ -26,8 +26,12 @@ export default async function handler(req, res) {
         const sheets = await getGoogleSheetClient();
         const row = await findCodeRow(sheets, GOOGLE_SHEET_ID, code);
 
-        if (!row) {
-            return res.status(401).json({ error: 'Invalid access code' });
+        if (!row || row.error) {
+            // DEBUG MODE: Return what we saw
+            return res.status(401).json({
+                error: 'Invalid access code',
+                debug: row ? { rows: row.debugRows, first: row.debugFirst, code: row.debugCodeSeen } : 'No Row Return'
+            });
         }
 
         // 2. Logic: Check Status & Binding
