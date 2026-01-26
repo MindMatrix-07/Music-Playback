@@ -1749,7 +1749,7 @@
         <div class="bg-blob secondary"></div>
     </div>
 
-    <div class="container">
+    <div class="container" id="appContent" style="display: none;">
         <!-- Settings Button -->
         <button id="settingsBtn" class="settings-icon-btn" title="Settings">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3151,6 +3151,7 @@
                     if (res.ok) {
                         // Success -> Fade out overlay
                         overlay.classList.add('hidden');
+                        document.getElementById('appContent').style.display = 'block'; // Reveal App
                     } else {
                         // Error
                         errorMsg.textContent = data.error || 'Invalid code';
