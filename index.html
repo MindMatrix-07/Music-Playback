@@ -3216,6 +3216,7 @@
                 try {
                     const res = await fetch('/api/verify-access', {
                         method: 'POST',
+                        credentials: 'include', // Force sending cookies
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ code: code }) // No deviceId sent, cookie is used
                     });
