@@ -103,7 +103,7 @@
         <a href="/" class="back-link">← Back to App</a>
 
         <h1>Privacy Policy</h1>
-        <p class="last-updated">Last Updated: 2026-01-25</p>
+        <p class="last-updated">Last Updated: 2026-01-26</p>
 
         <h2>1. Introduction</h2>
         <p>This Privacy Policy explains how <strong>Music Playback</strong> ("we," "our," or "the App") handles your
@@ -149,10 +149,28 @@
         <p>We do not use tracking cookies or analytics software. Third-party embeds (Spotify, Apple Music, YouTube) may
             use their own cookies to maintain user sessions and preferences, subject to their respective policies.</p>
 
-        <h2>5. Security</h2>
+        <h2>5. Access Control & Account Binding</h2>
+        <p>This is a private-access application. To facilitate access control, we implement the following:</p>
         <ul>
-            <li><strong>No Server Storage</strong>: We do not have a database. We cannot lose or leak your data because
-                we do not have it.</li>
+            <li><strong>Access Codes</strong>: We maintain a private record of authorized "One-Time Access Codes"
+                (stored securely in a private Google Sheet).</li>
+            <li><strong>Account Binding</strong>: When you redeem a code, your <strong>Spotify User ID</strong> is
+                recorded next to that code.
+                <ul>
+                    <li>This creates a permanent 1-to-1 link between the code and your Spotify account.</li>
+                    <li>This prevents unauthorized sharing or theft of access codes.</li>
+                    <li>We do <strong>not</strong> store your Spotify password, email, or other personal profile
+                        data—only the unique numerical ID.</li>
+                </ul>
+            </li>
+            <li><strong>Cookies</strong>: A secure, encrypted <code>auth_token</code> cookie is set on your browser to
+                keep you logged in. This cookie contains your Access Code and Spotify ID.</li>
+        </ul>
+
+        <h2>6. Security</h2>
+        <ul>
+            <li><strong>Minimal Storage</strong>: We use Google Sheets as a strictly private database for access control
+                only.</li>
             <li><strong>Client-Side Requests</strong>: API requests are primarily made from your browser to the service
                 provider.</li>
             <li><strong>Data Hardening</strong>: We employ strict <strong>Anti-Theft</strong> and
@@ -168,7 +186,7 @@
             </li>
         </ul>
 
-        <h2>6. Your Rights</h2>
+        <h2>7. Your Rights</h2>
         <p>Since we do not store your data, there is nothing for us to delete or export. You can clear your data at any
             time by:</p>
         <ol>
@@ -177,7 +195,7 @@
             <li>Clearing your browser's cache/local storage.</li>
         </ol>
 
-        <h2>7. Changes to This Policy</h2>
+        <h2>8. Changes to This Policy</h2>
         <p>We may update this policy to reflect changes in our features or legal requirements. Updates will be posted
             here.</p>
 
