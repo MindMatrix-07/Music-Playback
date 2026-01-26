@@ -163,6 +163,20 @@
                         binding. It is purely anonymous.</li>
                 </ul>
             </li>
+
+            <li><strong>Diagnostic Tools</strong>: The App includes a manual "Copy Diagnostic Info" feature to help
+                troubleshoot issues.
+                <ul>
+                    <li><strong>Manual Only</strong>: This data is <strong>never</strong> sent automatically. It is only
+                        generated when you click "Copy".</li>
+                    <li><strong>Content</strong>: It includes technical details like your filtered User Agent, Screen
+                        Size, and Authentication Status.</li>
+                    <li><strong>Security</strong>: Sensitive information like your <strong>YouTube API Key</strong> is
+                        <strong>redacted</strong> (we only log whether you have one or not, e.g.,
+                        <code>hasYTKey: true</code>).</li>
+                </ul>
+            </li>
+
             <li><strong>Name</strong>: We request a <strong>Name</strong> (or nickname) when you first unlock the site.
                 <ul>
                     <li>This is stored in our private Google Sheet solely to help the administrator identify who is
