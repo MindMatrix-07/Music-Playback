@@ -31,7 +31,9 @@ export async function findCodeRow(sheets, spreadsheetId, code) {
     if (!rows || rows.length === 0) return null;
 
     // Find index (1-based for Sheets API range updates)
-    const rowIndex = rows.findIndex(row => row[0] === code);
+    // Case-insensitive search
+    const cleanCode = code.trim().toLowerCase();
+    const rowIndex = rows.findIndex(row => row[0] && row[0].trim().toLowerCase() === cleanCode);
 
     if (rowIndex === -1) return null;
 
