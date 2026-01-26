@@ -139,10 +139,28 @@
             margin-bottom: 40px;
         }
 
+        .header-title-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .site-logo {
+            height: 48px;
+            width: auto;
+            filter: grayscale(100%) brightness(200%);
+            /* Monochrome White */
+            opacity: 0.9;
+        }
+
+
         .header h1 {
             font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin: 0;
+            /* Remove margin as wrapper handles gap */
             background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -850,13 +868,38 @@
             display: flex;
         }
 
+        .loading-logo {
+            width: 80px;
+            height: auto;
+            animation: pulse-logo 1.5s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+        }
+
+        @keyframes pulse-logo {
+            0% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+        }
+
+        /* 
         .spinner {
             width: 50px;
             height: 50px;
             border: 4px solid var(--border-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-        }
+        } */
 
         body.spotify-active .spinner {
             border-top-color: var(--spotify-green);
@@ -942,8 +985,13 @@
                 margin-bottom: 25px;
             }
 
-            .header h1 {
-                font-size: 1.8rem;
+            .header-title-wrapper {
+                flex-direction: row;
+                gap: 10px;
+            }
+
+            .site-logo {
+                height: 32px;
             }
 
             .header p {
@@ -1127,7 +1175,6 @@
                 width: 200px;
                 /* Fixed width for better visibility control */
                 max-width: 100%;
-                aspect-ratio: 1;
                 margin: 0 auto;
                 /* Center it */
                 display: block;
@@ -1754,7 +1801,7 @@
         <button id="settingsBtn" class="settings-icon-btn" title="Settings">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path
-                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73L12.22 2z">
+                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73L12.22 2z">
                 </path>
                 <circle cx="12" cy="12" r="3"></circle>
             </svg>
@@ -1762,7 +1809,10 @@
 
         <!-- Header -->
         <header class="header">
-            <h1>Music Playback</h1>
+            <div class="header-title-wrapper">
+                <img src="/assets/logo.png" alt="Logo" class="site-logo">
+                <h1>Music Playback</h1>
+            </div>
             <p>Search and play music from your favorite platform</p>
         </header>
 
@@ -1846,7 +1896,7 @@
 
                 <!-- Loading -->
                 <div class="loading" id="loading">
-                    <div class="spinner"></div>
+                    <img src="/assets/logo.png" alt="Loading..." class="loading-logo">
                     <p class="loading-text">Finding your music...</p>
                     <div class="loading-dots">
                         <div class="loading-dot"></div>
