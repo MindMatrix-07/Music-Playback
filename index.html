@@ -2776,6 +2776,30 @@
                     }
                 });
             }
+
+            // Diagnostics Copy
+            const internalCopyBtn = document.getElementById('internalCopyLogBtn');
+            const internalConfirm = document.getElementById('internalClipConfirm');
+            if (internalCopyBtn) {
+                internalCopyBtn.addEventListener('click', () => {
+                    const diag = {
+                        timestamp: new Date().toISOString(),
+                        userAgent: navigator.userAgent,
+                        screen: window.innerWidth + 'x' + window.innerHeight,
+                        platform: currentPlatform,
+                        hasDeviceID: !!localStorage.getItem('device_binding_id'),
+                        deviceID: localStorage.getItem('device_binding_id'),
+                        hasYTKey: !!localStorage.getItem('yt_api_key'), // SECURE: Only copies true/false
+                        authCookie: document.cookie.includes('auth_token'),
+                        referrer: document.referrer
+                    };
+
+                    navigator.clipboard.writeText(JSON.stringify(diag, null, 2)).then(() => {
+                        internalConfirm.style.opacity = '1';
+                        setTimeout(() => internalConfirm.style.opacity = '0', 2000);
+                    });
+                });
+            }
         }
 
         // Official YouTube Search (Client-Side)
