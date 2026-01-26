@@ -21,7 +21,7 @@ export async function getGoogleSheetClient() {
 }
 
 export async function findCodeRow(sheets, spreadsheetId, code) {
-    const range = 'Sheet1!A:B'; // Col A: Code, Col B: Status
+    const range = 'Sheet1!A:C'; // Col A: Code, Col B: Status, Col C: SpotifyID
     const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
         range,
@@ -38,18 +38,19 @@ export async function findCodeRow(sheets, spreadsheetId, code) {
     return {
         index: rowIndex + 1, // 1-based index
         code: rows[rowIndex][0],
-        status: rows[rowIndex][1] // "USED" or undefined/empty
+        status: rows[rowIndex][1], // "USED" or undefined/empty
+        spotifyId: rows[rowIndex][2] // Linked Spotify ID
     };
 }
 
-export async function markCodeAsUsed(sheets, spreadsheetId, rowIndex) {
-    const range = `Sheet1!B${rowIndex}`;
+export async function markCodeAsUsed(sheets, spreadsheetId, rowIndex, spotifyId) {
+    const range = `Sheet1!B${rowIndex}:C${rowIndex}`;
     await sheets.spreadsheets.values.update({
         spreadsheetId,
         range,
         valueInputOption: 'RAW',
         requestBody: {
-            values: [['USED']]
+            values: [['USED', spotifyId]]
         }
     });
 }
