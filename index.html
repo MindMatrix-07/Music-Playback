@@ -3154,7 +3154,11 @@
                         document.getElementById('appContent').style.display = 'block'; // Reveal App
                     } else {
                         // Error
-                        errorMsg.textContent = data.error || 'Invalid code';
+                        let msg = data.error || 'Invalid code';
+                        if (data.debug) {
+                            msg += ' | DEBUG: ' + JSON.stringify(data.debug);
+                        }
+                        errorMsg.textContent = msg;
                         // Keep values so they can fix typose
                     }
                 } catch (e) {
