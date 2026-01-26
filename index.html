@@ -2971,8 +2971,18 @@
     <!-- Access Code Overlay -->
     <div id="accessOverlay" class="access-overlay">
         <div class="access-card">
-            <div class="access-icon">🔒</div>
-            <h2>Private Access</h2>
+            <!-- Branding Header -->
+            <div class="access-header-logo"
+                style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
+                <img src="/assets/logo.png" alt="Logo"
+                    style="height: 40px; width: auto; filter: brightness(0) invert(1); opacity: 0.9;">
+                <h1
+                    style="font-size: 1.8rem; margin: 0; background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    Music Playback</h1>
+            </div>
+
+            <h2 style="font-size: 1.1rem; color: #888; font-weight: 400; margin-bottom: 30px; margin-top: -10px;">
+                Private Access</h2>
 
             <!-- Step 1: Discord Login -->
             <div id="discordLoginStep">
@@ -2986,7 +2996,7 @@
                     Login with Discord
                 </a>
 
-                <div style="margin-top: 25px; border-top: 1px solid #333; padding-top: 20px;">
+                <div class="mobile-stack" style="margin-top: 25px; border-top: 1px solid #333; padding-top: 20px;">
                     <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">
                         Or continue without Discord (Device Only)
                     </p>
@@ -3001,6 +3011,9 @@
                     </p>
                 </div>
             </div>
+
+            <!-- ... (Code Entry Step remains same logic, just visually wrapped) ... -->
+
 
             <!-- Step 2: Code Entry -->
             <div id="codeEntryStep" class="hidden">
@@ -3063,6 +3076,24 @@
             max-width: 400px;
             width: 90%;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            /* Mobile Optimization */
+            box-sizing: border-box;
+        }
+
+        /* Mobile tweaks for Access Card */
+        @media (max-width: 480px) {
+            .access-card {
+                padding: 25px 20px;
+                width: 95%;
+            }
+
+            .access-header-logo img {
+                height: 32px !important;
+            }
+
+            .access-header-logo h1 {
+                font-size: 1.5rem !important;
+            }
         }
 
         .access-icon {
