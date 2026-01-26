@@ -2885,29 +2885,11 @@
         <div class="access-card">
             <div class="access-icon">🔒</div>
             <h2>Private Access</h2>
-            <p id="accessDesc">Link your Spotify account to unlock.</p>
+            <p id="accessDesc">Please enter your access code.</p>
 
-            <!-- Step 1: Spotify Login -->
-            <div id="stepLogin">
-                <button id="accessSpotifyBtn" class="spotify-auth-btn">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 4.2-1.32 9.6-0.66 13.261 1.56.42.18.6.72.48 1.26zm.12-3.36C14.939 8.46 8.64 8.22 5.04 9.3c-.6.18-1.26-.12-1.44-.72-.18-.6.12-1.26.72-1.44 4.2-1.32 11.28-1.08 15.48 1.44.6.36.78 1.14.42 1.74-.3.6-1.02.78-1.62.42z" />
-                    </svg>
-                    Continue with Spotify
-                </button>
-            </div>
-
-            <!-- Step 2: Enter Code -->
-            <div id="stepCode" class="hidden">
-                <div class="user-preview">
-                    <img id="accessUserImg" src="" alt="">
-                    <span id="accessUserName">User</span>
-                </div>
-                <div class="access-input-wrapper">
-                    <input type="text" id="accessCodeInput" placeholder="Enter Access Code" autocomplete="off">
-                    <button id="accessSubmitBtn">→</button>
-                </div>
+            <div class="access-input-wrapper">
+                <input type="text" id="accessCodeInput" placeholder="Enter Access Code" autocomplete="off">
+                <button id="accessSubmitBtn">→</button>
             </div>
 
             <p id="accessError" class="access-error"></p>
@@ -3064,14 +3046,19 @@
         // Auth Logic
         (async function checkAuth() {
             const overlay = document.getElementById('accessOverlay');
-            const stepLogin = document.getElementById('stepLogin');
-            const stepCode = document.getElementById('stepCode');
             const input = document.getElementById('accessCodeInput');
             const btn = document.getElementById('accessSubmitBtn');
             const errorMsg = document.getElementById('accessError');
-            const spotifyBtn = document.getElementById('accessSpotifyBtn');
 
-            // 1. Check if already authenticated (Cookie)
+            // 1. Get/Create Persistent Device ID
+            let deviceId = localStorage.getItem('device_binding_id');
+            if (!deviceId) {
+                // Generate a random UUID-like string
+                deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+                localStorage.setItem('device_binding_id', deviceId);
+            }
+
+            // 2. Check Auth Status
             try {
                 const res = await fetch('/api/auth/status');
                 const data = await res.json();
@@ -3084,66 +3071,14 @@
                 console.error('Auth Check Failed', e);
             }
 
-            // 2. Check for Spotify Token (Pre-Auth)
-            let spotifyToken = null;
-
-            // Check hash first (Callback return)
-            const hash = window.location.hash.substring(1);
-            if (hash) {
-                const params = new URLSearchParams(hash);
-                if (params.get('access_token')) {
-                    spotifyToken = params.get('access_token');
-                    // We save it briefly to memory, not localstorage until confirmed
-
-                    // Show Code Step
-                    stepLogin.classList.add('hidden');
-                    stepCode.classList.remove('hidden');
-
-                    const name = params.get('user_name') || 'Spotify User';
-                    const img = params.get('user_image') || '';
-                    document.getElementById('accessUserName').textContent = name;
-                    if (img) document.getElementById('accessUserImg').src = img;
-
-                    input.focus();
-                }
-            }
-
-            // Fallback: Check if main app already grabbed the token (Race condition fix)
-            if (!spotifyToken) {
-                const stored = localStorage.getItem('spotify_user');
-                if (stored) {
-                    try {
-                        const user = JSON.parse(stored);
-                        if (user.accessToken) {
-                            spotifyToken = user.accessToken;
-                            // Show Code Step
-                            stepLogin.classList.add('hidden');
-                            stepCode.classList.remove('hidden');
-
-                            document.getElementById('accessUserName').textContent = user.name || 'Spotify User';
-                            if (user.image) document.getElementById('accessUserImg').src = user.image;
-                        }
-                    } catch (e) { }
-                }
-            }
-
-            // Spotify Login Click
-            spotifyBtn.addEventListener('click', () => {
-                window.location.href = '/api/spotify-login';
-            });
-
-            // 3. Verify Code + Token
+            // 3. Login Flow
             async function attemptLogin() {
                 const code = input.value.trim();
                 if (!code) return;
-                if (!spotifyToken) {
-                    window.location.href = '/api/spotify-login';
-                    return;
-                }
 
                 btn.disabled = true;
                 btn.style.opacity = '0.5';
-                errorMsg.textContent = 'Verifying & Linking...';
+                errorMsg.textContent = 'Verifying...';
 
                 try {
                     const res = await fetch('/api/verify-access', {
@@ -3151,7 +3086,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             code: code,
-                            spotifyAccessToken: spotifyToken
+                            deviceId: deviceId
                         })
                     });
 
@@ -3160,31 +3095,11 @@
                     if (res.ok) {
                         // Success -> Fade out overlay
                         overlay.classList.add('hidden');
-                        // Also trigger the main app's auth check or reload to ensure clean state
-                        setTimeout(() => {
-                            // Clear hash to look clean
-                            history.replaceState(null, '', window.location.pathname);
-                            // We might want to trigger the main app's spotify init here too
-                            if (window.checkAuthCallback) window.checkAuthCallback();
-                        }, 500);
-
                     } else {
-                        // Error Handling
+                        // Error
                         errorMsg.textContent = data.error || 'Invalid code';
-
-                        // If session is invalid (401), clear everything and force re-login
-                        if (res.status === 401 && data.error.includes('Spotify')) {
-                            localStorage.removeItem('spotify_user');
-                            spotifyToken = null;
-                            setTimeout(() => {
-                                stepCode.classList.add('hidden');
-                                stepLogin.classList.remove('hidden');
-                                errorMsg.textContent = 'Session expired. Please log in again.';
-                            }, 1000);
-                        } else {
-                            input.value = '';
-                            input.focus();
-                        }
+                        input.value = '';
+                        input.focus();
                     }
                 } catch (e) {
                     errorMsg.textContent = 'Connection error. Try again.';
@@ -3198,6 +3113,11 @@
             input.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') attemptLogin();
             });
+
+            // Focus input specifically when overlay is visible
+            if (!overlay.classList.contains('hidden')) {
+                input.focus();
+            }
         })();
     </script>
 </body>

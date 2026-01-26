@@ -8,10 +8,10 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { code, spotifyAccessToken } = req.body;
+    const { code, deviceId } = req.body;
 
     if (!code) return res.status(400).json({ error: 'Code required' });
-    if (!spotifyAccessToken) return res.status(400).json({ error: 'Spotify Login required to use this code' });
+    if (!deviceId) return res.status(400).json({ error: 'Device ID required' });
 
     const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
     if (!GOOGLE_SHEET_ID) {
@@ -20,19 +20,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        // 1. Verify Spotify Token & Get User ID
-        const spotifyRes = await fetch('https://api.spotify.com/v1/me', {
-            headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
-        });
-
-        if (!spotifyRes.ok) {
-            return res.status(401).json({ error: 'Invalid Spotify Session. Please login again.' });
-        }
-
-        const spotifyProfile = await spotifyRes.json();
-        const spotifyUserId = spotifyProfile.id; // Unique Immutable ID
-
-        // 2. Check Sheet
+        // 1. Check Sheet
         const sheets = await getGoogleSheetClient();
         const row = await findCodeRow(sheets, GOOGLE_SHEET_ID, code);
 
@@ -40,26 +28,29 @@ export default async function handler(req, res) {
             return res.status(401).json({ error: 'Invalid access code' });
         }
 
-        // 3. Logic: Check Status & Binding
+        // 2. Logic: Check Status & Binding
+        // row.spotifyId checks Column C (we reuse this column for DeviceID now)
+        const storedDeviceId = row.spotifyId;
+
         if (row.status === 'USED') {
-            // Already Used: Check if it belongs to THIS user
-            if (row.spotifyId === spotifyUserId) {
-                // MATCH: Grant Access (Returning User)
+            // Already Used: Check if it belongs to THIS device
+            if (storedDeviceId === deviceId) {
+                // MATCH: Grant Access (Returning Device)
             } else {
                 // MISMATCH: Code stolen or shared
                 return res.status(403).json({
-                    error: 'This code is linked to a different Spotify account.'
+                    error: 'This code is linked to a different device/browser.'
                 });
             }
         } else {
-            // New Code: Bind it to THIS user
-            await markCodeAsUsed(sheets, GOOGLE_SHEET_ID, row.index, spotifyUserId);
+            // New Code: Bind it to THIS device
+            await markCodeAsUsed(sheets, GOOGLE_SHEET_ID, row.index, deviceId);
         }
 
-        // 4. Issue Lifetime Session
+        // 3. Issue Lifetime Session
         const token = await signSession({
             code: row.code,
-            spotifyId: spotifyUserId
+            deviceId: deviceId
         });
 
         const cookie = serialize('auth_token', token, {
@@ -71,7 +62,7 @@ export default async function handler(req, res) {
         });
 
         res.setHeader('Set-Cookie', cookie);
-        return res.status(200).json({ success: true, message: 'Code linked to account.' });
+        return res.status(200).json({ success: true, message: 'Device authorized.' });
 
     } catch (error) {
         console.error('Auth Error:', error);
