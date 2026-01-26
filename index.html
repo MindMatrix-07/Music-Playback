@@ -150,10 +150,15 @@
         .site-logo {
             height: 48px;
             width: auto;
-            filter: invert(1);
             mix-blend-mode: screen;
-            /* Drops black background/pixels */
             opacity: 0.9;
+            border-radius: 12px;
+            /* Slightly rounded as requested */
+            /* Protection */
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: none;
+            /* Block all interactions including right-click */
         }
 
 
@@ -873,8 +878,13 @@
             width: 80px;
             height: auto;
             animation: pulse-logo 1.5s ease-in-out infinite;
-            filter: invert(1) drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
             mix-blend-mode: screen;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+            border-radius: 16px;
+            /* Protection */
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: none;
         }
 
         @keyframes pulse-logo {
@@ -1803,7 +1813,7 @@
         <button id="settingsBtn" class="settings-icon-btn" title="Settings">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path
-                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73L12.22 2z">
+                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73L12.22 2z">
                 </path>
                 <circle cx="12" cy="12" r="3"></circle>
             </svg>
@@ -1812,7 +1822,8 @@
         <!-- Header -->
         <header class="header">
             <div class="header-title-wrapper">
-                <img src="/assets/logo.png" alt="Logo" class="site-logo">
+                <img src="/assets/logo.png" alt="Logo" class="site-logo" oncontextmenu="return false;"
+                    draggable="false">
                 <h1>Music Playback</h1>
             </div>
             <p>Search and play music from your favorite platform</p>
@@ -1898,7 +1909,8 @@
 
                 <!-- Loading -->
                 <div class="loading" id="loading">
-                    <img src="/assets/logo.png" alt="Loading..." class="loading-logo">
+                    <img src="/assets/logo.png" alt="Loading..." class="loading-logo" oncontextmenu="return false;"
+                        draggable="false">
                     <p class="loading-text">Finding your music...</p>
                     <div class="loading-dots">
                         <div class="loading-dot"></div>
@@ -2977,7 +2989,8 @@
             <div class="access-header-logo"
                 style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
                 <img src="/assets/logo.png" alt="Logo"
-                    style="height: 40px; width: auto; filter: brightness(0) invert(1); opacity: 0.9;">
+                    style="height: 40px; width: auto; mix-blend-mode: screen; border-radius: 12px; opacity: 0.9; pointer-events: none;"
+                    oncontextmenu="return false;" draggable="false">
                 <h1
                     style="font-size: 1.8rem; margin: 0; background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                     Music Playback</h1>
