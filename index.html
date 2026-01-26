@@ -2885,12 +2885,17 @@
         <div class="access-card">
             <div class="access-icon">🔒</div>
             <h2>Private Access</h2>
-            <p id="accessDesc">Please enter your access code.</p>
+            <p id="accessDesc">Please enter your code and name.</p>
 
-            <div class="access-input-wrapper">
-                <input type="text" id="accessCodeInput" placeholder="Enter Access Code" autocomplete="off">
-                <button id="accessSubmitBtn">→</button>
+            <div class="access-input-group">
+                <input type="text" id="accessNameInput" placeholder="Your Name" autocomplete="off" class="access-field">
             </div>
+            <div class="access-input-group">
+                <input type="text" id="accessCodeInput" placeholder="Access Code (e.g., USER-1)" autocomplete="off"
+                    class="access-field">
+            </div>
+
+            <button id="accessSubmitBtn" class="full-width-btn">Unlock Access</button>
 
             <p id="accessError" class="access-error"></p>
         </div>
@@ -2941,6 +2946,55 @@
         .access-card p {
             color: #888;
             margin-bottom: 30px;
+        }
+
+        .access-input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .access-field {
+            width: 100%;
+            background: #222;
+            border: 1px solid #333;
+            padding: 12px 15px;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+            /* Fix padding width issue */
+        }
+
+        .access-field:focus {
+            border-color: var(--spotify-green);
+        }
+
+        .full-width-btn {
+            background: var(--spotify-green);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .full-width-btn:hover {
+            transform: scale(1.02);
+            background: #1ed760;
+        }
+
+        .access-error {
+            color: #ff4d4d;
+            font-size: 0.9rem;
+            min-height: 20px;
+            margin-top: 15px;
         }
 
         .spotify-auth-btn {
@@ -3046,7 +3100,8 @@
         // Auth Logic
         (async function checkAuth() {
             const overlay = document.getElementById('accessOverlay');
-            const input = document.getElementById('accessCodeInput');
+            const codeInput = document.getElementById('accessCodeInput');
+            const nameInput = document.getElementById('accessNameInput');
             const btn = document.getElementById('accessSubmitBtn');
             const errorMsg = document.getElementById('accessError');
 
@@ -3073,8 +3128,19 @@
 
             // 3. Login Flow
             async function attemptLogin() {
-                const code = input.value.trim();
-                if (!code) return;
+                const code = codeInput.value.trim();
+                const name = nameInput.value.trim();
+
+                if (!name) {
+                    errorMsg.textContent = 'Please enter your name.';
+                    nameInput.focus();
+                    return;
+                }
+                if (!code) {
+                    errorMsg.textContent = 'Please enter the code.';
+                    codeInput.focus();
+                    return;
+                }
 
                 btn.disabled = true;
                 btn.style.opacity = '0.5';
@@ -3086,7 +3152,8 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             code: code,
-                            deviceId: deviceId
+                            deviceId: deviceId,
+                            name: name
                         })
                     });
 
@@ -3098,8 +3165,7 @@
                     } else {
                         // Error
                         errorMsg.textContent = data.error || 'Invalid code';
-                        input.value = '';
-                        input.focus();
+                        // Keep values so they can fix typose
                     }
                 } catch (e) {
                     errorMsg.textContent = 'Connection error. Try again.';
@@ -3110,13 +3176,18 @@
             }
 
             btn.addEventListener('click', attemptLogin);
-            input.addEventListener('keypress', (e) => {
+
+            // Allow Enter key on both inputs
+            nameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') codeInput.focus();
+            });
+            codeInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') attemptLogin();
             });
 
             // Focus input specifically when overlay is visible
             if (!overlay.classList.contains('hidden')) {
-                input.focus();
+                nameInput.focus();
             }
         })();
     </script>

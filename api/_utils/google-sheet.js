@@ -43,14 +43,14 @@ export async function findCodeRow(sheets, spreadsheetId, code) {
     };
 }
 
-export async function markCodeAsUsed(sheets, spreadsheetId, rowIndex, spotifyId) {
-    const range = `Sheet1!B${rowIndex}:C${rowIndex}`;
+export async function markCodeAsUsed(sheets, spreadsheetId, rowIndex, deviceId, name) {
+    const range = `Sheet1!B${rowIndex}:D${rowIndex}`; // Update Cols B, C, D
     await sheets.spreadsheets.values.update({
         spreadsheetId,
         range,
         valueInputOption: 'RAW',
         requestBody: {
-            values: [['USED', spotifyId]]
+            values: [['USED', deviceId, name]]
         }
     });
 }

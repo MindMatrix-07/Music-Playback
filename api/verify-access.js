@@ -8,10 +8,12 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { code, deviceId } = req.body;
+    const { code, deviceId, name } = req.body;
 
     if (!code) return res.status(400).json({ error: 'Code required' });
     if (!deviceId) return res.status(400).json({ error: 'Device ID required' });
+    // Name is optional for returning users, but required for new binds. 
+    // We enforce it at frontend.
 
     const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
     if (!GOOGLE_SHEET_ID) {
@@ -43,8 +45,9 @@ export default async function handler(req, res) {
                 });
             }
         } else {
-            // New Code: Bind it to THIS device
-            await markCodeAsUsed(sheets, GOOGLE_SHEET_ID, row.index, deviceId);
+            // New Code: Bind it to THIS device AND Name
+            if (!name) return res.status(400).json({ error: 'Name is required for first-time login.' });
+            await markCodeAsUsed(sheets, GOOGLE_SHEET_ID, row.index, deviceId, name);
         }
 
         // 3. Issue Lifetime Session
