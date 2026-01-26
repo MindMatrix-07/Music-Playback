@@ -63,7 +63,8 @@ export async function findCodeRow(sheets, spreadsheetId, code) {
         index: rowIndex + 1, // 1-based index
         code: rows[rowIndex][0],
         status: rows[rowIndex][1], // "USED" or undefined/empty
-        spotifyId: cleanId // Linked Spotify ID
+        spotifyId: cleanId, // Linked Spotify ID
+        name: rows[rowIndex][3] // Stored Name
     };
 }
 
