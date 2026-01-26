@@ -150,8 +150,8 @@
         .site-logo {
             height: 48px;
             width: auto;
-            filter: grayscale(100%) brightness(200%);
-            /* Monochrome White */
+            filter: brightness(0) invert(1);
+            /* Force White */
             opacity: 0.9;
         }
 
@@ -872,7 +872,7 @@
             width: 80px;
             height: auto;
             animation: pulse-logo 1.5s ease-in-out infinite;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+            filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
         }
 
         @keyframes pulse-logo {
