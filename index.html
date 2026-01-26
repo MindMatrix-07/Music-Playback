@@ -3169,10 +3169,22 @@
                         }, 500);
 
                     } else {
-                        // Error
+                        // Error Handling
                         errorMsg.textContent = data.error || 'Invalid code';
-                        input.value = '';
-                        input.focus();
+
+                        // If session is invalid (401), clear everything and force re-login
+                        if (res.status === 401 && data.error.includes('Spotify')) {
+                            localStorage.removeItem('spotify_user');
+                            spotifyToken = null;
+                            setTimeout(() => {
+                                stepCode.classList.add('hidden');
+                                stepLogin.classList.remove('hidden');
+                                errorMsg.textContent = 'Session expired. Please log in again.';
+                            }, 1000);
+                        } else {
+                            input.value = '';
+                            input.focus();
+                        }
                     }
                 } catch (e) {
                     errorMsg.textContent = 'Connection error. Try again.';
