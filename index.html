@@ -2927,6 +2927,178 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
+    <!-- Access Code Overlay -->
+    <div id="accessOverlay" class="access-overlay">
+        <div class="access-card">
+            <div class="access-icon">🔒</div>
+            <h2>Private Access</h2>
+            <p>Please enter your access code to continue.</p>
+            <div class="access-input-wrapper">
+                <input type="text" id="accessCodeInput" placeholder="Enter Access Code" autocomplete="off">
+                <button id="accessSubmitBtn">→</button>
+            </div>
+            <p id="accessError" class="access-error"></p>
+        </div>
+    </div>
+
+    <style>
+        .access-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .access-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .access-card {
+            background: #111;
+            border: 1px solid #333;
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .access-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .access-card h2 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .access-card p {
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .access-input-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        #accessCodeInput {
+            flex: 1;
+            background: #222;
+            border: 1px solid #333;
+            padding: 12px 20px;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #accessCodeInput:focus {
+            border-color: var(--spotify-green);
+        }
+
+        #accessSubmitBtn {
+            background: var(--spotify-green);
+            color: white;
+            border: none;
+            width: 50px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #accessSubmitBtn:hover {
+            transform: scale(1.05);
+        }
+
+        .access-error {
+            color: #ff4d4d;
+            font-size: 0.9rem;
+            min-height: 20px;
+        }
+    </style>
+
+    <script>
+        // Auth Logic
+        (async function checkAuth() {
+            const overlay = document.getElementById('accessOverlay');
+            const input = document.getElementById('accessCodeInput');
+            const btn = document.getElementById('accessSubmitBtn');
+            const errorMsg = document.getElementById('accessError');
+
+            // 1. Check Status
+            try {
+                const res = await fetch('/api/auth/status');
+                const data = await res.json();
+
+                if (data.authenticated) {
+                    overlay.classList.add('hidden');
+                    return; // Access Granted
+                }
+            } catch (e) {
+                console.error('Auth Check Failed', e);
+            }
+
+            // 2. Handle Login
+            async function attemptLogin() {
+                const code = input.value.trim();
+                if (!code) return;
+
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                errorMsg.textContent = 'Verifying...';
+
+                try {
+                    const res = await fetch('/api/verify-access', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ code })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        // Success -> Fade out overlay
+                        overlay.classList.add('hidden');
+                    } else {
+                        // Error
+                        errorMsg.textContent = data.error || 'Invalid code';
+                        input.value = '';
+                        input.focus();
+                    }
+                } catch (e) {
+                    errorMsg.textContent = 'Connection error. Try again.';
+                } finally {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }
+            }
+
+            btn.addEventListener('click', attemptLogin);
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') attemptLogin();
+            });
+
+            // Focus input specifically when overlay is visible
+            if (!overlay.classList.contains('hidden')) {
+                input.focus();
+            }
+        })();
+    </script>
 </body>
 
 </html>

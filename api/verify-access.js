@@ -1,54 +1,60 @@
-export default async function handler(req, res) {
-    if (req.method === 'OPTIONS') {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-        return res.status(200).end();
-    }
 
+import { getGoogleSheetClient, findCodeRow, markCodeAsUsed } from './_utils/google-sheet.js';
+import { signSession } from './_utils/auth.js';
+import { serialize } from 'cookie';
+
+export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     const { code } = req.body;
-
     if (!code) {
         return res.status(400).json({ error: 'Code required' });
     }
 
-    // Vercel KV REST API Credentials (Automatically injected by Vercel)
-    const KV_REST_API_URL = process.env.KV_REST_API_URL;
-    const KV_REST_API_TOKEN = process.env.KV_REST_API_TOKEN;
-
-    if (!KV_REST_API_URL || !KV_REST_API_TOKEN) {
-        return res.status(500).json({ error: 'Server configuration error: KV not set up' });
+    const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
+    if (!GOOGLE_SHEET_ID) {
+        console.error('Missing GOOGLE_SHEET_ID');
+        return res.status(500).json({ error: 'Server configuration error' });
     }
 
     try {
-        // 1. Check if Code Exists
-        // Redis command: GET <code>
-        const checkRes = await fetch(`${KV_REST_API_URL}/get/${code}`, {
-            headers: { Authorization: `Bearer ${KV_REST_API_TOKEN}` }
-        });
+        const sheets = await getGoogleSheetClient();
 
-        const checkData = await checkRes.json();
-        // Vercel KV returns { result: "value" } or { result: null }
+        // 1. Find the code in the sheet
+        const row = await findCodeRow(sheets, GOOGLE_SHEET_ID, code);
 
-        if (!checkData.result) {
-            return res.status(401).json({ error: 'Invalid or expired code' });
+        // 2. Validate
+        if (!row) {
+            return res.status(401).json({ error: 'Invalid code' });
         }
 
-        // 2. Burning the Code (One-Time Use)
-        // Redis command: DEL <code>
-        await fetch(`${KV_REST_API_URL}/del/${code}`, {
-            headers: { Authorization: `Bearer ${KV_REST_API_TOKEN}` }
+        if (row.status === 'USED') {
+            return res.status(403).json({ error: 'This code has already been used' });
+        }
+
+        // 3. Mark as USED
+        await markCodeAsUsed(sheets, GOOGLE_SHEET_ID, row.index);
+
+        // 4. Issue Session
+        const token = await signSession({ code: row.code });
+
+        // 5. Set Cookie
+        const cookie = serialize('auth_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 60 * 60 * 24 * 30, // 30 Days
+            path: '/',
         });
 
-        // 3. Success
-        return res.status(200).json({ success: true, token: 'device_verified_' + Date.now() });
+        res.setHeader('Set-Cookie', cookie);
+        return res.status(200).json({ success: true });
 
     } catch (error) {
-        console.error('KV Error:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Auth Error:', error);
+        // Don't leak details to user, but log for debug
+        return res.status(500).json({ error: 'Internal Authentication Error' });
     }
 }

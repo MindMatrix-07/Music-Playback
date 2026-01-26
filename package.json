@@ -4,5 +4,10 @@
   "engines": {
     "node": "20.x"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "cookie": "^1.1.1",
+    "googleapis": "^170.1.0",
+    "jose": "^6.1.3"
+  }
 }
