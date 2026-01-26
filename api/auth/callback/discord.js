@@ -66,12 +66,13 @@ export default async function handler(req, res) {
         // B. Check if User is Already Bound (Auto-Login)
         try {
             if (GOOGLE_SHEET_ID) {
+                console.log(`Checking existing binding for user: ${userData.id}`);
                 const sheets = await getGoogleSheetClient();
                 const existingBinding = await findUserRow(sheets, GOOGLE_SHEET_ID, userData.id);
 
                 if (existingBinding) {
                     // User is already bound! Issue auth token immediately.
-                    console.log(`Auto-login for Discord User: ${userData.username} (${userData.id})`);
+                    console.log(`Auto-login SUCCESS: Found binding for ${userData.username} (${userData.id})`);
 
                     const token = await signSession({
                         code: existingBinding.code,
@@ -86,7 +87,11 @@ export default async function handler(req, res) {
                         maxAge: 60 * 60 * 24 * 365 * 10, // 10 Years
                         path: '/',
                     }));
+                } else {
+                    console.log(`Auto-login: No binding found for ${userData.username} (${userData.id})`);
                 }
+            } else {
+                console.warn('Auto-login skipped: GOOGLE_SHEET_ID missing in env');
             }
         } catch (checkError) {
             console.error('Error checking existing binding:', checkError);

@@ -56,11 +56,14 @@ export async function findCodeRow(sheets, spreadsheetId, code) {
         };
     }
 
+    // Clean data before returning
+    const cleanId = rows[rowIndex][2] ? String(rows[rowIndex][2]).replace(/^'/, '').trim() : null;
+
     return {
         index: rowIndex + 1, // 1-based index
         code: rows[rowIndex][0],
         status: rows[rowIndex][1], // "USED" or undefined/empty
-        spotifyId: rows[rowIndex][2] // Linked Spotify ID
+        spotifyId: cleanId // Linked Spotify ID
     };
 }
 
@@ -77,17 +80,25 @@ export async function findUserRow(sheets, spreadsheetId, userId) {
     }
 
     // Find row where Column C (Index 2) matches userId
-    const rowIndex = rows.findIndex(row => row[2] && String(row[2]).trim() === String(userId));
+    const rowIndex = rows.findIndex(row => {
+        if (!row[2]) return false;
+        // Clean potential ' prefix and convert to string
+        const storedId = String(row[2]).replace(/^'/, '').trim();
+        return storedId === String(userId);
+    });
 
     if (rowIndex === -1) {
         return null;
     }
 
+    // Clean data before returning
+    const cleanId = rows[rowIndex][2] ? String(rows[rowIndex][2]).replace(/^'/, '').trim() : null;
+
     return {
         index: rowIndex + 1,
         code: rows[rowIndex][0],
         status: rows[rowIndex][1],
-        spotifyId: rows[rowIndex][2],
+        spotifyId: cleanId,
         name: rows[rowIndex][3]
     };
 }
@@ -95,12 +106,16 @@ export async function findUserRow(sheets, spreadsheetId, userId) {
 export async function markCodeAsUsed(sheets, spreadsheetId, rowIndex, deviceId, name) {
     // const sheetName = await getFirstSheetName(sheets, spreadsheetId);
     const range = `Sheet1!B${rowIndex}:D${rowIndex}`; // Hardcoded for stability
+
+    // Force string format for ID by prepending apostrophe
+    const secureId = `'${deviceId}`;
+
     await sheets.spreadsheets.values.update({
         spreadsheetId,
         range,
-        valueInputOption: 'RAW',
+        valueInputOption: 'USER_ENTERED', // Changed to USER_ENTERED to parsing the apostrophe as formatting
         requestBody: {
-            values: [['USED', deviceId, name]]
+            values: [['USED', secureId, name]]
         }
     });
 }
