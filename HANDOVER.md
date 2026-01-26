@@ -1,35 +1,42 @@
 # Handover Instructions
 
 **Date:** 2026-01-26
-**Current Status:** The "One-Time Access Code" system is **fully implemented** using **Google Sheets** as the database, with **Spotify Account Binding** for security.
+**Current Status:** The system has been upgraded to **Device Binding** (removing the Spotify Login requirement) and security has been hardened.
 
-## System Architecture
+## 🚀 Key Changes & Features
 
-### 1. Authentication (Google Sheets + Spotify)
-- **Database**: A private Google Sheet stores the access codes.
-    - **Row Structure**: `Col A: Code` | `Col B: Status` | `Col C: SpotifyID`.
-- **Binding Logic**:
-    - Users must log in with Spotify first (to get their immutable `Spotify User ID`).
-    - When they enter a Code:
-        - If new: The code is marked `USED` in Col B, and their `SpotifyID` is saved to Col C.
-        - If used: The system checks if the `SpotifyID` in Col C matches the user.
-- **Session**: A secure, HTTPOnly cookie (`auth_token`) is issued for **10 Years**.
+### 1. Device Binding (Replaces Spotify Binding)
+- **Goal**: Allow public access without Spotify API limits/quotas.
+- **Mechanism**: 
+    - The browser generates a unique **Device ID** (UUID).
+    - This ID is bound to the Access Code in the Google Sheet.
+    - **Row Structure**: `Col A: Code` | `Col B: Status` | `Col C: DeviceID` | `Col D: Name`.
+- **Benefit**: Users don't need a Spotify account to unlock. Codes are still secure (cannot be shared once used).
 
-### 2. Frontend
-- **Lock Screen**: `index.html` features a "Private Access" overlay.
-    - Forces "Continue with Spotify" -> Then "Enter Code".
-- **Privacy**: `privacy.html` has been updated to disclose this binding and storage mechanism.
+### 2. Name Collection
+- Added a "Name" input field to the Lock Screen.
+- This name is saved to **Column D** of the Google Sheet for your records.
 
-### 3. Key Files
-- `api/_utils/google-sheet.js`: Handles reading/writing to the Sheet.
-- `api/verify-access.js`: The core logic for validating codes and binding accounts.
-- `api/auth/status.js`: Checks if the user is logged in.
-- `walkthrough.md`: Detailed guide on setting up the Google Cloud credentials.
+### 3. Security Hardening
+- **Content Hiding**: The main specific app content (`#appContent`) is `display: none` by default.
+- **Verification**: JavaScript only reveals the content *after* the server confirms the code is valid.
+- **Anti-Bypass**: Deleting the overlay via DevTools will now show a blank screen, not the app.
 
-## Setup Requirements
-- **Vercel Env Vars**: `GOOGLE_SHEET_ID`, `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `JWT_SECRET`.
-- **Google Sheet**: Must be shared with the Service Account email as Editor.
+### 4. Stability Fixes
+- **Login Loop**: Fixed a race condition where the Spotify Token was consumed too early.
+- **Legacy Code**: Removed old "Protected Site" overlays that were blocking the UI.
+- **CSS**: Fixed "Unlock Access" button size.
 
-## Future Steps
-- Monitor Google Sheets API quota (free tier is generous but has limits).
-- Consider adding a "Logout" button if users want to switch accounts (currently they are locked in for 10 years unless they clear cookies).
+## 🛠️ Setup Requirements (Updated)
+1.  **Google Sheet**: Ensure headers are: `Code`, `Status`, `DeviceID`, `Name`.
+2.  **Environment Variables**: 
+    - `GOOGLE_SHEET_ID`
+    - `GOOGLE_CLIENT_EMAIL`
+    - `GOOGLE_PRIVATE_KEY`
+    - `JWT_SECRET`
+    - *(Removed: `SPOTIFY_CLIENT_SECRET` is no longer critical for the lock screen)*.
+
+## 📂 Key Files
+- `api/verify-access.js`: Logic for checking Code + DeviceID + Name.
+- `index.html`: Lock Screen UI + Security Hiding Logic + DeviceID Generation.
+- `api/_utils/google-sheet.js`: Handles writing to Columns B:D.
