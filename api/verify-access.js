@@ -8,7 +8,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { code } = req.body;
+    const { code, name } = req.body;
 
     // 1. Validate Discord Session
     const cookies = parse(req.headers.cookie || '');
@@ -33,6 +33,9 @@ export default async function handler(req, res) {
     const discordName = discordUser.username;
 
     if (!code) return res.status(400).json({ error: 'Code required' });
+
+    // Use manual name if provided, else Discord username
+    const finalName = name && name.trim() ? name.trim() : discordName;
 
     const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
     if (!GOOGLE_SHEET_ID) {
@@ -69,8 +72,8 @@ export default async function handler(req, res) {
             }
         } else {
             // New Code: Bind it to THIS Discord ID
-            // We use the Discord Username as the 'Name' for the sheet
-            await markCodeAsUsed(sheets, GOOGLE_SHEET_ID, row.index, discordId, discordName);
+            // We use the Manual Name (if typed) or Discord Username
+            await markCodeAsUsed(sheets, GOOGLE_SHEET_ID, row.index, discordId, finalName);
         }
 
         // 4. Issue Lifetime Session
