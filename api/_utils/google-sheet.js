@@ -27,31 +27,41 @@ export async function getFirstSheetName(sheets, spreadsheetId) {
     return output.data.sheets[0].properties.title;
 }
 
-const rows = response.data.values;
-if (!rows || rows.length === 0) {
-    return { error: true, msg: 'Sheet is empty' };
-}
+export async function findCodeRow(sheets, spreadsheetId, code) {
+    // Revert to simple hardcoded sheet for stability
+    const sheetName = 'Sheet1';
+    const range = 'Sheet1!A:D';
 
-// Find index
-const cleanCode = code.trim().toLowerCase();
-const rowIndex = rows.findIndex(row => row[0] && row[0].trim().toLowerCase() === cleanCode);
+    const response = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range,
+    });
 
-if (rowIndex === -1) {
-    // DEBUG: Return info about what we saw
+    const rows = response.data.values;
+    if (!rows || rows.length === 0) {
+        return { error: true, msg: 'Sheet is empty' };
+    }
+
+    // Find index
+    const cleanCode = code.trim().toLowerCase();
+    const rowIndex = rows.findIndex(row => row[0] && row[0].trim().toLowerCase() === cleanCode);
+
+    if (rowIndex === -1) {
+        // DEBUG: Return info about what we saw
+        return {
+            error: true,
+            debugRows: rows.length,
+            debugFirst: rows[0],
+            debugCodeSeen: cleanCode
+        };
+    }
+
     return {
-        error: true,
-        debugRows: rows.length,
-        debugFirst: rows[0],
-        debugCodeSeen: cleanCode
+        index: rowIndex + 1, // 1-based index
+        code: rows[rowIndex][0],
+        status: rows[rowIndex][1], // "USED" or undefined/empty
+        spotifyId: rows[rowIndex][2] // Linked Spotify ID
     };
-}
-
-return {
-    index: rowIndex + 1, // 1-based index
-    code: rows[rowIndex][0],
-    status: rows[rowIndex][1], // "USED" or undefined/empty
-    spotifyId: rows[rowIndex][2] // Linked Spotify ID
-};
 }
 
 export async function markCodeAsUsed(sheets, spreadsheetId, rowIndex, deviceId, name) {
