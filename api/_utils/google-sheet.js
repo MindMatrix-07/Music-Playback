@@ -64,6 +64,34 @@ export async function findCodeRow(sheets, spreadsheetId, code) {
     };
 }
 
+export async function findUserRow(sheets, spreadsheetId, userId) {
+    const range = 'Sheet1!A:D';
+    const response = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range,
+    });
+
+    const rows = response.data.values;
+    if (!rows || rows.length === 0) {
+        return null;
+    }
+
+    // Find row where Column C (Index 2) matches userId
+    const rowIndex = rows.findIndex(row => row[2] && row[2].trim() === userId);
+
+    if (rowIndex === -1) {
+        return null;
+    }
+
+    return {
+        index: rowIndex + 1,
+        code: rows[rowIndex][0],
+        status: rows[rowIndex][1],
+        spotifyId: rows[rowIndex][2],
+        name: rows[rowIndex][3]
+    };
+}
+
 export async function markCodeAsUsed(sheets, spreadsheetId, rowIndex, deviceId, name) {
     // const sheetName = await getFirstSheetName(sheets, spreadsheetId);
     const range = `Sheet1!B${rowIndex}:D${rowIndex}`; // Hardcoded for stability

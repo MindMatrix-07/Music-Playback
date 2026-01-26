@@ -1,9 +1,11 @@
 
 import { serialize } from 'cookie';
+import { getGoogleSheetClient, findUserRow } from '../../_utils/google-sheet.js';
+import { signSession } from '../../_utils/auth.js';
 
 export default async function handler(req, res) {
     const { code } = req.query;
-    const { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET } = process.env;
+    const { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, GOOGLE_SHEET_ID } = process.env;
 
     if (!code) {
         return res.status(400).json({ error: 'Missing code' });
@@ -43,23 +45,56 @@ export default async function handler(req, res) {
 
         const userData = await userResponse.json();
 
-        // 3. Set Cookie strictly for Discord Info (Temporary, just for the Binding step)
-        const cookieValue = JSON.stringify({
+        // 3. Prepare Cookies List
+        const cookiesToSet = [];
+
+        // A. Discord Session Cookie (Always set this so UI shows name/avatar)
+        const discordCookieValue = JSON.stringify({
             id: userData.id,
             username: userData.username,
             avatar: userData.avatar
         });
 
-        // Expires in 1 hour (plenty of time to enter the code)
-        const cookie = serialize('discord_session', cookieValue, {
-            httpOnly: false, // Accessible to JS so we can show "Logged in as X"
+        cookiesToSet.push(serialize('discord_session', discordCookieValue, {
+            httpOnly: false, // Accessible to JS
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             path: '/',
             maxAge: 3600,
-        });
+        }));
 
-        res.setHeader('Set-Cookie', cookie);
+        // B. Check if User is Already Bound (Auto-Login)
+        try {
+            if (GOOGLE_SHEET_ID) {
+                const sheets = await getGoogleSheetClient();
+                const existingBinding = await findUserRow(sheets, GOOGLE_SHEET_ID, userData.id);
+
+                if (existingBinding) {
+                    // User is already bound! Issue auth token immediately.
+                    console.log(`Auto-login for Discord User: ${userData.username} (${userData.id})`);
+
+                    const token = await signSession({
+                        code: existingBinding.code,
+                        userId: userData.id,
+                        authType: 'DISCORD'
+                    });
+
+                    cookiesToSet.push(serialize('auth_token', token, {
+                        httpOnly: true,
+                        secure: process.env.NODE_ENV === 'production',
+                        sameSite: 'strict',
+                        maxAge: 60 * 60 * 24 * 365 * 10, // 10 Years
+                        path: '/',
+                    }));
+                }
+            }
+        } catch (checkError) {
+            console.error('Error checking existing binding:', checkError);
+            // Continue without auto-login if sheet check fails
+        }
+
+        // 4. Set All Cookies
+        res.setHeader('Set-Cookie', cookiesToSet);
 
         // Redirect back to home
         res.redirect('/');
