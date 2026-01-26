@@ -45,7 +45,7 @@ export default async function handler(req, res) {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 60 * 60 * 24 * 30, // 30 Days
+            maxAge: 60 * 60 * 24 * 365 * 10, // 10 Years (Lifetime)
             path: '/',
         });
 

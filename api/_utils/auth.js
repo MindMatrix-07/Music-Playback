@@ -7,7 +7,7 @@ export async function signSession(payload) {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
-        .setExpirationTime('30d') // 30 Day Session
+        .setExpirationTime('10y') // 10 Years (Lifetime)
         .sign(SECRET_KEY);
 }
 
