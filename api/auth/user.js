@@ -22,19 +22,10 @@ export default async function handler(req, res) {
 
         await connectToDatabase();
 
-        // Find the access code entry bound to this user
-        const result = await AccessCode.updateOne(
-            { spotifyId: payload.userId },
-            {
-                $set: {
-                    spotifyId: null,
-                    name: null,
-                    status: 'UNUSED' // Resetting status allows re-use or just ensures fresh state
-                }
-            }
-        );
+        // Permanently delete the access code document
+        const result = await AccessCode.deleteOne({ spotifyId: payload.userId });
 
-        if (result.matchedCount === 0) {
+        if (result.deletedCount === 0) {
             return res.status(404).json({ error: 'User data not found' });
         }
 
