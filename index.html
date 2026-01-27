@@ -3357,121 +3357,111 @@
         }
 
         // Auto Fetch
-        async function autoFetchLyrics(track) {
-            currentLyrics = { plain: 'Loading...', synced: '' }; // Reset with loading state
-            parsedSyncedLyrics = [];
+        // Auto Fetch
+async function autoFetchLyrics(track) {
+    console.log('Using optimized lrclib fetcher for:', track.name);
+    currentLyrics = { plain: 'Loading...', synced: '' }; // Reset with loading state
+    parsedSyncedLyrics = [];
 
-            // Update UI immediately if visible
-            const container = document.getElementById('lyricsContainer');
-            const textEl = document.getElementById('lyricsText');
-            const syncedEl = document.getElementById('lyricsSynced');
+    // Update UI immediately if visible
+    const container = document.getElementById('lyricsContainer');
+    const textEl = document.getElementById('lyricsText');
+    const syncedEl = document.getElementById('lyricsSynced');
 
-            // Auto-Show Lyrics Panel (User Request)
-            if (container.classList.contains('hidden')) {
-                container.classList.remove('hidden');
-            }
+    // Auto-Show Lyrics Panel (User Request)
+    if (container.classList.contains('hidden')) {
+        container.classList.remove('hidden');
+    }
 
-            if (textEl) textEl.textContent = 'Loading lyrics...';
-            if (syncedEl) syncedEl.innerHTML = ''; // Clear synced view
+    if (textEl) textEl.textContent = 'Loading lyrics...';
+    if (syncedEl) syncedEl.innerHTML = ''; // Clear synced view
 
-            // Fallback for missing artist (handling search result structure)
-            const artist = (track.artists && track.artists[0] && track.artists[0].name) || 'Unknown Artist';
-            const trackName = track.name;
-            let duration = Math.floor(track.duration_ms / 1000);
+    // 1. Prepare Metadata
+    const artist = (track.artists && track.artists[0] && track.artists[0].name) || 'Unknown Artist';
+    const trackName = track.name;
+    let duration = Math.floor(track.duration_ms / 1000);
+    if (isNaN(duration) || duration <= 0) duration = '';
 
-            // Validate duration (prevent NaN)
-            if (isNaN(duration) || duration <= 0) duration = '';
+    // 2. Helper: Clean Title
+    const cleanTitle = (t) => {
+        return t
+            .replace(/\s*\(.*remaster.*\)/i, '')
+            .replace(/\s*-\s*.*remaster.*/i, '')
+            .replace(/\s*\(.*feat.*\)/i, '')
+            .replace(/\s*\[.*feat.*\]/i, '')
+            .replace(/\s*\(.*mix.*\)/i, '')
+            .replace(/\s*\(.*edit.*\)/i, '')
+            .replace(/\s*\(.*from.*\)/i, '')
+            .replace(/\s*-\s*from.*/i, '')
+            .trim();
+    };
 
-            const timeoutFetch = (url, ms = 15000) => {
-                const controller = new AbortController();
-                const id = setTimeout(() => controller.abort(), ms);
-                return fetch(url, { signal: controller.signal })
-                    .then(res => { clearTimeout(id); return res; });
-            };
+    const cleanTrackName = cleanTitle(trackName);
+    const timeoutFetch = (url, ms = 15000) => {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), ms);
+        return fetch(url, { signal: controller.signal })
+            .then(res => { clearTimeout(id); return res; });
+    };
 
-            // Clean Title Helper (Remove (Remastered), - 2009 Remaster, etc.)
-            const cleanTitle = (t) => {
-                return t
-                    .replace(/\s*\(.*remaster.*\)/i, '')
-                    .replace(/\s*-\s*.*remaster.*/i, '')
-                    .replace(/\s*\(.*feat.*\)/i, '')
-                    .replace(/\s*\[.*feat.*\]/i, '')
-                    .replace(/\s*\(.*mix.*\)/i, '')
-                    .replace(/\s*\(.*edit.*\)/i, '')
-                    .replace(/\s*\(.*from.*\)/i, '') // Handles (From "Movie")
-                    .replace(/\s*-\s*from.*/i, '')
-                    .trim();
-            };
+    try {
+        // 3. Attempt 1: Direct Match
+        let url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(trackName)}`;
+        if (duration) url += `&duration=${duration}`;
 
-            const cleanTrackName = cleanTitle(trackName);
+        let res = await timeoutFetch(url);
 
-            try {
-                // Check LRCLIB (Direct Match first - High Accuracy)
-                let url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(trackName)}`;
-                if (duration) url += `&duration=${duration}`;
+        // 3b. Attempt 1b: Direct Match with Cleaned Title
+        if (!res.ok && cleanTrackName !== trackName) {
+            let cleanUrl = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(cleanTrackName)}`;
+            if (duration) cleanUrl += `&duration=${duration}`;
+            res = await timeoutFetch(cleanUrl);
+        }
 
-                let res = await timeoutFetch(url);
+        if (res.ok) {
+            const data = await res.json();
+            currentLyrics.plain = data.plainLyrics || 'Lyrics found but no plain text available.';
+            currentLyrics.synced = data.syncedLyrics || '';
+            if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
+        } else {
+            // 4. Attempt 2: Search API
+            if (textEl) textEl.textContent = 'Searching...';
+            const searchRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(cleanTrackName + ' ' + artist)}`);
+            const searchData = await searchRes.json();
 
-                // If Direct Match fails, try Cleaned Title Direct Match
-                if (!res.ok && cleanTrackName !== trackName) {
-                    let cleanUrl = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(cleanTrackName)}`;
-                    if (duration) cleanUrl += `&duration=${duration}`;
-                    res = await timeoutFetch(cleanUrl);
-                }
+            if (searchData && searchData.length > 0) {
+                const match = searchData[0];
+                currentLyrics.plain = match.plainLyrics || 'Lyrics found but no plain text available.';
+                currentLyrics.synced = match.syncedLyrics || '';
+                if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
+            } else {
+                // 5. Attempt 3: Deep Search
+                const aggressiveTitle = trackName.replace(/\s*\(.*?\)/g, '').replace(/\s*\[.*?\]/g, '').trim();
+                if (aggressiveTitle !== cleanTrackName && aggressiveTitle !== trackName) {
+                    if (textEl) textEl.textContent = 'Trying deep search...';
+                    const deepRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(aggressiveTitle + ' ' + artist)}`);
+                    const deepData = await deepRes.json();
 
-                if (res.ok) {
-                    const data = await res.json();
-                    currentLyrics.plain = data.plainLyrics || 'Lyrics found but no plain text available.';
-                    currentLyrics.synced = data.syncedLyrics || '';
-
-                    if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
-                } else {
-                    // Fallback to Search API (Cleaned Query)
-                    if (textEl) textEl.textContent = 'Searching...';
-
-                    // Search using: Cleaned Title + Artist
-                    const searchRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(cleanTrackName + ' ' + artist)}`);
-                    const searchData = await searchRes.json();
-
-                    if (searchData && searchData.length > 0) {
-                        const match = searchData[0];
+                    if (deepData && deepData.length > 0) {
+                        const match = deepData[0];
                         currentLyrics.plain = match.plainLyrics || 'Lyrics found but no plain text available.';
                         currentLyrics.synced = match.syncedLyrics || '';
-
                         if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
-                    } else {
-                        // AGGRESSIVE FALLBACK: Try stripping ALL parentheses content
-                        // E.g. "Sukoon (From "Bhoomi 2025")" -> "Sukoon" (if regex missed something)
-                        const aggressiveTitle = trackName.replace(/\s*\(.*?\)/g, '').replace(/\s*\[.*?\]/g, '').trim();
-
-                        if (aggressiveTitle !== cleanTrackName && aggressiveTitle !== trackName) {
-                            if (textEl) textEl.textContent = 'Trying deep search...';
-                            const deepRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(aggressiveTitle + ' ' + artist)}`);
-                            const deepData = await deepRes.json();
-
-                            if (deepData && deepData.length > 0) {
-                                const match = deepData[0];
-                                currentLyrics.plain = match.plainLyrics || 'Lyrics found but no plain text available.';
-                                currentLyrics.synced = match.syncedLyrics || '';
-                                if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
-                                return; // Success!
-                            }
-                        }
-
-                        throw new Error(`No lyrics found for "${cleanTrackName}"`);
+                        return;
                     }
                 }
-            } catch (e) {
-                console.log('Lyrics fetch failed:', e);
-                const errorMsg = e.name === 'AbortError' ? 'Request timed out.' : (e.message || 'Error fetching lyrics.');
-
-                currentLyrics.plain = errorMsg;
-                currentLyrics.synced = '';
-
-                if (textEl) textEl.textContent = errorMsg;
-                setLyricsMode('plain');
+                throw new Error(`No lyrics found for "${cleanTrackName}"`);
             }
         }
+    } catch (e) {
+        console.log('Lyrics fetch failed:', e);
+        const errorMsg = 'No lyrics found for this song.';
+        currentLyrics.plain = errorMsg;
+        currentLyrics.synced = '';
+        if (textEl) textEl.textContent = errorMsg;
+        setLyricsMode('plain');
+    }
+}
 
 
         function initLyricsFeature() {
