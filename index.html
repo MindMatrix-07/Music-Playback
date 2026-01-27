@@ -3069,10 +3069,13 @@
             const textEl = document.getElementById('lyricsText');
             const syncedEl = document.getElementById('lyricsSynced');
 
-            if (!container.classList.contains('hidden')) {
-                if (textEl) textEl.textContent = 'Loading lyrics...';
-                if (syncedEl) syncedEl.innerHTML = ''; // Clear synced view
+            // Auto-Show Lyrics Panel (User Request)
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
             }
+
+            if (textEl) textEl.textContent = 'Loading lyrics...';
+            if (syncedEl) syncedEl.innerHTML = ''; // Clear synced view
 
             // Fallback for missing artist (handling search result structure)
             const artist = (track.artists && track.artists[0] && track.artists[0].name) || 'Unknown Artist';
