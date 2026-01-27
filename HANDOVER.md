@@ -44,7 +44,10 @@
     -   Updated **Settings Modal** to be scrollable and fit within the viewport on small/landscape screens (`max-height: 85vh`).
     -   **Portrait Mode Support**: Increased album art size on mobile and refined grid layouts for tablet/portrait usage.
     -   **Dynamic Background**: Implemented a "Dark Mode Radial Gradient". The background remains mostly black, with a dynamic color glow in the top-left corner that matches the active album art.
-    -   **Time-Synced Lyrics**: Reference lyrics now support a "Synced" mode that displays lyrics with timestamps in a structured list format.
+    -   **Live Lyrics Syncing**: Added automated synced lyrics.
+        -   **Auto-Fetch**: Lyrics load instantly upon track selection.
+        -   **Preview Sync**: Lyrics scroll in real-time when playing previews.
+        -   **Synced Timer**: A manual "Start Sync Timer" button allows users to sync lyrics for full tracks (Spotify/Apple Music) where automated sync isn't possible.
 
 ### 5. Privacy Policy Updates
 -   **Admin Powers:** Explicitly stated that Administrators can delete user data.
