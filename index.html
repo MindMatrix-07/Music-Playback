@@ -3061,8 +3061,27 @@
             <h2 style="font-size: 1.1rem; color: #888; font-weight: 400; margin-bottom: 30px; margin-top: -10px;">
                 Private Access</h2>
 
+            <!-- Loading Step -->
+            <div id="loadingStep" style="margin-top: 20px;">
+                <div
+                    style="border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #1DB954; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto 15px;">
+                </div>
+                <p style="color: #888; font-size: 0.9rem;">Verifying access...</p>
+                <style>
+                    @keyframes spin {
+                        0% {
+                            transform: rotate(0deg);
+                        }
+
+                        100% {
+                            transform: rotate(360deg);
+                        }
+                    }
+                </style>
+            </div>
+
             <!-- Step 1: Discord Login -->
-            <div id="discordLoginStep">
+            <div id="discordLoginStep" class="hidden">
                 <p style="color: #ccc; margin-bottom: 20px;">Please login with Discord to continue.</p>
                 <a href="/api/auth/discord" class="spotify-auth-btn"
                     style="background: #5865F2; width: 100%; justify-content: center; box-sizing: border-box; text-decoration: none; display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 50px; font-weight: 600; font-size: 1rem;">
@@ -3371,8 +3390,14 @@
 
             // 1. Check Auth Status
             try {
+                // Show loader (it should be visible by default in HTML, but ensuring logic flow)
+                const loadingStep = document.getElementById('loadingStep');
+
                 const res = await fetch('/api/auth/status?_=' + Date.now());
                 const data = await res.json();
+
+                // Hide loader
+                if (loadingStep) loadingStep.classList.add('hidden');
 
                 if (data.maintenance) {
                     document.getElementById('maintOverlay').classList.remove('hidden');
@@ -3410,6 +3435,9 @@
 
             } catch (e) {
                 console.error('Auth Check Failed', e);
+                // On error, better to show login than get stuck
+                if (document.getElementById('loadingStep')) document.getElementById('loadingStep').classList.add('hidden');
+                discordStep.classList.remove('hidden');
             }
 
             // 2. Login Flow (Code Submission only)
