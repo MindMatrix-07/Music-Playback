@@ -9,37 +9,50 @@ export default async function handler(req, res) {
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
 
-    await connectToDatabase();
+    try {
+        await connectToDatabase();
 
-    // 1. Check Maintenance Mode
-    const settings = await SystemSettings.findOne({ key: 'maintenance' });
-    if (settings && settings.value && settings.value.active) {
-        return res.status(200).json({
-            authenticated: false,
-            maintenance: true,
-            reason: settings.value.reason
-        });
-    }
+        // 1. Check Maintenance Mode
+        const settings = await SystemSettings.findOne({ key: 'maintenance' });
+        if (settings && settings.value && settings.value.active) {
+            return res.status(200).json({
+                authenticated: false,
+                maintenance: true,
+                reason: settings.value.reason
+            });
+        }
 
-    const cookies = parse(req.headers.cookie || '');
-    const token = cookies.auth_token;
-    const discordSession = cookies.discord_session ? JSON.parse(cookies.discord_session) : null;
+        const cookies = parse(req.headers.cookie || '');
+        const token = cookies.auth_token;
 
-    if (!token) {
-        return res.status(200).json({
-            authenticated: false,
-            discordUser: discordSession
-        });
-    }
+        // Safe Parse
+        let discordSession = null;
+        try {
+            discordSession = cookies.discord_session ? JSON.parse(cookies.discord_session) : null;
+        } catch (e) {
+            console.warn('Invalid Discord Session Cookie:', e);
+        }
 
-    const payload = await verifySession(token);
+        if (!token) {
+            return res.status(200).json({
+                authenticated: false,
+                discordUser: discordSession
+            });
+        }
 
-    if (payload) {
-        return res.status(200).json({ authenticated: true, user: payload });
-    } else {
-        return res.status(200).json({
-            authenticated: false,
-            discordUser: discordSession
-        });
+        const payload = await verifySession(token);
+
+        if (payload) {
+            return res.status(200).json({ authenticated: true, user: payload });
+        } else {
+            return res.status(200).json({
+                authenticated: false,
+                discordUser: discordSession
+            });
+        }
+    } catch (error) {
+        console.error('Auth Status Error:', error);
+        // Even if error, return 200 with auth:false so frontend doesn't hang
+        return res.status(200).json({ authenticated: false, error: 'Server Error' });
     }
 }
