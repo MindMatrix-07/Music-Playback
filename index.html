@@ -3061,14 +3061,17 @@
 
         // Auto Fetch
         async function autoFetchLyrics(track) {
-            currentLyrics = { plain: '', synced: '' }; // Reset
+            currentLyrics = { plain: 'Loading...', synced: '' }; // Reset with loading state
             parsedSyncedLyrics = [];
 
-            // Show placeholder or loading state if visible
+            // Update UI immediately if visible
             const container = document.getElementById('lyricsContainer');
             const textEl = document.getElementById('lyricsText');
+            const syncedEl = document.getElementById('lyricsSynced');
+
             if (!container.classList.contains('hidden')) {
-                document.getElementById('lyricsText').textContent = 'Loading lyrics...';
+                if (textEl) textEl.textContent = 'Loading lyrics...';
+                if (syncedEl) syncedEl.innerHTML = ''; // Clear synced view
             }
 
             // Fallback for missing artist (handling search result structure)
@@ -3081,7 +3084,7 @@
                 const res = await fetch(`https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(trackName)}&duration=${duration}`);
                 if (res.ok) {
                     const data = await res.json();
-                    currentLyrics.plain = data.plainLyrics || '';
+                    currentLyrics.plain = data.plainLyrics || 'Lyrics found but no plain text available.';
                     currentLyrics.synced = data.syncedLyrics || '';
 
                     // Auto-Switch Mode
@@ -3097,7 +3100,7 @@
                     if (searchData && searchData.length > 0) {
                         // Pick best match
                         const match = searchData[0]; // Simplistic best match
-                        currentLyrics.plain = match.plainLyrics || '';
+                        currentLyrics.plain = match.plainLyrics || 'Lyrics found but no plain text available.';
                         currentLyrics.synced = match.syncedLyrics || '';
                         if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
                     } else {
@@ -3106,7 +3109,8 @@
                 }
             } catch (e) {
                 console.log('Lyrics fetch failed:', e);
-                currentLyrics.plain = 'Lyrics not found.';
+                currentLyrics.plain = 'Lyrics not found for this track.';
+                currentLyrics.synced = '';
                 setLyricsMode('plain');
             }
         }
@@ -3127,6 +3131,14 @@
                     container.classList.add('hidden');
                 } else {
                     container.classList.remove('hidden');
+                    // Refresh View State (in case fetch finished while hidden)
+                    if (currentLyrics.synced && lyricsMode === 'synced') {
+                        renderSyncedLyrics(currentLyrics.synced);
+                    } else {
+                        const textEl = document.getElementById('lyricsText');
+                        if (textEl) textEl.textContent = currentLyrics.plain || 'Select a song to fetch lyrics.';
+                    }
+
                     // Sync immediately if playing
                     if (previewAudio && !previewAudio.paused) updateSyncedLyrics(previewAudio.currentTime);
                 }
