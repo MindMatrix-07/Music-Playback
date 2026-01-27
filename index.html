@@ -2480,6 +2480,9 @@ body.apple-active .tab-btn.active {
         <button class="copy-btn" id="copyLyricsBtn" onclick="copyCurrentLyrics()">Copy Lyrics</button>
     </div>
     
+        <div id="syncStatusBanner" style="padding: 10px; text-align: center; background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); font-size: 0.85rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.5s ease;">
+        Tap a line below 👆 when you hear the vocals to sync lyrics
+    </div>
     <div id="lyricsViewArea" class="lyrics-view-area">
     </div>
 </section>
@@ -3163,153 +3166,204 @@ body.apple-active .tab-btn.active {
             }
         }
 
-        // --- NEW LYRICS MODULE (Re-implemented from Scratch) ---
-let lyricsData = { plain: '', synced: [], rawSynced: '' };
-let currentLyricsTab = 'plain';
+        // --- NEW LYRICS MODULE (Manual Sync Integrated) ---
+        let lyricsData = { plain: '', synced: [], rawSynced: '' };
+        let currentLyricsTab = 'plain';
 
-async function fetchLyrics(track) {
-    console.log('Fetching lyrics with new module for:', track.name);
-    const module = document.getElementById('lyricsModule');
-    const view = document.getElementById('lyricsViewArea');
+        // Manual Sync (Internal Player) State
+        let virtualStartTime = 0;
+        let virtualSyncAnchored = false;
+        let virtualTimerId = null;
 
-    if (module) module.classList.remove('hidden');
-    if (view) view.innerHTML = '<div class="loading-lyrics"><span>Fetching lyrics...</span></div>';
-
-    lyricsData = { plain: '', synced: [], rawSynced: '' };
-
-    const artist = (track.artists && track.artists[0]?.name) || track.artist || 'Unknown';
-    const title = track.name;
-    const duration = Math.floor(track.duration_ms / 1000);
-
-    try {
-        let url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`;
-        if (duration) url += `&duration=${duration}`;
-
-        const res = await fetch(url);
-        let data;
-
-        if (res.ok) {
-            data = await res.json();
-        } else {
-            const sRes = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(title + ' ' + artist)}`);
-            const sData = await sRes.json();
-            if (sData && sData.length > 0) data = sData[0];
-        }
-
-        if (data) {
-            lyricsData.plain = data.plainLyrics || 'Only synced lyrics available.';
-            lyricsData.rawSynced = data.syncedLyrics || '';
-            parseSyncedLyrics(data.syncedLyrics);
-
-            if (lyricsData.synced.length > 0) {
-                switchLyricsTab('synced');
-            } else {
-                switchLyricsTab('plain');
+        async function fetchLyrics(track) {
+            console.log("Fetching lyrics with manual sync module for:", track.name);
+            const module = document.getElementById("lyricsModule");
+            const view = document.getElementById("lyricsViewArea");
+            const banner = document.getElementById("syncStatusBanner");
+            
+            // Reset Virtual Player
+            virtualSyncAnchored = false;
+            if (virtualTimerId) clearInterval(virtualTimerId);
+            if (banner) {
+                banner.textContent = "Tap a line below 👆 when you hear the vocals to sync lyrics";
+                banner.style.color = "var(--text-secondary)";
+                banner.style.background = "rgba(255, 255, 255, 0.05)";
+                banner.style.display = "block";
             }
-        } else {
-            throw new Error('No lyrics found');
+
+            if (module) module.classList.remove("hidden");
+            if (view) view.innerHTML = '<div class="loading-lyrics"><span>Fetching lyrics...</span></div>';
+            
+            lyricsData = { plain: '', synced: [], rawSynced: '' };
+            
+            const artist = (track.artists && track.artists[0]?.name) || track.artist || 'Unknown';
+            const title = track.name;
+            const duration = Math.floor(track.duration_ms / 1000);
+
+            try {
+                let url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`;
+                if (duration) url += `&duration=${duration}`;
+                
+                const res = await fetch(url);
+                let data;
+                
+                if (res.ok) {
+                    data = await res.json();
+                } else {
+                    const sRes = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(title + ' ' + artist)}`);
+                    const sData = await sRes.json();
+                    if (sData && sData.length > 0) data = sData[0];
+                }
+
+                if (data) {
+                    lyricsData.plain = data.plainLyrics || 'Only synced lyrics available.';
+                    lyricsData.rawSynced = data.syncedLyrics || '';
+                    parseSyncedLyrics(data.syncedLyrics);
+                    
+                    if (lyricsData.synced.length > 0) {
+                        switchLyricsTab('synced');
+                    } else {
+                        switchLyricsTab('plain');
+                        const banner = document.getElementById("syncStatusBanner");
+                        if (banner) banner.style.display = "none";
+                    }
+                } else {
+                    throw new Error('No lyrics found');
+                }
+            } catch (e) {
+                if (view) view.innerHTML = '<div class="loading-lyrics"><span>No lyrics found for this track.</span></div>';
+                const banner = document.getElementById("syncStatusBanner");
+                if (banner) banner.style.display = "none";
+            }
         }
-    } catch (e) {
-        if (view) view.innerHTML = '<div class="loading-lyrics"><span>No lyrics found for this track.</span></div>';
-    }
-}
 
-function parseSyncedLyrics(lrc) {
-    if (!lrc) return;
-    const lines = lrc.split('\n');
-    const lrcRegex = /^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
-
-    lines.forEach(line => {
-        const match = line.trim().match(lrcRegex);
-        if (match) {
-            const time = parseInt(match[1]) * 60 + parseInt(match[2]) + parseInt(match[3]) / 1000;
-            const text = match[4].trim();
-            if (text) lyricsData.synced.push({ time, text });
-        }
-    });
-}
-
-function switchLyricsTab(tab) {
-    currentLyricsTab = tab;
-    const tPlain = document.getElementById('tabPlain');
-    const tSynced = document.getElementById('tabSynced');
-    if (tPlain) tPlain.classList.toggle('active', tab === 'plain');
-    if (tSynced) tSynced.classList.toggle('active', tab === 'synced');
-
-    renderLyrics();
-}
-
-function renderLyrics() {
-    const view = document.getElementById('lyricsViewArea');
-    if (!view) return;
-
-    if (currentLyricsTab === 'plain') {
-        view.innerHTML = `<div class="plain-lyrics">${lyricsData.plain || 'No plain lyrics available.'}</div>`;
-    } else {
-        if (lyricsData.synced.length === 0) {
-            view.innerHTML = '<div class="loading-lyrics">No synced lyrics available.</div>';
-            return;
+        function parseSyncedLyrics(lrc) {
+            if (!lrc) return;
+            const lines = lrc.split('\n');
+            const lrcRegex = /^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
+            
+            lines.forEach(line => {
+                const match = line.trim().match(lrcRegex);
+                if (match) {
+                    const time = parseInt(match[1]) * 60 + parseInt(match[2]) + parseInt(match[3]) / 1000;
+                    const text = match[4].trim();
+                    if (text) lyricsData.synced.push({ time, text });
+                }
+            });
         }
 
-        let html = '<div class="synced-lyrics-container">';
-        lyricsData.synced.forEach((line, i) => {
-            html += `<div class="synced-line" id="line-${i}" onclick="seekTo(${line.time})">${line.text}</div>`;
-        });
-        html += '</div>';
-        view.innerHTML = html;
+        function switchLyricsTab(tab) {
+            currentLyricsTab = tab;
+            const tPlain = document.getElementById("tabPlain");
+            const tSynced = document.getElementById("tabSynced");
+            const banner = document.getElementById("syncStatusBanner");
 
-        // Ensure player is hooked
-        if (previewAudio) {
-            const syncHandler = () => syncLyrics(previewAudio.currentTime);
-            previewAudio.removeEventListener('timeupdate', syncHandler);
-            previewAudio.addEventListener('timeupdate', syncHandler);
+            if (tPlain) tPlain.classList.toggle("active", tab === "plain");
+            if (tSynced) tSynced.classList.toggle("active", tab === "synced");
+            if (banner) {
+                if (tab === "synced" && lyricsData.synced.length > 0) {
+                    banner.style.display = "block";
+                } else {
+                    banner.style.display = "none";
+                }
+            }
+            
+            renderLyrics();
         }
-    }
-}
 
-function seekTo(time) {
-    if (previewAudio && previewAudio.src) {
-        previewAudio.currentTime = time;
-        if (previewAudio.paused) previewAudio.play();
-    }
-}
+        function renderLyrics() {
+            const view = document.getElementById('lyricsViewArea');
+            if (!view) return;
 
-function syncLyrics(currentTime) {
-    if (currentLyricsTab !== 'synced' || lyricsData.synced.length === 0) return;
-
-    let activeIndex = -1;
-    for (let i = 0; i < lyricsData.synced.length; i++) {
-        if (lyricsData.synced[i].time <= currentTime) {
-            activeIndex = i;
-        } else {
-            break;
+            if (currentLyricsTab === 'plain') {
+                view.innerHTML = `<div class="plain-lyrics">${lyricsData.plain || 'No plain lyrics available.'}</div>`;
+            } else {
+                if (lyricsData.synced.length === 0) {
+                    view.innerHTML = '<div class="loading-lyrics">No synced lyrics available.</div>';
+                    return;
+                }
+                
+                let html = '<div class="synced-lyrics-container">';
+                lyricsData.synced.forEach((line, i) => {
+                    html += `<div class="synced-line" id="line-${i}" onclick="seekTo(${line.time})">${line.text}</div>`;
+                });
+                html += '</div>';
+                view.innerHTML = html;
+                
+                // Ensure player is hooked
+                if (previewAudio) {
+                     const syncHandler = () => { if (!virtualSyncAnchored) syncLyrics(previewAudio.currentTime); };
+                     previewAudio.removeEventListener('timeupdate', syncHandler);
+                     previewAudio.addEventListener('timeupdate', syncHandler);
+                }
+            }
         }
-    }
 
-    if (activeIndex !== -1) {
-        const lines = document.querySelectorAll('.synced-line');
-        lines.forEach(l => l.classList.remove('active'));
+        function seekTo(time) {
+            if (previewAudio && previewAudio.src && !previewAudio.paused) {
+                previewAudio.currentTime = time;
+                return;
+            }
 
-        const activeLine = document.getElementById(`line-${activeIndex}`);
-        if (activeLine && !activeLine.classList.contains('active')) {
-            activeLine.classList.add('active');
-            activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Manual Sync Mode
+            console.log("Anchoring Virtual Player at:", time);
+            virtualStartTime = Date.now() - (time * 1000);
+            virtualSyncAnchored = true;
+
+            if (virtualTimerId) clearInterval(virtualTimerId);
+            virtualTimerId = setInterval(() => {
+                const elapsed = (Date.now() - virtualStartTime) / 1000;
+                syncLyrics(elapsed);
+                
+                if (selectedTrack && elapsed > (selectedTrack.duration_ms / 1000) + 10) {
+                    clearInterval(virtualTimerId);
+                    virtualSyncAnchored = false;
+                }
+            }, 200);
+
+            let banner = document.getElementById("syncStatusBanner");
+            if (banner) {
+                banner.textContent = "Lyrics synced! Tracking music internally...";
+                banner.style.color = "#1db954";
+                banner.style.background = "rgba(29, 185, 84, 0.1)";
+            }
         }
-    }
-}
 
-async function copyCurrentLyrics() {
-    const text = currentLyricsTab === 'plain' ? lyricsData.plain : lyricsData.rawSynced;
-    if (!text) return;
-    try {
-        await navigator.clipboard.writeText(text);
-        const btn = document.getElementById('copyLyricsBtn');
-        const old = btn.textContent;
-        btn.textContent = 'Copied!';
-        setTimeout(() => btn.textContent = old, 2000);
-    } catch (e) { }
-}
+        function syncLyrics(currentTime) {
+            if (currentLyricsTab !== 'synced' || lyricsData.synced.length === 0) return;
+            
+            let activeIndex = -1;
+            for (let i = 0; i < lyricsData.synced.length; i++) {
+                if (lyricsData.synced[i].time <= currentTime) {
+                    activeIndex = i;
+                } else {
+                    break;
+                }
+            }
+            
+            if (activeIndex !== -1) {
+                const lines = document.querySelectorAll('.synced-line');
+                lines.forEach(l => l.classList.remove('active'));
+                
+                const activeLine = document.getElementById(`line-${activeIndex}`);
+                if (activeLine && !activeLine.classList.contains('active')) {
+                    activeLine.classList.add('active');
+                    activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
 
+        async function copyCurrentLyrics() {
+            const text = currentLyricsTab === 'plain' ? lyricsData.plain : lyricsData.rawSynced;
+            if (!text) return;
+            try {
+                await navigator.clipboard.writeText(text);
+                const btn = document.getElementById('copyLyricsBtn');
+                const old = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = old, 2000);
+            } catch (e) {}
+        }
 
         // Settings Logic
         function initSettings() {
