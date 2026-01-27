@@ -3385,7 +3385,18 @@
             function showError(msg, details = null) {
                 errorMsg.textContent = msg;
                 copyBtn.classList.remove('hidden');
-                lastErrorLog = { timestamp: new Date().toISOString(), error: msg, details };
+
+                // Sanitize details to REMOVE API Keys
+                let safeDetails = details;
+                if (details && typeof details === 'object') {
+                    safeDetails = JSON.parse(JSON.stringify(details)); // Deep copy
+                    // Explicitly remove sensitive keys
+                    if (safeDetails.yt_api_key) safeDetails.yt_api_key = '[REDACTED]';
+                    if (safeDetails.apiKey) safeDetails.apiKey = '[REDACTED]';
+                    if (safeDetails.headers) delete safeDetails.headers; // Remove headers incase of tokens
+                }
+
+                lastErrorLog = { timestamp: new Date().toISOString(), error: msg, details: safeDetails };
                 console.error('Captured Error:', lastErrorLog);
             }
             copyBtn.addEventListener('click', () => {
