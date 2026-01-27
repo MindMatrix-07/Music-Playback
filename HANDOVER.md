@@ -33,7 +33,16 @@
 -   **Consent:**
     -   Added disclaimer to Login screen: *"By signing in you are accepting the privacy policy and terms"*.
 
-### 4. Technical Details
+### 4. Mobile Optimization
+-   **Admin Panel (`admin.html`):**
+    -   Added responsive CSS for mobile devices (screens < 768px).
+    -   Tables now scroll horizontally on small screens instead of breaking layout.
+    -   Controls (buttons, inputs) stack vertically for better touch accessibility.
+-   **Main App (`index.html`):**
+    -   Verified responsiveness of player and metadata grid.
+    -   Updated **Settings Modal** to be scrollable and fit within the viewport on small/landscape screens (`max-height: 85vh`).
+
+### 5. Technical Details
 -   **Database:** MongoDB Atlas (Primary), Google Sheets (Secondary/Backup).
 -   **Analytics:** Vercel Analytics (restored per user request).
 -   **Hosting:** Vercel (Note: Approaching serverless function limits; consolidated APIs previously).

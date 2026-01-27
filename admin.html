@@ -220,6 +220,63 @@
                 box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
             }
         }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                width: 100%;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            header div {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Stack specific controls */
+            .maintenance-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            #maint-reason {
+                width: 100%;
+            }
+
+            /* Responsive Table */
+            .table-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table {
+                min-width: 600px;
+                /* Force scroll */
+            }
+
+            /* Adjust inputs/buttons */
+            #new-code {
+                max-width: none !important;
+                flex: 1;
+            }
+        }
     </style>
 </head>
 
@@ -304,32 +361,36 @@
         <div id="tab-users">
             <input type="text" id="user-search" placeholder="Search by Code or Name..." onkeyup="renderUsers()"
                 style="margin-bottom: 1rem;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Code</th>
-                        <th>User (Discord)</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="user-table-body">
-                    <!-- JS Populated -->
-                </tbody>
-            </table>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>User (Discord)</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <!-- JS Populated -->
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- SPAM TABLE -->
         <div id="tab-spam" class="hidden">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody id="spam-table-body"></tbody>
-            </table>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="spam-table-body"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
