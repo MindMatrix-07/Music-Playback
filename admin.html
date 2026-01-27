@@ -560,7 +560,9 @@
                         ind.className = 'maint-status inactive';
                     }
 
-                    document.getElementById('maint-reason').value = data.reason || '';
+                    if (document.activeElement !== document.getElementById('maint-reason')) {
+                        document.getElementById('maint-reason').value = data.reason || '';
+                    }
                 }
             } catch (e) { console.error('Load settings failed', e); }
         }
