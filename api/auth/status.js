@@ -1,5 +1,5 @@
 import { verifySession } from '../_utils/auth.js';
-import { verifyToken } from '../_utils/auth.js';
+
 import { connectToDatabase, SystemSettings } from '../_utils/mongodb.js';
 import { parse } from 'cookie';
 
