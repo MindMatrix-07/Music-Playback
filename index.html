@@ -1065,7 +1065,156 @@
         }
 
         /* Mobile Styles */
-        @media (max-width: 768px) {
+        
+        .lyrics-container {
+            margin-top: 30px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .lyrics-container.hidden {
+            display: none;
+        }
+
+        .lyrics-header {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .warning-banner {
+            background: rgba(251, 146, 60, 0.1);
+            color: #fb923c;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(251, 146, 60, 0.3);
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .lyrics-content {
+            white-space: pre-wrap;
+            font-family: inherit;
+            line-height: 1.8;
+            color: var(--text-primary);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+        }
+
+        body.apple-active .meta-link {
+            color: var(--apple-pink);
+        }
+
+        /* Lyrics View Styling */
+        .lyrics-container {
+            max-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lyrics-content {
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .lyrics-synced-view {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .lyric-line {
+            display: flex;
+            gap: 15px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .lyric-line:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .lyric-time {
+            font-family: monospace;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            min-width: 50px;
+            opacity: 0.6;
+        }
+
+        .lyric-text {
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            line-height: 1.4;
+        }
+
+        .lyrics-mode-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px;
+            border-radius: 10px;
+            gap: 4px;
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: var(--spotify-green);
+            color: white;
+        }
+
+        body.apple-active .mode-btn.active {
+            background: var(--apple-gradient);
+        }
+
+
+@media (max-width: 768px) {
             .container {
                 padding: 20px 15px;
             }
@@ -1623,7 +1772,156 @@
         }
 
         /* Mobile Adjustments */
-        @media (max-width: 768px) {
+        
+        .lyrics-container {
+            margin-top: 30px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .lyrics-container.hidden {
+            display: none;
+        }
+
+        .lyrics-header {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .warning-banner {
+            background: rgba(251, 146, 60, 0.1);
+            color: #fb923c;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(251, 146, 60, 0.3);
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .lyrics-content {
+            white-space: pre-wrap;
+            font-family: inherit;
+            line-height: 1.8;
+            color: var(--text-primary);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+        }
+
+        body.apple-active .meta-link {
+            color: var(--apple-pink);
+        }
+
+        /* Lyrics View Styling */
+        .lyrics-container {
+            max-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lyrics-content {
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .lyrics-synced-view {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .lyric-line {
+            display: flex;
+            gap: 15px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .lyric-line:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .lyric-time {
+            font-family: monospace;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            min-width: 50px;
+            opacity: 0.6;
+        }
+
+        .lyric-text {
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            line-height: 1.4;
+        }
+
+        .lyrics-mode-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px;
+            border-radius: 10px;
+            gap: 4px;
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: var(--spotify-green);
+            color: white;
+        }
+
+        body.apple-active .mode-btn.active {
+            background: var(--apple-gradient);
+        }
+
+
+@media (max-width: 768px) {
             .metadata-grid {
                 grid-template-columns: 1fr;
                 gap: 30px;
@@ -2263,7 +2561,6 @@
             </div>
         </section>
 
-        <!-- Lyrics Section (Fresh Implementation) -->
         <section id="lyricsContainer" class="lyrics-container hidden">
             <div class="lyrics-header"
                 style="display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.2);">
@@ -3073,6 +3370,108 @@
             if (container.classList.contains('hidden')) {
                 container.classList.remove('hidden');
             }
+
+            if (textEl) textEl.textContent = 'Loading lyrics...';
+            if (syncedEl) syncedEl.innerHTML = ''; // Clear synced view
+
+            // Fallback for missing artist (handling search result structure)
+            const artist = (track.artists && track.artists[0] && track.artists[0].name) || 'Unknown Artist';
+            const trackName = track.name;
+            let duration = Math.floor(track.duration_ms / 1000);
+
+            // Validate duration (prevent NaN)
+            if (isNaN(duration) || duration <= 0) duration = '';
+
+            const timeoutFetch = (url, ms = 15000) => {
+                const controller = new AbortController();
+                const id = setTimeout(() => controller.abort(), ms);
+                return fetch(url, { signal: controller.signal })
+                    .then(res => { clearTimeout(id); return res; });
+            };
+
+            // Clean Title Helper (Remove (Remastered), - 2009 Remaster, etc.)
+            const cleanTitle = (t) => {
+                return t
+                    .replace(/\s*\(.*remaster.*\)/i, '')
+                    .replace(/\s*-\s*.*remaster.*/i, '')
+                    .replace(/\s*\(.*feat.*\)/i, '')
+                    .replace(/\s*\[.*feat.*\]/i, '')
+                    .replace(/\s*\(.*mix.*\)/i, '')
+                    .replace(/\s*\(.*edit.*\)/i, '')
+                    .replace(/\s*\(.*from.*\)/i, '') // Handles (From "Movie")
+                    .replace(/\s*-\s*from.*/i, '')
+                    .trim();
+            };
+
+            const cleanTrackName = cleanTitle(trackName);
+
+            try {
+                // Check LRCLIB (Direct Match first - High Accuracy)
+                let url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(trackName)}`;
+                if (duration) url += `&duration=${duration}`;
+
+                let res = await timeoutFetch(url);
+
+                // If Direct Match fails, try Cleaned Title Direct Match
+                if (!res.ok && cleanTrackName !== trackName) {
+                    let cleanUrl = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(cleanTrackName)}`;
+                    if (duration) cleanUrl += `&duration=${duration}`;
+                    res = await timeoutFetch(cleanUrl);
+                }
+
+                if (res.ok) {
+                    const data = await res.json();
+                    currentLyrics.plain = data.plainLyrics || 'Lyrics found but no plain text available.';
+                    currentLyrics.synced = data.syncedLyrics || '';
+
+                    if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
+                } else {
+                    // Fallback to Search API (Cleaned Query)
+                    if (textEl) textEl.textContent = 'Searching...';
+
+                    // Search using: Cleaned Title + Artist
+                    const searchRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(cleanTrackName + ' ' + artist)}`);
+                    const searchData = await searchRes.json();
+
+                    if (searchData && searchData.length > 0) {
+                        const match = searchData[0];
+                        currentLyrics.plain = match.plainLyrics || 'Lyrics found but no plain text available.';
+                        currentLyrics.synced = match.syncedLyrics || '';
+
+                        if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
+                    } else {
+                        // AGGRESSIVE FALLBACK: Try stripping ALL parentheses content
+                        // E.g. "Sukoon (From "Bhoomi 2025")" -> "Sukoon" (if regex missed something)
+                        const aggressiveTitle = trackName.replace(/\s*\(.*?\)/g, '').replace(/\s*\[.*?\]/g, '').trim();
+
+                        if (aggressiveTitle !== cleanTrackName && aggressiveTitle !== trackName) {
+                            if (textEl) textEl.textContent = 'Trying deep search...';
+                            const deepRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(aggressiveTitle + ' ' + artist)}`);
+                            const deepData = await deepRes.json();
+
+                            if (deepData && deepData.length > 0) {
+                                const match = deepData[0];
+                                currentLyrics.plain = match.plainLyrics || 'Lyrics found but no plain text available.';
+                                currentLyrics.synced = match.syncedLyrics || '';
+                                if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
+                                return; // Success!
+                            }
+                        }
+
+                        throw new Error(`No lyrics found for "${cleanTrackName}"`);
+                    }
+                }
+            } catch (e) {
+                console.log('Lyrics fetch failed:', e);
+                const errorMsg = e.name === 'AbortError' ? 'Request timed out.' : (e.message || 'Error fetching lyrics.');
+
+                currentLyrics.plain = errorMsg;
+                currentLyrics.synced = '';
+
+                if (textEl) textEl.textContent = errorMsg;
+                setLyricsMode('plain');
+            }
+        }
 
             if (textEl) textEl.textContent = 'Loading lyrics...';
             if (syncedEl) syncedEl.innerHTML = ''; // Clear synced view
