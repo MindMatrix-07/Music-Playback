@@ -1554,6 +1554,88 @@
             color: var(--apple-pink);
         }
 
+        /* Lyrics View Styling */
+        .lyrics-container {
+            max-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lyrics-content {
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .lyrics-synced-view {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .lyric-line {
+            display: flex;
+            gap: 15px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .lyric-line:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .lyric-time {
+            font-family: monospace;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            min-width: 50px;
+            opacity: 0.6;
+        }
+
+        .lyric-text {
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            line-height: 1.4;
+        }
+
+        .lyrics-mode-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px;
+            border-radius: 10px;
+            gap: 4px;
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: var(--spotify-green);
+            color: white;
+        }
+
+        body.apple-active .mode-btn.active {
+            background: var(--apple-gradient);
+        }
+
         /* Mobile Adjustments */
         @media (max-width: 768px) {
             .metadata-grid {
@@ -2197,11 +2279,22 @@
 
         <!-- Lyrics Section (Fresh Implementation) -->
         <section id="lyricsContainer" class="lyrics-container hidden">
-            <div class="lyrics-header">
-                <div class="warning-banner">⚠️ Intended for reference purposes only</div>
-                <button id="copyLyricsBtn" class="copy-btn">Copy</button>
+            <div class="lyrics-header"
+                style="display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.2);">
+                <div class="lyrics-mode-toggle">
+                    <button class="mode-btn active" id="viewPlainBtn" onclick="setLyricsMode('plain')">Plain</button>
+                    <button class="mode-btn" id="viewSyncedBtn" onclick="setLyricsMode('synced')">Synced</button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <button id="copyLyricsBtn" class="copy-btn">Copy</button>
+                </div>
             </div>
-            <div id="lyricsText" class="lyrics-content">Loading...</div>
+            <div class="warning-banner"
+                style="padding: 10px; text-align: center; background: rgba(255, 166, 0, 0.05); color: #ffaa00; font-size: 0.8rem; border-bottom: 1px solid rgba(255, 166, 0, 0.1);">
+                ⚠️ Intended for reference purposes only
+            </div>
+            <div id="lyricsText" class="lyrics-content">Select a song to fetch lyrics.</div>
+            <div id="lyricsSynced" class="lyrics-synced-view hidden"></div>
         </section>
         <!-- Footer -->
         <footer
@@ -2869,7 +2962,66 @@
             }
         }
 
-        // Lyrics Feature Logic (Fresh)
+        // Lyrics Feature Logic
+        let currentLyrics = { plain: '', synced: '' };
+        let lyricsMode = 'plain';
+
+        function setLyricsMode(mode) {
+            lyricsMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(mode === 'plain' ? 'viewPlainBtn' : 'viewSyncedBtn').classList.add('active');
+
+            const textEl = document.getElementById('lyricsText');
+            const syncedEl = document.getElementById('lyricsSynced');
+
+            if (mode === 'plain') {
+                textEl.classList.remove('hidden');
+                syncedEl.classList.add('hidden');
+                textEl.textContent = currentLyrics.plain || 'No plain lyrics available.';
+            } else {
+                textEl.classList.add('hidden');
+                syncedEl.classList.remove('hidden');
+                renderSyncedLyrics(currentLyrics.synced);
+            }
+        }
+
+        function renderSyncedLyrics(lrc) {
+            const container = document.getElementById('lyricsSynced');
+            container.innerHTML = '';
+
+            if (!lrc) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">No synced lyrics available for this track.</div>';
+                return;
+            }
+
+            // Simple LRC Parser: [mm:ss.xx] text
+            const lines = lrc.split('\n');
+            const lrcRegex = /^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
+
+            lines.forEach(line => {
+                const match = line.trim().match(lrcRegex);
+                if (match) {
+                    const mins = match[1];
+                    const secs = match[2];
+                    const text = match[4].trim();
+
+                    if (text) {
+                        const lineEl = document.createElement('div');
+                        lineEl.className = 'lyric-line';
+                        lineEl.innerHTML = `
+                            <span class="lyric-time">${mins}:${secs}</span>
+                            <span class="lyric-text">${escapeHtml(text)}</span>
+                        `;
+                        container.appendChild(lineEl);
+                    }
+                }
+            });
+
+            if (container.children.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">Could not parse synced lyrics format.</div>';
+            }
+        }
+
         function initLyricsFeature() {
             const btn = document.getElementById('refLyricsBtn');
             const container = document.getElementById('lyricsContainer');
@@ -2900,6 +3052,8 @@
                 }
 
                 content.textContent = 'Fetching lyrics from LRCLIB...';
+                document.getElementById('lyricsSynced').innerHTML = '';
+                currentLyrics = { plain: '', synced: '' };
 
                 try {
                     const artistName = selectedTrack.artist.split(',')[0].trim();
@@ -2912,8 +3066,16 @@
                     const res = await fetch(`/api/get-lyrics?${query.toString()}`);
                     const data = await res.json();
 
-                    if (res.ok && data.plainLyrics) {
-                        content.textContent = data.plainLyrics;
+                    if (res.ok) {
+                        currentLyrics.plain = data.plainLyrics || '';
+                        currentLyrics.synced = data.syncedLyrics || '';
+
+                        // Default to synced if available, else plain
+                        if (currentLyrics.synced) {
+                            setLyricsMode('synced');
+                        } else {
+                            setLyricsMode('plain');
+                        }
                     } else {
                         content.textContent = 'Lyrics not found for this track.';
                     }
@@ -2926,8 +3088,8 @@
             // Copy
             if (copyBtn) {
                 copyBtn.addEventListener('click', () => {
-                    const text = content.textContent;
-                    if (!text || text.includes('Loading...')) return;
+                    const text = lyricsMode === 'plain' ? currentLyrics.plain : currentLyrics.synced;
+                    if (!text) return;
 
                     navigator.clipboard.writeText(text).then(() => {
                         const originalText = copyBtn.textContent;
