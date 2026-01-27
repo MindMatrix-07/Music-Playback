@@ -3080,39 +3080,22 @@
             // Fallback for missing artist (handling search result structure)
             const artist = (track.artists && track.artists[0] && track.artists[0].name) || 'Unknown Artist';
             const trackName = track.name;
-            // Simple Search (Broad Match) - User Requested "Old Behavior"
-            // We prioritize finding ANY lyrics over perfect synced timing.
-
-            const cleanupQuery = (t) => {
-                return t.replace(/\(.*\)/g, '').replace(/\[.*\]/g, '').replace(/-.*remaster.*/i, '').trim();
-            };
-
-            const cleanTrack = cleanupQuery(trackName);
-            const query = `${cleanTrack} ${artist}`;
-
-            if (textEl) textEl.textContent = 'Searching lyrics...';
-
-            const timeoutFetch = (url, ms = 15000) => {
-                const controller = new AbortController();
-                const id = setTimeout(() => controller.abort(), ms);
-                return fetch(url, { signal: controller.signal })
-                    .then(res => { clearTimeout(id); return res; });
-            };
+            // Use internal API adapter (Restoring original architecture)
+            // This handles CORS, User-Agent, and robust searching on the backend.
 
             try {
-                // Use Search API directly (Fuzzy match)
-                // This is likely what "worked before" - it finds the best guess without strict duration/title locking
-                const searchRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(query)}`);
-                const searchData = await searchRes.json();
+                if (textEl) textEl.textContent = 'Fetching lyrics...';
 
-                if (searchData && searchData.length > 0) {
-                    // Pick the best match (first one usually)
-                    const match = searchData[0];
-                    currentLyrics.plain = match.plainLyrics || 'Lyrics found but no text available.';
-                    currentLyrics.synced = match.syncedLyrics || '';
+                // Call our own backend API
+                let url = `/api/get-lyrics?title=${encodeURIComponent(trackName)}&artist=${encodeURIComponent(artist)}`;
+                if (duration) url += `&duration=${duration}`;
 
-                    // User said "I don't need synced", but we'll show it if we have it, 
-                    // otherwise default to plain without complaining.
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (res.ok) {
+                    currentLyrics.plain = data.plainLyrics || 'Lyrics found but no text available.';
+                    currentLyrics.synced = data.syncedLyrics || '';
 
                     // Force refresh UI
                     if (currentLyrics.synced && !container.classList.contains('hidden')) {
@@ -3122,11 +3105,11 @@
                         if (textEl) textEl.textContent = currentLyrics.plain;
                     }
                 } else {
-                    throw new Error('No lyrics found');
+                    throw new Error(data.error || 'No lyrics found');
                 }
             } catch (e) {
                 console.log('Lyrics fetch failed:', e);
-                const errorMsg = 'No lyrics found.'; // Simple message as requested
+                const errorMsg = 'No lyrics found.';
                 currentLyrics.plain = errorMsg;
                 currentLyrics.synced = '';
 
