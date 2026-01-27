@@ -1,6 +1,6 @@
 import { verifySession } from '../_utils/auth.js';
 
-import { connectToDatabase, SystemSettings } from '../_utils/mongodb.js';
+import { connectToDatabase, SystemSettings, AccessCode } from '../_utils/mongodb.js';
 import { parse } from 'cookie';
 
 export default async function handler(req, res) {
@@ -42,7 +42,35 @@ export default async function handler(req, res) {
 
         const payload = await verifySession(token);
 
+        // DEBUG: Check payload structure
         if (payload) {
+            console.log('[AuthStatus] Verifying Payload:', payload);
+        }
+
+        if (payload) {
+            // 2. Enforce Block Status (Real-time check)
+            let accessEntry = null;
+
+            if (payload.code) {
+                accessEntry = await AccessCode.findOne({ code: payload.code });
+            } else if (payload.userId) {
+                // Fallback for older tokens: Check by User ID
+                accessEntry = await AccessCode.findOne({ spotifyId: payload.userId });
+            }
+
+            console.log('[AuthStatus] Block Check:', {
+                code: payload.code,
+                uid: payload.userId,
+                blocked: accessEntry ? accessEntry.isBlocked : 'N/A'
+            });
+
+            if (accessEntry && accessEntry.isBlocked) {
+                return res.status(200).json({
+                    authenticated: false,
+                    error: 'Access Blocked by Admin'
+                });
+            }
+
             return res.status(200).json({ authenticated: true, user: payload });
         } else {
             return res.status(200).json({
