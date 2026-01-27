@@ -3077,7 +3077,7 @@
                     <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">
                         Or continue without Discord (Device Only)
                     </p>
-                    <button id="device-login-btn" class="secondary-btn small" onclick="continueWithoutDiscord()"
+                    <button id="skipDiscordBtn" class="secondary-btn small"
                         style="background: transparent; border: 1px solid #555; font-size: 0.9rem; width: 100%; margin-top: 10px; color: #ccc; cursor: pointer; padding: 10px; border-radius: 20px;">
                         Continue without Discord
                     </button>
@@ -3371,7 +3371,7 @@
 
             // 1. Check Auth Status
             try {
-                const res = await fetch('/api/auth/status');
+                const res = await fetch('/api/auth/status?_=' + Date.now());
                 const data = await res.json();
 
                 if (data.maintenance) {
