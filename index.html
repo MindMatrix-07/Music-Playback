@@ -3092,40 +3092,58 @@
                     .then(res => { clearTimeout(id); return res; });
             };
 
+            // Clean Title Helper (Remove (Remastered), - 2009 Remaster, etc.)
+            const cleanTitle = (t) => {
+                return t
+                    .replace(/\s*\(.*remaster.*\)/i, '')
+                    .replace(/\s*-\s*.*remaster.*/i, '')
+                    .replace(/\s*\(.*feat.*\)/i, '')
+                    .replace(/\s*\[.*feat.*\]/i, '')
+                    .replace(/\s*\(.*mix.*\)/i, '')
+                    .replace(/\s*\(.*edit.*\)/i, '')
+                    .trim();
+            };
+
+            const cleanTrackName = cleanTitle(trackName);
+
             try {
-                // Check LRCLIB with timeout
+                // Check LRCLIB (Direct Match first - High Accuracy)
                 let url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(trackName)}`;
                 if (duration) url += `&duration=${duration}`;
 
-                const res = await timeoutFetch(url);
+                let res = await timeoutFetch(url);
+
+                // If Direct Match fails, try Cleaned Title Direct Match
+                if (!res.ok && cleanTrackName !== trackName) {
+                    let cleanUrl = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(cleanTrackName)}`;
+                    if (duration) cleanUrl += `&duration=${duration}`;
+                    res = await timeoutFetch(cleanUrl);
+                }
 
                 if (res.ok) {
                     const data = await res.json();
                     currentLyrics.plain = data.plainLyrics || 'Lyrics found but no plain text available.';
                     currentLyrics.synced = data.syncedLyrics || '';
 
-                    // Auto-Switch Mode
-                    if (currentLyrics.synced) {
-                        setLyricsMode('synced');
-                    } else {
-                        setLyricsMode('plain');
-                    }
+                    if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
                 } else {
-                    // Try Search API if direct match fails (Fallback)
-                    if (textEl) textEl.textContent = 'Searching for best match...';
+                    // Fallback to Search API (Cleaned Query)
+                    if (textEl) textEl.textContent = 'Searching...';
 
-                    const searchRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(trackName + ' ' + artist)}`);
+                    // Search using: Cleaned Title + Artist
+                    const searchRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(cleanTrackName + ' ' + artist)}`);
                     const searchData = await searchRes.json();
 
                     if (searchData && searchData.length > 0) {
-                        // Pick best match
-                        const match = searchData[0]; // Simplistic best match
+                        const match = searchData[0];
                         currentLyrics.plain = match.plainLyrics || 'Lyrics found but no plain text available.';
                         currentLyrics.synced = match.syncedLyrics || '';
 
                         if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
                     } else {
-                        throw new Error('No lyrics found via search');
+                        // Last Resort: Search JUST Title (if artist was the problem, slightly risky but better than nothing)
+                        // Or just report not found.
+                        throw new Error(`No lyrics found for "${cleanTrackName}"`);
                     }
                 }
             } catch (e) {
@@ -3135,7 +3153,6 @@
                 currentLyrics.plain = errorMsg;
                 currentLyrics.synced = '';
 
-                // Force Update UI Error
                 if (textEl) textEl.textContent = errorMsg;
                 setLyricsMode('plain');
             }
