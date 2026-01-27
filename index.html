@@ -3076,8 +3076,6 @@
                 </div>
 
                 <div class="access-input-wrapper" style="flex-direction: column;">
-                    <input type="text" id="accessNameInput" placeholder="Your Name" class="access-field"
-                        style="margin-bottom: 10px; text-align: center;">
                     <input type="text" id="accessCodeInput" placeholder="Access Code" autocomplete="off"
                         class="access-field"
                         style="text-align: center; letter-spacing: 2px; text-transform: uppercase;">
@@ -3308,7 +3306,6 @@
             const codeStep = document.getElementById('codeEntryStep');
 
             const codeInput = document.getElementById('accessCodeInput');
-            const nameInput = document.getElementById('accessNameInput'); // Reset
             const btn = document.getElementById('accessSubmitBtn');
             const errorMsg = document.getElementById('accessError');
             const copyBtn = document.getElementById('copyLogBtn');
@@ -3371,8 +3368,6 @@
                         // Default avatar
                         discordAvatar.src = 'https://cdn.discordapp.com/embed/avatars/0.png';
                     }
-                    // Pre-fill name if empty
-                    if (!nameInput.value) nameInput.value = data.discordUser.username;
                 } else {
                     // Not logged in at all -> Show Discord Login Button (Default)
                     discordStep.classList.remove('hidden');
@@ -3386,13 +3381,8 @@
             // 2. Login Flow (Code Submission only)
             async function attemptLogin() {
                 const code = codeInput.value.trim();
-                const name = nameInput.value.trim();
+                // Name is now handled by backend (Discord Name or Anonymous)
 
-                if (!name) {
-                    errorMsg.textContent = 'Please enter your name.';
-                    nameInput.focus();
-                    return;
-                }
                 if (!code) {
                     errorMsg.textContent = 'Please enter the code.';
                     codeInput.focus();
@@ -3411,7 +3401,7 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             code: code,
-                            name: name,
+                            name: '', // Empty name will trigger backend fallback
                             deviceId: deviceId // Send logic for fallback
                         })
                     });
@@ -3444,17 +3434,14 @@
 
             btn.addEventListener('click', attemptLogin);
 
-            // Allow Enter key on both inputs
-            nameInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') codeInput.focus();
-            });
+            // Allow Enter key on input
             codeInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') attemptLogin();
             });
 
             // Focus input specifically when overlay is visible
             if (!overlay.classList.contains('hidden')) {
-                nameInput.focus();
+                codeInput.focus();
             }
         })();
     </script>
