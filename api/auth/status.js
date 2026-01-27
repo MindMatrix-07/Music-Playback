@@ -4,6 +4,11 @@ import { connectToDatabase, SystemSettings } from '../../_utils/mongodb.js';
 import { parse } from 'cookie';
 
 export default async function handler(req, res) {
+    // Prevent Caching
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     await connectToDatabase();
 
     // 1. Check Maintenance Mode

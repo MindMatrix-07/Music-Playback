@@ -3377,6 +3377,8 @@
                     document.getElementById('maintOverlay').classList.remove('hidden');
                     if (data.reason) document.getElementById('maintReason').textContent = data.reason;
                     return; // Stop everything
+                } else {
+                    document.getElementById('maintOverlay').classList.add('hidden');
                 }
 
                 if (data.authenticated) {
