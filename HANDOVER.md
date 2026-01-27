@@ -43,7 +43,7 @@
     -   Verified responsiveness of player and metadata grid.
     -   Updated **Settings Modal** to be scrollable and fit within the viewport on small/landscape screens (`max-height: 85vh`).
     -   **Portrait Mode Support**: Increased album art size on mobile and refined grid layouts for tablet/portrait usage.
-    -   **Dynamic Background**: Added a blurred, moving background that automatically matches the current song's album art. Includes a toggle in Settings.
+    -   **Dynamic Background**: Implemented a "Dual-Color Gradient" system. It extracts the dominant color from the album art and creates a smooth gradient to black, with subtle breathing animations. Includes a toggle in Settings.
     -   **Time-Synced Lyrics**: Reference lyrics now support a "Synced" mode that displays lyrics with timestamps in a structured list format.
 
 ### 5. Privacy Policy Updates

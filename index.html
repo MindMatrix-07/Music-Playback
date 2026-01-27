@@ -86,53 +86,39 @@
         }
 
         /* Animated Background */
+        /* Dual-Color Gradient Background */
         #dynamic-bg {
             position: fixed;
-            top: -25%;
-            left: -25%;
-            width: 150%;
-            height: 150%;
-            z-index: -2;
-            background-size: cover;
-            background-position: center;
-            filter: blur(80px) saturate(2) brightness(0.5);
-            transition: background-image 1.5s ease-in-out, opacity 1s ease;
-            opacity: 0;
-            pointer-events: none;
-            animation: appleMotion 45s infinite alternate ease-in-out;
-            transform-origin: center center;
-        }
-
-        /* Second layer for more depth */
-        #dynamic-bg::after {
-            content: "";
-            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: inherit;
-            filter: blur(60px);
-            opacity: 0.4;
-            animation: appleMotion 35s infinite alternate-reverse ease-in-out;
-            mix-blend-mode: soft-light;
+            z-index: -2;
+            background: linear-gradient(135deg, var(--bg-dominant, #222) 0%, #000 100%);
+            background-size: 200% 200%;
+            transition: --bg-dominant 2s ease, background 2s ease;
+            opacity: 0;
+            pointer-events: none;
+            /* Subtle animation */
+            animation: gradientBreath 15s ease infinite alternate;
         }
 
-        @keyframes appleMotion {
+        /* Register custom property for smooth color transitions if supported */
+        @property --bg-dominant {
+            syntax: '<color>';
+            inherits: false;
+            initial-value: #222;
+        }
+
+        @keyframes gradientBreath {
             0% {
-                transform: scale(1.1) translate(0, 0) rotate(0deg);
-            }
-
-            33% {
-                transform: scale(1.3) translate(-3%, 2%) rotate(6deg);
-            }
-
-            66% {
-                transform: scale(1.2) translate(3%, -3%) rotate(-4deg);
+                background-position: 0% 0%;
+                transform: scale(1);
             }
 
             100% {
-                transform: scale(1.4) translate(0, 0) rotate(2deg);
+                background-position: 20% 20%;
+                transform: scale(1.05);
             }
         }
 
@@ -3798,13 +3784,40 @@
             }
         }
 
-        function updateBgImage() {
+        function getDominantColor(imageUrl) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.src = imageUrl;
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 1;
+                        canvas.height = 1;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, 1, 1);
+                        const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+                        resolve(`rgb(${r}, ${g}, ${b})`);
+                    } catch (e) {
+                        console.warn('CORS denied for image color extraction', e);
+                        resolve('#222');
+                    }
+                };
+                img.onerror = () => resolve('#222');
+            });
+        }
+
+        async function updateBgImage() {
             const enabled = localStorage.getItem('bg_anim_enabled') === 'true';
             if (!enabled || !selectedTrack) return;
 
             const bg = document.getElementById('dynamic-bg');
             if (bg && selectedTrack.image) {
-                bg.style.backgroundImage = `url('${selectedTrack.image}')`;
+                const color = await getDominantColor(selectedTrack.image);
+                // Set custom property for smooth transition (supported browsers)
+                bg.style.setProperty('--bg-dominant', color);
+                // Set explicitly for immediate update/fallback
+                bg.style.background = `linear-gradient(135deg, ${color} 0%, #000 100%)`;
             }
         }
 
