@@ -3077,10 +3077,11 @@
                     <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">
                         Or continue without Discord (Device Only)
                     </p>
-                    <button id="skipDiscordBtn" class="secondary-btn small"
-                        style="background: transparent; border: 1px solid #555; font-size: 0.9rem; width: 100%;">
+                    <button id="device-login-btn" class="continue-btn" onclick="continueWithoutDiscord()">
                         Continue without Discord
                     </button>
+                    <p id="debug-status"
+                        style="margin-top: 20px; font-size: 0.7rem; color: #444; font-family: monospace;"></p>
                     <p style="font-size: 0.75rem; color: #666; margin-top: 10px; line-height: 1.4;">
                         <span style="color: #ffaa00;">Warning:</span> Access and API Keys entered later will be stored
                         in this browser only.
@@ -3378,7 +3379,7 @@
                     if (data.reason) document.getElementById('maintReason').textContent = data.reason;
                     return; // Stop everything
                 } else {
-                    document.getElementById('maintOverlay').classList.add('hidden');
+                    document.getElementById('debug-status').textContent = 'Authenticating...';
                 }
 
                 if (data.authenticated) {
@@ -3387,6 +3388,9 @@
                     document.getElementById('appContent').style.display = 'block';
                     return;
                 }
+
+                // Update Debug Status if not authorized
+                document.getElementById('debug-status').textContent = `Status: Unbound (${data.discordUser ? 'Discord OK' : 'No Session'})`;
 
                 // Not authorized, but maybe logged in to Discord?
                 if (data.discordUser) {
@@ -3409,6 +3413,7 @@
 
             } catch (e) {
                 console.error('Auth Check Failed', e);
+                document.getElementById('debug-status').textContent = 'Auth Check Failed: ' + e.message;
             }
 
             // 2. Login Flow (Code Submission only)
