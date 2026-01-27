@@ -67,7 +67,8 @@ export async function findCodeCommon(code) {
                 spotifyId: mongoRecord.spotifyId,
                 name: mongoRecord.name,
                 // Add index if we have it, mostly for backward compatibility logic
-                index: mongoRecord.rowIndex
+                index: mongoRecord.rowIndex,
+                isBlocked: mongoRecord.isBlocked
             };
         }
 
@@ -124,7 +125,8 @@ export async function findUserCommon(userId) {
                 status: mongoRecord.status,
                 spotifyId: mongoRecord.spotifyId,
                 name: mongoRecord.name,
-                index: mongoRecord.rowIndex
+                index: mongoRecord.rowIndex,
+                isBlocked: mongoRecord.isBlocked
             };
         }
 

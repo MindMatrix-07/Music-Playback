@@ -76,7 +76,9 @@ export default async function handler(req, res) {
         if (row.status === 'USED') {
             // Already Used: Check if it matches OUR userId
             if (storedId === userId) {
-                // MATCH: Grant Access
+                // MATCH: Grant Access (Re-entry allowed for original owner)
+                // "The code once used cannot be used again" (by others)
+                // "in the case of discord ... allow to enter" (by owner)
             } else {
                 // MISMATCH
                 return res.status(403).json({
