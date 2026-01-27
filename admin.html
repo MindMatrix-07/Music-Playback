@@ -294,6 +294,7 @@
                     document.getElementById('dashboard').classList.remove('hidden');
                     const data = await res.json();
                     loadDashboard(data);
+                    startAutoRefresh();
                 } else {
                     let data = {};
                     try { data = await res.json(); } catch (e) { }
@@ -312,6 +313,28 @@
         if (PASSWORD) {
             document.getElementById('login-pass').value = PASSWORD;
             login();
+        }
+
+        // --- POLING ---
+        let refreshInterval;
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(async () => {
+                if (!PASSWORD || document.getElementById('dashboard').classList.contains('hidden')) return;
+
+                try {
+                    // Silent refetch
+                    const res = await fetch('/api/admin/handler?action=stats', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password: PASSWORD })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        loadDashboard(data);
+                    }
+                } catch (e) { console.error('Auto-refresh failed', e); }
+            }, 10000); // 10 seconds
         }
 
         // --- DASHBOARD ---
