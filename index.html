@@ -2981,7 +2981,8 @@
                 if (match) {
                     const mins = parseInt(match[1]);
                     const secs = parseInt(match[2]);
-                    const ms = parseInt(match[3]) * 10; // Convert to ms (roughly)
+                    const frac = match[3];
+                    const ms = frac.length === 3 ? parseInt(frac) : parseInt(frac) * 10;
                     const time = mins * 60 + secs + (ms / 1000);
                     const text = match[4].trim();
 
@@ -3914,6 +3915,7 @@
         }
 
         // Initialize
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             // Default to true if not set
             if (localStorage.getItem('bg_anim_enabled') === null) {
@@ -3922,6 +3924,11 @@
             // Update toggle state immediately
             document.getElementById('bg-anim-toggle').checked = localStorage.getItem('bg_anim_enabled') === 'true';
             updateBgState();
+
+            // Initialize Features
+            initPreviewAudio();
+            initLyricsFeature();
+            if (typeof initSettings === 'function') initSettings();
         });
 
         // Hook into existing track play logic (you'll need to call updateBgImage() where tracks are played)
