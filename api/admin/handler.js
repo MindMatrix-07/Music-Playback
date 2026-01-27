@@ -1,6 +1,6 @@
 
-import { connectToDatabase, AccessCode, Analytics } from '../../_utils/mongodb.js';
-import { createCodeCommon } from '../../_utils/db-service.js';
+import { connectToDatabase, AccessCode, Analytics } from '../_utils/mongodb.js';
+import { createCodeCommon } from '../_utils/db-service.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });

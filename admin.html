@@ -295,7 +295,10 @@
                     const data = await res.json();
                     loadDashboard(data);
                 } else {
-                    document.getElementById('login-msg').textContent = 'Invalid Password';
+                    let data = {};
+                    try { data = await res.json(); } catch (e) { }
+                    document.getElementById('login-msg').textContent = data.error || 'Login Failed (Check Console)';
+                    console.error('Login Failed:', res.status, data);
                 }
             } catch (e) { console.error(e); }
         }
