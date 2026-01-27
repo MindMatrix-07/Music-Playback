@@ -4,17 +4,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Create Code</title>
+    <title>Admin Dashboard</title>
     <style>
         body {
             font-family: system-ui, -apple-system, sans-serif;
             background: #111;
             color: #fff;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Auth Overlay */
+        #auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #111;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            z-index: 1000;
         }
 
         .card {
@@ -22,142 +38,420 @@
             padding: 2rem;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            width: 300px;
-        }
-
-        h2 {
-            margin-top: 0;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-            color: #aaa;
         }
 
         input {
             width: 100%;
             padding: 0.8rem;
-            box-sizing: border-box;
+            margin: 0.5rem 0;
             background: #333;
             border: 1px solid #444;
             color: #fff;
             border-radius: 6px;
+            box-sizing: border-box;
         }
 
         button {
-            width: 100%;
-            padding: 0.8rem;
+            padding: 0.8rem 1.2rem;
             background: #1DB954;
             color: #fff;
             border: none;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
         button:hover {
             background: #1ed760;
         }
 
-        #message {
-            margin-top: 1rem;
-            text-align: center;
-            font-size: 0.9rem;
-            min-height: 1.2em;
+        button.danger {
+            background: #ff4444;
         }
 
-        .success {
+        button.danger:hover {
+            background: #ff6666;
+        }
+
+        button.secondary {
+            background: #444;
+        }
+
+        /* Dashboard */
+        .hidden {
+            display: none !important;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #222;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 2.5rem;
+            font-weight: bold;
             color: #1DB954;
         }
 
-        .error {
-            color: #ff5555;
+        .stat-label {
+            color: #aaa;
+            margin-top: 0.5rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #222;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        th {
+            background: #1a1a1a;
+            color: #888;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #2a2a2a;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .status-used {
+            background: #1DB95433;
+            color: #1DB954;
+        }
+
+        .status-blocked {
+            background: #ff444433;
+            color: #ff6666;
+        }
+
+        .discord-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid #444;
+        }
+
+        .tab-btn.active {
+            background: #1DB954;
+            border-color: #1DB954;
         }
     </style>
 </head>
 
 <body>
-    <div class="card">
-        <h2>Create Access Code</h2>
-        <div class="form-group">
-            <label>New Code</label>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="code" placeholder="e.g. VIP-2025" required>
-                <button type="button" onclick="generateRandom()"
-                    style="width: auto; padding: 0.8rem; background: #555;">🎲</button>
+
+    <!-- AUTH OVERLAY -->
+    <div id="auth-overlay">
+        <div class="card" style="width: 300px; text-align: center;">
+            <h2>Admin Login</h2>
+            <input type="password" id="login-pass" placeholder="Enter Admin Password">
+            <button onclick="login()">Enter Dashboard</button>
+            <p id="login-msg" style="color: #ff5555; margin-top: 1rem;"></p>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboard" class="container hidden">
+        <header>
+            <h1>Admin Panel</h1>
+            <div style="display: flex; gap: 10px;">
+                <button class="secondary" onclick="exportData()">⬇ Export Data (JSON)</button>
+                <button class="secondary" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <!-- CREATE SECTION -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3>Create Access Code</h3>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="new-code" placeholder="Code (e.g. VIP-2025)" style="max-width: 200px;">
+                <button class="secondary" onclick="generateRandom()">🎲</button>
+                <button onclick="createCode()">Create</button>
+            </div>
+            <div id="create-msg" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('users')">User Management</button>
+            <button class="tab-btn" onclick="switchTab('spam')">Spam Reports</button>
+        </div>
+
+        <!-- STATS GRID -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-val" id="count-active">0</div>
+                <div class="stat-label">Active Users (24h)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="count-daily">0</div>
+                <div class="stat-label">Daily Visits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="count-total">0</div>
+                <div class="stat-label">Total Users</div>
             </div>
         </div>
-        <div class="form-group">
-            <label>Admin Password</label>
-            <input type="password" id="password" placeholder="Admin Password" required>
+
+        <!-- USERS TABLE -->
+        <div id="tab-users">
+            <input type="text" id="user-search" placeholder="Search by Code or Name..." onkeyup="renderUsers()"
+                style="margin-bottom: 1rem;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>User (Discord)</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="user-table-body">
+                    <!-- JS Populated -->
+                </tbody>
+            </table>
         </div>
-        <button onclick="createCode()">Create Code</button>
-        <div id="message"></div>
+
+        <!-- SPAM TABLE -->
+        <div id="tab-spam" class="hidden">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody id="spam-table-body"></tbody>
+            </table>
+        </div>
     </div>
 
     <script>
-        // Check local storage for password to pre-fill
-        const storedPass = localStorage.getItem('admin_pass');
-        if (storedPass) document.getElementById('password').value = storedPass;
+        let GLOBAL_DATA = { users: [], spam: [] };
+        let PASSWORD = localStorage.getItem('admin_pass') || '';
 
-        function generateRandom() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No I, O, 1, 0 to avoid confusion
-            let result = '';
-            for (let i = 0; i < 5; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            document.getElementById('code').value = result;
+        // --- AUTH ---
+        async function login() {
+            const pass = document.getElementById('login-pass').value;
+            if (!pass) return;
+
+            // Test auth by fetching stats
+            try {
+                const res = await fetch('/api/admin/stats', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pass })
+                });
+
+                if (res.ok) {
+                    PASSWORD = pass;
+                    localStorage.setItem('admin_pass', pass);
+                    document.getElementById('auth-overlay').classList.add('hidden');
+                    document.getElementById('dashboard').classList.remove('hidden');
+                    const data = await res.json();
+                    loadDashboard(data);
+                } else {
+                    document.getElementById('login-msg').textContent = 'Invalid Password';
+                }
+            } catch (e) { console.error(e); }
         }
 
+        function logout() {
+            localStorage.removeItem('admin_pass');
+            location.reload();
+        }
+
+        // Auto-login check
+        if (PASSWORD) {
+            document.getElementById('login-pass').value = PASSWORD;
+            login();
+        }
+
+        // --- DASHBOARD ---
+        function loadDashboard(data) {
+            GLOBAL_DATA.users = data.users;
+            GLOBAL_DATA.spam = data.spamReports;
+
+            // Update Counters
+            document.getElementById('count-active').textContent = data.stats.activeUsers;
+            document.getElementById('count-daily').textContent = data.stats.dailyVisits;
+            document.getElementById('count-total').textContent = data.users.length;
+
+            renderUsers();
+            renderSpam();
+        }
+
+        function renderUsers() {
+            const tbody = document.getElementById('user-table-body');
+            const search = document.getElementById('user-search').value.toLowerCase();
+            tbody.innerHTML = '';
+
+            GLOBAL_DATA.users.forEach(u => {
+                if (search && !u.code.toLowerCase().includes(search) && (!u.name || !u.name.toLowerCase().includes(search))) return;
+
+                const tr = document.createElement('tr');
+
+                // Copy Button
+                const copyBtn = `<button class="secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="navigator.clipboard.writeText('${u.code}').then(() => alert('Copied!'))">📋</button>`;
+
+                const statusBadge = u.isBlocked
+                    ? '<span class="status-badge status-blocked">BLOCKED</span>'
+                    : (u.status === 'USED' ? '<span class="status-badge status-used">ACTIVE</span>' : '<span style="color:#666">UNUSED</span>');
+
+                tr.innerHTML = `
+                    <td>${u.code} ${copyBtn}</td>
+                    <td><div class="discord-user">${u.name || '-'} <small style="color:#666">(${u.spotifyId || ''})</small></div></td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button class="${u.isBlocked ? 'secondary' : 'danger'}" onclick="toggleBlock('${u.code}', ${u.isBlocked})">
+                            ${u.isBlocked ? 'Unblock' : 'Block'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderSpam() {
+            const tbody = document.getElementById('spam-table-body');
+            tbody.innerHTML = '';
+            GLOBAL_DATA.spam.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${new Date(s.createdAt).toLocaleString()}</td>
+                    <td>${JSON.stringify(s.details)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- ACTIONS ---
         async function createCode() {
-            const code = document.getElementById('code').value;
-            const password = document.getElementById('password').value;
-            const msgEl = document.getElementById('message');
-
-            if (!code || !password) return;
-
-            msgEl.textContent = 'Creating...';
-            msgEl.className = '';
+            const code = document.getElementById('new-code').value;
+            const msg = document.getElementById('create-msg');
 
             try {
                 const res = await fetch('/api/admin/add-code', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code, password })
+                    body: JSON.stringify({ code, password: PASSWORD })
                 });
-
-                // Try to parse JSON, but handle HTML/Text errors (like 500 crashes)
-                let data;
-                const contentType = res.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    data = await res.json();
-                } else {
-                    const text = await res.text();
-                    throw new Error(`Server Error (${res.status}): ${text.substring(0, 100)}`);
-                }
+                const data = await res.json();
 
                 if (res.ok) {
-                    msgEl.textContent = data.message;
-                    msgEl.className = 'success';
-                    document.getElementById('code').value = ''; // Clear code
-                    localStorage.setItem('admin_pass', password); // Remember password
+                    msg.innerHTML = `<span style="color:#1DB954">${data.message}</span>`;
+                    document.getElementById('new-code').value = '';
+                    // Refresh data
+                    login();
                 } else {
-                    msgEl.textContent = data.error || 'Unknown Error';
-                    msgEl.className = 'error';
+                    msg.innerHTML = `<span style="color:#ff5555">${data.error}</span>`;
                 }
-            } catch (e) {
-                console.error(e);
-                msgEl.textContent = e.message || 'Connection failed';
-                msgEl.className = 'error';
-            }
+            } catch (e) { console.error(e); }
+        }
+
+        async function toggleBlock(code, isCurrentlyBlocked) {
+            if (!confirm(`Are you sure you want to ${isCurrentlyBlocked ? 'Unblock' : 'Block'} this user?`)) return;
+
+            try {
+                const res = await fetch('/api/admin/user-action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        password: PASSWORD,
+                        code: code,
+                        action: isCurrentlyBlocked ? 'UNBLOCK' : 'BLOCK'
+                    })
+                });
+
+                if (res.ok) {
+                    // Update local state and re-render for instant feedback
+                    const user = GLOBAL_DATA.users.find(u => u.code === code);
+                    if (user) user.isBlocked = !isCurrentlyBlocked;
+                    renderUsers();
+                } else {
+                    alert('Action failed');
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function exportData() {
+            try {
+                const res = await fetch('/api/admin/export', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: PASSWORD })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `music-app-export-${new Date().toISOString().split('T')[0]}.json`;
+                    a.click();
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function generateRandom() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let result = '';
+            for (let i = 0; i < 5; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+            document.getElementById('new-code').value = result;
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+
+            document.getElementById('tab-users').classList.add('hidden');
+            document.getElementById('tab-spam').classList.add('hidden');
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
         }
     </script>
 </body>

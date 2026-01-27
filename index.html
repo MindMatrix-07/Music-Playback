@@ -7,7 +7,48 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Music Playback</title>
+    <title>Music Playback Tool</title>
+    <script>
+        // Analytics Tracking
+        (function () {
+            // 1. track visit
+            fetch('/api/analytics/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'VISIT' })
+            }).catch(() => { });
+
+            // 2. Track Spam Clicks
+            let clickCount = 0;
+            let lastClickTime = 0;
+
+            document.addEventListener('click', (e) => {
+                const now = Date.now();
+                if (now - lastClickTime < 300) { // Clicked twice in 300ms
+                    clickCount++;
+                } else {
+                    clickCount = 1; // Reset
+                }
+                lastClickTime = now;
+
+                if (clickCount === 5) { // 5 rapid clicks = Spam
+                    fetch('/api/analytics/track', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'SPAM',
+                            details: {
+                                x: e.clientX,
+                                y: e.clientY,
+                                element: e.target.tagName
+                            }
+                        })
+                    }).catch(() => { });
+                    clickCount = 0; // Reset
+                }
+            }, true);
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">

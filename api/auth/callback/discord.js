@@ -71,22 +71,27 @@ export default async function handler(req, res) {
                 const existingBinding = await findUserCommon(userData.id);
 
                 if (existingBinding) {
-                    // User is already bound! Issue auth token immediately.
-                    console.log(`Auto-login SUCCESS: Found binding for ${userData.username} (${userData.id})`);
+                    if (existingBinding.isBlocked) {
+                        console.log(`Auto-login BLOCKED: User ${userData.username} is blocked.`);
+                        // Do NOT issue token, just let them land on homepage as guest/unbound
+                    } else {
+                        // User is already bound! Issue auth token immediately.
+                        console.log(`Auto-login SUCCESS: Found binding for ${userData.username} (${userData.id})`);
 
-                    const token = await signSession({
-                        code: existingBinding.code,
-                        userId: userData.id,
-                        authType: 'DISCORD'
-                    });
+                        const token = await signSession({
+                            code: existingBinding.code,
+                            userId: userData.id,
+                            authType: 'DISCORD'
+                        });
 
-                    cookiesToSet.push(serialize('auth_token', token, {
-                        httpOnly: true,
-                        secure: process.env.NODE_ENV === 'production',
-                        sameSite: 'strict',
-                        maxAge: 60 * 60 * 24 * 365 * 10, // 10 Years
-                        path: '/',
-                    }));
+                        cookiesToSet.push(serialize('auth_token', token, {
+                            httpOnly: true,
+                            secure: process.env.NODE_ENV === 'production',
+                            sameSite: 'strict',
+                            maxAge: 60 * 60 * 24 * 365 * 10, // 10 Years
+                            path: '/',
+                        }));
+                    }
                 } else {
                     console.log(`Auto-login: No binding found for ${userData.username} (${userData.id})`);
                 }

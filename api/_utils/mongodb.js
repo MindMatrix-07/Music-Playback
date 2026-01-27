@@ -52,10 +52,21 @@ const accessCodeSchema = new mongoose.Schema({
     spotifyId: { type: String, default: null }, // Linked User ID
     name: { type: String, default: null }, // User Name
     rowIndex: { type: Number, default: null }, // Reference to Sheet Row
+    isBlocked: { type: Boolean, default: false }, // BLOCK FEATURE
+    lastLogin: { type: Date, default: null }, // LAST LOGIN TRACKING
     createdAt: { type: Date, default: Date.now }
+});
+
+const analyticsSchema = new mongoose.Schema({
+    type: { type: String, required: true }, // 'VISIT', 'SPAM'
+    userId: { type: String, default: null },
+    details: { type: Object, default: {} },
+    ip: { type: String, default: null }, // Optional: Hash or partial IP for spam tracking
+    createdAt: { type: Date, default: Date.now, expires: 60 * 60 * 24 * 30 } // 30 Day Auto-delete
 });
 
 // Prevent model recompilation error in dev
 const AccessCode = mongoose.models.AccessCode || mongoose.model('AccessCode', accessCodeSchema);
+const Analytics = mongoose.models.Analytics || mongoose.model('Analytics', analyticsSchema);
 
-export { connectToDatabase, AccessCode };
+export { connectToDatabase, AccessCode, Analytics };

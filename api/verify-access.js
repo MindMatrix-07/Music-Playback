@@ -65,6 +65,11 @@ export default async function handler(req, res) {
             });
         }
 
+        // Check Blocked Status
+        if (row.isBlocked) {
+            return res.status(403).json({ error: 'This access code has been blocked by an administrator.' });
+        }
+
         // 3. Logic: Check Status & Binding
         const storedId = row.spotifyId; // Column C
 
