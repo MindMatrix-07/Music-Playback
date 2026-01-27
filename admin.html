@@ -89,7 +89,11 @@
         <h2>Create Access Code</h2>
         <div class="form-group">
             <label>New Code</label>
-            <input type="text" id="code" placeholder="e.g. VIP-USER-2025" required>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="code" placeholder="e.g. VIP-2025" required>
+                <button type="button" onclick="generateRandom()"
+                    style="width: auto; padding: 0.8rem; background: #555;">🎲</button>
+            </div>
         </div>
         <div class="form-group">
             <label>Admin Password</label>
@@ -103,6 +107,15 @@
         // Check local storage for password to pre-fill
         const storedPass = localStorage.getItem('admin_pass');
         if (storedPass) document.getElementById('password').value = storedPass;
+
+        function generateRandom() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No I, O, 1, 0 to avoid confusion
+            let result = '';
+            for (let i = 0; i < 5; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('code').value = result;
+        }
 
         async function createCode() {
             const code = document.getElementById('code').value;
