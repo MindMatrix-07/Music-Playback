@@ -2564,6 +2564,9 @@
 
         // Preview Player Functions
         function initPreviewAudio() {
+            if (window.previewAudioInitialized) return;
+            window.previewAudioInitialized = true;
+
             previewAudio = document.getElementById('previewAudio');
             previewAudio.addEventListener('timeupdate', () => {
                 updatePreviewProgress();
@@ -3109,6 +3112,9 @@
         }
 
         function initLyricsFeature() {
+            if (window.lyricsFeatureInitialized) return;
+            window.lyricsFeatureInitialized = true;
+
             const btn = document.getElementById('refLyricsBtn');
             const container = document.getElementById('lyricsContainer');
             // ... (rest is same, but remove fetch trigger from click) ...
