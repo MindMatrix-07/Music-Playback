@@ -216,6 +216,27 @@
             <div id="create-msg" style="margin-top: 10px;"></div>
         </div>
 
+        <!-- MAINTENANCE SECTION -->
+        <div class="card" style="margin-bottom: 2rem; border: 1px solid #ff444455;">
+            <h3 style="color: #ff6666;">⚠️ Emergency Shutdown (Maintenance Mode)</h3>
+            <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 15px;">
+                Turning this ON will block ALL access to the main website.
+            </p>
+
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <label
+                    style="display: flex; align-items: center; gap: 10px; cursor: pointer; background: #333; padding: 10px; border-radius: 6px;">
+                    <input type="checkbox" id="maint-toggle" style="width: auto; margin: 0;">
+                    <span style="font-weight: bold;">Enable Shutdown</span>
+                </label>
+
+                <input type="text" id="maint-reason" placeholder="Reason (e.g. Server Upgrade)"
+                    style="flex: 1; min-width: 200px; margin: 0;">
+
+                <button class="danger" onclick="saveSettings()">Save Status</button>
+            </div>
+        </div>
+
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('users')">User Management</button>
             <button class="tab-btn" onclick="switchTab('spam')">Spam Reports</button>
@@ -349,6 +370,7 @@
 
             renderUsers();
             renderSpam();
+            loadSettings();
         }
 
         function renderUsers() {
@@ -478,6 +500,50 @@
             document.getElementById('tab-users').classList.add('hidden');
             document.getElementById('tab-spam').classList.add('hidden');
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
+        }
+
+        // --- SETTINGS ---
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/admin/handler?action=get_settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: PASSWORD })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('maint-toggle').checked = data.active;
+                    document.getElementById('maint-reason').value = data.reason || '';
+                }
+            } catch (e) { console.error('Load settings failed', e); }
+        }
+
+        async function saveSettings() {
+            // FORCE PASSWORD PROMPT
+            const confirmPass = prompt("⚠️ CONFIRM ACTION\nPlease re-enter ADMIN PASSWORD to change shutdown status:");
+            if (!confirmPass) return;
+
+            try {
+                const res = await fetch('/api/admin/handler?action=update_settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        password: confirmPass, // Use the FRESH password
+                        active: document.getElementById('maint-toggle').checked,
+                        reason: document.getElementById('maint-reason').value
+                    })
+                });
+
+                if (res.ok) {
+                    alert('Settings Saved Successfully');
+                    // If password was correct, update local cache too just in case
+                    PASSWORD = confirmPass;
+                    localStorage.setItem('admin_pass', confirmPass);
+                } else {
+                    const data = await res.json();
+                    alert('Failed: ' + (data.error || 'Server Error'));
+                }
+            } catch (e) { alert('Network Error'); }
         }
     </script>
 </body>

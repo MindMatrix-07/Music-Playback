@@ -1783,10 +1783,37 @@
         .hidden {
             display: none !important;
         }
+
+        /* Maintenance Overlay */
+        .maint-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 30000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
     </style>
 </head>
 
 <body class="spotify-active">
+
+    <!-- Maintenance Overlay -->
+    <div id="maintOverlay" class="maint-overlay hidden">
+        <div style="font-size: 4rem; margin-bottom: 20px;">🚧</div>
+        <h1 style="color: #ff5555; margin-bottom: 20px;">System Maintenance</h1>
+        <p id="maintReason" style="font-size: 1.2rem; color: #ccc; max-width: 600px; line-height: 1.6;">
+            We are currently performing updates. Please check back later.
+        </p>
+    </div>
 
     <div id="spamOverlay" class="spam-overlay">
         <div class="spam-title">⚠️ Too Many Clicks</div>
@@ -3345,6 +3372,12 @@
             try {
                 const res = await fetch('/api/auth/status');
                 const data = await res.json();
+
+                if (data.maintenance) {
+                    document.getElementById('maintOverlay').classList.remove('hidden');
+                    if (data.reason) document.getElementById('maintReason').textContent = data.reason;
+                    return; // Stop everything
+                }
 
                 if (data.authenticated) {
                     // Fully Authorized

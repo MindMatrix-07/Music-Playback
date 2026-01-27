@@ -65,8 +65,15 @@ const analyticsSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now, expires: 60 * 60 * 24 * 30 } // 30 Day Auto-delete
 });
 
+// New Settings Schema
+const settingsSchema = new mongoose.Schema({
+    key: { type: String, required: true, unique: true }, // e.g., 'maintenance'
+    value: { type: mongoose.Schema.Types.Mixed, default: {} }
+});
+
 // Prevent model recompilation error in dev
 const AccessCode = mongoose.models.AccessCode || mongoose.model('AccessCode', accessCodeSchema);
 const Analytics = mongoose.models.Analytics || mongoose.model('Analytics', analyticsSchema);
+const SystemSettings = mongoose.models.SystemSettings || mongoose.model('SystemSettings', settingsSchema);
 
-export { connectToDatabase, AccessCode, Analytics };
+export { connectToDatabase, AccessCode, Analytics, SystemSettings };

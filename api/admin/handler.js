@@ -1,5 +1,5 @@
 
-import { connectToDatabase, AccessCode, Analytics } from '../_utils/mongodb.js';
+import { connectToDatabase, AccessCode, Analytics, SystemSettings } from '../_utils/mongodb.js';
 import { createCodeCommon } from '../_utils/db-service.js';
 
 export default async function handler(req, res) {
@@ -25,6 +25,10 @@ export default async function handler(req, res) {
                 return await handleUserAction(req, res);
             case 'export':
                 return await handleExport(req, res);
+            case 'get_settings':
+                return await handleGetSettings(req, res);
+            case 'update_settings':
+                return await handleUpdateSettings(req, res);
             default:
                 return res.status(400).json({ error: 'Invalid action' });
         }
@@ -71,4 +75,28 @@ async function handleUserAction(req, res) {
 async function handleExport(req, res) {
     const data = await AccessCode.find({}, { _id: 0, code: 1, name: 1, spotifyId: 1, status: 1, isBlocked: 1, lastLogin: 1, createdAt: 1 }).sort({ createdAt: -1 });
     return res.status(200).json(data);
+}
+
+// --- 5. Settings ---
+async function handleGetSettings(req, res) {
+    let settings = await SystemSettings.findOne({ key: 'maintenance' });
+    if (!settings) {
+        // Default
+        settings = { value: { active: false, reason: '' } };
+    }
+    return res.status(200).json(settings.value);
+}
+
+async function handleUpdateSettings(req, res) {
+    const { active, reason } = req.body;
+
+    const update = { active: !!active, reason: reason || '' };
+
+    await SystemSettings.findOneAndUpdate(
+        { key: 'maintenance' },
+        { key: 'maintenance', value: update },
+        { upsert: true, new: true }
+    );
+
+    return res.status(200).json({ success: true, settings: update });
 }
