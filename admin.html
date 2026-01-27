@@ -469,7 +469,15 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    msg.innerHTML = `<span style="color:#1DB954">${data.message}</span>`;
+                    msg.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:10px; color:#1DB954;">
+                            <span>${data.message}</span>
+                            <button class="secondary" style="padding: 4px 10px; font-size: 0.8rem;" 
+                                onclick="navigator.clipboard.writeText('${code}').then(() => alert('Code Copied!'))">
+                                Copy Code
+                            </button>
+                        </div>
+                    `;
                     document.getElementById('new-code').value = '';
                     // Refresh data
                     login();
