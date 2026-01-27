@@ -88,20 +88,19 @@
         /* Animated Background */
         #dynamic-bg {
             position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
+            top: -25%;
+            left: -25%;
+            width: 150%;
+            height: 150%;
             z-index: -2;
             background-size: cover;
             background-position: center;
-            filter: blur(80px) saturate(2) brightness(0.45);
-            transition: background-image 2s ease-in-out, opacity 1s ease;
+            filter: blur(80px) saturate(2) brightness(0.5);
+            transition: background-image 1.5s ease-in-out, opacity 1s ease;
             opacity: 0;
             pointer-events: none;
-            animation: appleMotion 25s infinite alternate ease-in-out;
+            animation: appleMotion 45s infinite alternate ease-in-out;
             transform-origin: center center;
-            will-change: transform;
         }
 
         /* Second layer for more depth */
@@ -115,26 +114,25 @@
             background: inherit;
             filter: blur(60px);
             opacity: 0.4;
-            animation: appleMotion 18s infinite alternate-reverse ease-in-out;
-            mix-blend-mode: overlay;
-            will-change: transform;
+            animation: appleMotion 35s infinite alternate-reverse ease-in-out;
+            mix-blend-mode: soft-light;
         }
 
         @keyframes appleMotion {
             0% {
-                transform: scale(1.5) translate(0, 0) rotate(0deg);
+                transform: scale(1.1) translate(0, 0) rotate(0deg);
             }
 
             33% {
-                transform: scale(2.2) translate(-8%, 5%) rotate(10deg);
+                transform: scale(1.3) translate(-3%, 2%) rotate(6deg);
             }
 
             66% {
-                transform: scale(1.8) translate(8%, -7%) rotate(-8deg);
+                transform: scale(1.2) translate(3%, -3%) rotate(-4deg);
             }
 
             100% {
-                transform: scale(2.5) translate(-2%, 10%) rotate(5deg);
+                transform: scale(1.4) translate(0, 0) rotate(2deg);
             }
         }
 
