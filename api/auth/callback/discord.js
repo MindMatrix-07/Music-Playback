@@ -1,6 +1,6 @@
 
 import { serialize } from 'cookie';
-import { getGoogleSheetClient, findUserRow } from '../../_utils/google-sheet.js';
+import { findUserCommon } from '../../_utils/db-service.js';
 import { signSession } from '../../_utils/auth.js';
 
 export default async function handler(req, res) {
@@ -65,10 +65,10 @@ export default async function handler(req, res) {
 
         // B. Check if User is Already Bound (Auto-Login)
         try {
-            if (GOOGLE_SHEET_ID) {
+            if (GOOGLE_SHEET_ID || process.env.MONGODB_URI) {
                 console.log(`Checking existing binding for user: ${userData.id}`);
-                const sheets = await getGoogleSheetClient();
-                const existingBinding = await findUserRow(sheets, GOOGLE_SHEET_ID, userData.id);
+                // const sheets = await getGoogleSheetClient(); // Deprecated
+                const existingBinding = await findUserCommon(userData.id);
 
                 if (existingBinding) {
                     // User is already bound! Issue auth token immediately.

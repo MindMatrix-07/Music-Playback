@@ -1,5 +1,6 @@
 
-import { getGoogleSheetClient, findCodeRow, markCodeAsUsed } from './_utils/google-sheet.js';
+import { findCodeCommon, markCodeAsUsedCommon } from './_utils/db-service.js';
+import { getGoogleSheetClient } from './_utils/google-sheet.js'; // Keep for other uses if any, or remove if unused. verified: verify-access only needs db-service now.
 import { signSession } from './_utils/auth.js';
 import { serialize, parse } from 'cookie';
 
@@ -53,9 +54,9 @@ export default async function handler(req, res) {
     }
 
     try {
-        // 2. Check Sheet
-        const sheets = await getGoogleSheetClient();
-        const row = await findCodeRow(sheets, GOOGLE_SHEET_ID, code);
+        // 2. Check Database (Mongo -> Sheet Fallback)
+        // const sheets = await getGoogleSheetClient(); // Deprecated direct call
+        const row = await findCodeCommon(code);
 
         if (!row || row.error) {
             return res.status(401).json({
@@ -79,7 +80,7 @@ export default async function handler(req, res) {
             }
         } else {
             // New Code: Bind to this User ID
-            await markCodeAsUsed(sheets, GOOGLE_SHEET_ID, row.index, userId, finalName);
+            await markCodeAsUsedCommon(row, userId, finalName);
         }
 
         // 4. Issue Session

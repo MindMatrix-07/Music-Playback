@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Create Code</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #111;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: #222;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            width: 300px;
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            box-sizing: border-box;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background: #1DB954;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #1ed760;
+        }
+
+        #message {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            min-height: 1.2em;
+        }
+
+        .success {
+            color: #1DB954;
+        }
+
+        .error {
+            color: #ff5555;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>Create Access Code</h2>
+        <div class="form-group">
+            <label>New Code</label>
+            <input type="text" id="code" placeholder="e.g. VIP-USER-2025" required>
+        </div>
+        <div class="form-group">
+            <label>Admin Password</label>
+            <input type="password" id="password" placeholder="Admin Password" required>
+        </div>
+        <button onclick="createCode()">Create Code</button>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        // Check local storage for password to pre-fill
+        const storedPass = localStorage.getItem('admin_pass');
+        if (storedPass) document.getElementById('password').value = storedPass;
+
+        async function createCode() {
+            const code = document.getElementById('code').value;
+            const password = document.getElementById('password').value;
+            const msgEl = document.getElementById('message');
+
+            if (!code || !password) return;
+
+            msgEl.textContent = 'Creating...';
+            msgEl.className = '';
+
+            try {
+                const res = await fetch('/api/admin/add-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    msgEl.textContent = data.message;
+                    msgEl.className = 'success';
+                    document.getElementById('code').value = ''; // Clear code
+                    localStorage.setItem('admin_pass', password); // Remember password
+                } else {
+                    msgEl.textContent = data.error;
+                    msgEl.className = 'error';
+                }
+            } catch (e) {
+                msgEl.textContent = 'Connection failed';
+                msgEl.className = 'error';
+            }
+        }
+    </script>
+</body>
+
+</html>
