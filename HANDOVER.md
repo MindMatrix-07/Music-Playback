@@ -48,6 +48,8 @@
         -   **Auto-Fetch**: Lyrics load instantly upon track selection.
         -   **Preview Sync**: Lyrics scroll in real-time when playing previews.
         -   **Synced Timer**: A manual "Start Sync Timer" button allows users to sync lyrics for full tracks (Spotify/Apple Music) where automated sync isn't possible.
+        -   **Smart Search**: Implemented "Fuzzy Search" logic that cleans titles (removing "Remastered", "From...", etc.) and retries automatically to find lyrics for tracks with complex metadata.
+
 
 ### 5. Privacy Policy Updates
 -   **Admin Powers:** Explicitly stated that Administrators can delete user data.
