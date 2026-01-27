@@ -3082,9 +3082,17 @@
             const trackName = track.name;
             const duration = Math.floor(track.duration_ms / 1000);
 
+            const timeoutFetch = (url, ms = 5000) => {
+                const controller = new AbortController();
+                const id = setTimeout(() => controller.abort(), ms);
+                return fetch(url, { signal: controller.signal })
+                    .then(res => { clearTimeout(id); return res; });
+            };
+
             try {
-                // Check LRCLIB
-                const res = await fetch(`https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(trackName)}&duration=${duration}`);
+                // Check LRCLIB with timeout
+                const res = await timeoutFetch(`https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(trackName)}&duration=${duration}`);
+
                 if (res.ok) {
                     const data = await res.json();
                     currentLyrics.plain = data.plainLyrics || 'Lyrics found but no plain text available.';
@@ -3098,22 +3106,31 @@
                     }
                 } else {
                     // Try Search API if direct match fails (Fallback)
-                    const searchRes = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(trackName + ' ' + artist)}`);
+                    if (textEl) textEl.textContent = 'Searching for best match...';
+
+                    const searchRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(trackName + ' ' + artist)}`);
                     const searchData = await searchRes.json();
+
                     if (searchData && searchData.length > 0) {
                         // Pick best match
                         const match = searchData[0]; // Simplistic best match
                         currentLyrics.plain = match.plainLyrics || 'Lyrics found but no plain text available.';
                         currentLyrics.synced = match.syncedLyrics || '';
+
                         if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
                     } else {
-                        throw new Error('No lyrics found');
+                        throw new Error('No lyrics found via search');
                     }
                 }
             } catch (e) {
                 console.log('Lyrics fetch failed:', e);
-                currentLyrics.plain = 'Lyrics not found for this track.';
+                const errorMsg = e.name === 'AbortError' ? 'Request timed out.' : (e.message || 'Error fetching lyrics.');
+
+                currentLyrics.plain = errorMsg;
                 currentLyrics.synced = '';
+
+                // Force Update UI Error
+                if (textEl) textEl.textContent = errorMsg;
                 setLyricsMode('plain');
             }
         }
