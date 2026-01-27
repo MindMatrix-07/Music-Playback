@@ -2432,9 +2432,7 @@
             hideSearchResults();
 
             try {
-                const apiEndpoint = currentPlatform === 'spotify'
-                    ? `/api/spotify-search?q=${encodeURIComponent(query)}&limit=8`
-                    : `/api/apple-search?q=${encodeURIComponent(query)}&limit=8`;
+                const apiEndpoint = `/api/search?platform=${currentPlatform}&q=${encodeURIComponent(query)}&limit=8`;
 
                 const response = await fetch(apiEndpoint);
                 const data = await response.json();

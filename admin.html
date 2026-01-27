@@ -281,7 +281,7 @@
 
             // Test auth by fetching stats
             try {
-                const res = await fetch('/api/admin/stats', {
+                const res = await fetch('/api/admin/handler?action=stats', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: pass })
@@ -375,7 +375,7 @@
             const msg = document.getElementById('create-msg');
 
             try {
-                const res = await fetch('/api/admin/add-code', {
+                const res = await fetch('/api/admin/handler?action=create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ code, password: PASSWORD })
@@ -397,13 +397,13 @@
             if (!confirm(`Are you sure you want to ${isCurrentlyBlocked ? 'Unblock' : 'Block'} this user?`)) return;
 
             try {
-                const res = await fetch('/api/admin/user-action', {
+                const res = await fetch('/api/admin/handler?action=action', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         password: PASSWORD,
                         code: code,
-                        action: isCurrentlyBlocked ? 'UNBLOCK' : 'BLOCK'
+                        type: isCurrentlyBlocked ? 'UNBLOCK' : 'BLOCK'
                     })
                 });
 
@@ -420,7 +420,7 @@
 
         async function exportData() {
             try {
-                const res = await fetch('/api/admin/export', {
+                const res = await fetch('/api/admin/handler?action=export', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: PASSWORD })
