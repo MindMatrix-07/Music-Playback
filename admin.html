@@ -497,6 +497,9 @@
                         <button class="${u.isBlocked ? 'secondary' : 'danger'}" onclick="toggleBlock('${u.code}', ${u.isBlocked})">
                             ${u.isBlocked ? 'Unblock' : 'Block'}
                         </button>
+                        <button class="danger" style="margin-left: 5px;" onclick="deleteUser('${u.code}')">
+                            Delete
+                        </button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -571,6 +574,43 @@
                     alert('Action failed');
                 }
             } catch (e) { console.error(e); }
+        }
+
+        async function deleteUser(code) {
+            if (!confirm(`⚠️ DANGER ZONE ⚠️\n\nAre you sure you want to PERMANENTLY DELETE user '${code}'?\n\nThis action cannot be undone.`)) return;
+
+            // Double confirmation
+            const input = prompt(`To confirm deletion, please type "${code}" below:`);
+            if (input !== code) {
+                if (input !== null) alert("Code mismatch. Deletion cancelled.");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/handler?action=delete_user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        password: PASSWORD,
+                        code: code
+                    })
+                });
+
+                if (res.ok) {
+                    alert(`User '${code}' has been deleted.`);
+                    // Update local state
+                    GLOBAL_DATA.users = GLOBAL_DATA.users.filter(u => u.code !== code);
+                    renderUsers();
+                    // Refetch stats to update counters
+                    loadSettings();
+                } else {
+                    const data = await res.json();
+                    alert('Failed: ' + (data.error || 'Server Error'));
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Network Error');
+            }
         }
 
         async function exportData() {

@@ -40,9 +40,15 @@
     -   Controls (buttons, inputs) stack vertically for better touch accessibility.
 -   **Main App (`index.html`):**
     -   Verified responsiveness of player and metadata grid.
+    -   Verified responsiveness of player and metadata grid.
     -   Updated **Settings Modal** to be scrollable and fit within the viewport on small/landscape screens (`max-height: 85vh`).
 
-### 5. Technical Details
+### 5. Admin Features
+-   **User Deletion:** Added a red **Delete** button to the Admin Panel.
+    -   Requires double confirmation (Popup + Type Code) to prevent accidents.
+    -   Permanently removes the user's access code from the database.
+
+### 6. Technical Details
 -   **Database:** MongoDB Atlas (Primary), Google Sheets (Secondary/Backup).
 -   **Analytics:** Vercel Analytics (restored per user request).
 -   **Hosting:** Vercel (Note: Approaching serverless function limits; consolidated APIs previously).

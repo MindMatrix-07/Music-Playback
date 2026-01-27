@@ -63,6 +63,8 @@ export default async function handler(req, res) {
                 return await handleGetSettings(req, res);
             case 'update_settings':
                 return await handleUpdateSettings(req, res);
+            case 'delete_user':
+                return await handleDeleteUser(req, res);
             default:
                 return res.status(400).json({ error: 'Invalid action' });
         }
@@ -133,4 +135,19 @@ async function handleUpdateSettings(req, res) {
     );
 
     return res.status(200).json({ success: true, settings: update });
+}
+
+// --- 6. Delete User ---
+async function handleDeleteUser(req, res) {
+    const { code } = req.body;
+    if (!code) return res.status(400).json({ error: 'Code is required' });
+
+    // Use deleteOne to permanently remove the document
+    const result = await AccessCode.deleteOne({ code: code });
+
+    if (result.deletedCount === 0) {
+        return res.status(404).json({ error: 'User/Code not found' });
+    }
+
+    return res.status(200).json({ success: true, message: `User ${code} deleted.` });
 }
