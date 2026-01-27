@@ -43,7 +43,11 @@
     -   Verified responsiveness of player and metadata grid.
     -   Updated **Settings Modal** to be scrollable and fit within the viewport on small/landscape screens (`max-height: 85vh`).
 
-### 5. Admin Features
+### 5. Privacy Policy Updates
+-   **Admin Powers:** Explicitly stated that Administrators can delete user data.
+-   **Right to Erasure:** Added "Administrator Request" as a valid method for data deletion, alongside self-service.
+
+### 6. Admin Features
 -   **User Deletion:** Added a red **Delete** button to the Admin Panel.
     -   Requires double confirmation (Popup + Type Code) to prevent accidents.
     -   Permanently removes the user's access code from the database.
