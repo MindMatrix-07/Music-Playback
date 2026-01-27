@@ -1,14 +1,48 @@
-
+import crypto from 'crypto';
 import { connectToDatabase, AccessCode, Analytics, SystemSettings } from '../_utils/mongodb.js';
 import { createCodeCommon } from '../_utils/db-service.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    // Validate Password for ALL actions
+    // 1. Get Client IP
+    const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+
+    await connectToDatabase();
+
+    // 2. Rate Limiting (Brute Force Protection)
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+    const failedAttempts = await Analytics.countDocuments({
+        type: 'ADMIN_FAIL',
+        ip: ip,
+        createdAt: { $gte: fifteenMinutesAgo }
+    });
+
+    if (failedAttempts >= 5) {
+        return res.status(429).json({ error: 'Too many failed attempts. Try again in 15 minutes.' });
+    }
+
+    // 3. Constant-Time Password Check
     const { password } = req.body;
-    if (password !== process.env.ADMIN_PASSWORD) {
-        return res.status(401).json({ error: 'Unauthorized' });
+    const envPassword = process.env.ADMIN_PASSWORD || '';
+
+    // Prevent empty password bypass or crashing on length mismatch
+    const isMatch = password && envPassword &&
+        password.length === envPassword.length &&
+        crypto.timingSafeEqual(Buffer.from(password), Buffer.from(envPassword));
+
+    if (!isMatch) {
+        // Log Failed Attempt
+        await Analytics.create({
+            type: 'ADMIN_FAIL',
+            ip: ip,
+            details: { attempts: failedAttempts + 1 }
+        });
+
+        // Artificial Delay (Slow down brute force)
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        return res.status(401).json({ error: 'Unauthorized: Invalid Password' });
     }
 
     const { action } = req.query;
