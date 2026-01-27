@@ -3101,6 +3101,8 @@
                     .replace(/\s*\[.*feat.*\]/i, '')
                     .replace(/\s*\(.*mix.*\)/i, '')
                     .replace(/\s*\(.*edit.*\)/i, '')
+                    .replace(/\s*\(.*from.*\)/i, '') // Handles (From "Movie")
+                    .replace(/\s*-\s*from.*/i, '')
                     .trim();
             };
 
@@ -3141,8 +3143,24 @@
 
                         if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
                     } else {
-                        // Last Resort: Search JUST Title (if artist was the problem, slightly risky but better than nothing)
-                        // Or just report not found.
+                        // AGGRESSIVE FALLBACK: Try stripping ALL parentheses content
+                        // E.g. "Sukoon (From "Bhoomi 2025")" -> "Sukoon" (if regex missed something)
+                        const aggressiveTitle = trackName.replace(/\s*\(.*?\)/g, '').replace(/\s*\[.*?\]/g, '').trim();
+
+                        if (aggressiveTitle !== cleanTrackName && aggressiveTitle !== trackName) {
+                            if (textEl) textEl.textContent = 'Trying deep search...';
+                            const deepRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(aggressiveTitle + ' ' + artist)}`);
+                            const deepData = await deepRes.json();
+
+                            if (deepData && deepData.length > 0) {
+                                const match = deepData[0];
+                                currentLyrics.plain = match.plainLyrics || 'Lyrics found but no plain text available.';
+                                currentLyrics.synced = match.syncedLyrics || '';
+                                if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
+                                return; // Success!
+                            }
+                        }
+
                         throw new Error(`No lyrics found for "${cleanTrackName}"`);
                     }
                 }
