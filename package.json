@@ -6,6 +6,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@vercel/analytics": "^1.6.1",
     "cookie": "^1.1.1",
     "googleapis": "^170.1.0",
     "jose": "^6.1.3",
