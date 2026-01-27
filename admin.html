@@ -180,6 +180,46 @@
             background: #1DB954;
             border-color: #1DB954;
         }
+
+        .maintenance-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .maint-status {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .maint-status.active {
+            background: #ff4444;
+            color: white;
+            animation: pulse-red 2s infinite;
+        }
+
+        .maint-status.inactive {
+            background: #1DB954;
+            color: white;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+            }
+        }
     </style>
 </head>
 
@@ -224,16 +264,18 @@
             </p>
 
             <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                <label
-                    style="display: flex; align-items: center; gap: 10px; cursor: pointer; background: #333; padding: 10px; border-radius: 6px;">
-                    <input type="checkbox" id="maint-toggle" style="width: auto; margin: 0;">
-                    <span style="font-weight: bold;">Enable Shutdown</span>
-                </label>
+                <div class="maintenance-controls">
+                    <div id="maint-status-indicator" class="maint-status inactive">NORMAL</div>
 
-                <input type="text" id="maint-reason" placeholder="Reason (e.g. Server Upgrade)"
-                    style="flex: 1; min-width: 200px; margin: 0;">
+                    <input type="text" id="maint-reason" placeholder="Reason (e.g. Server Upgrade)"
+                        style="flex: 1; min-width: 200px; margin: 0;">
 
-                <button class="danger" onclick="saveSettings()">Save Status</button>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="danger" onclick="saveSettings(true)">Enable Shutdown</button>
+                        <button class="secondary" style="background:#444;" onclick="saveSettings(false)">Disable
+                            Shutdown</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -508,15 +550,24 @@
                 });
                 if (res.ok) {
                     const data = await res.json();
-                    document.getElementById('maint-toggle').checked = data.active;
+                    const ind = document.getElementById('maint-status-indicator');
+
+                    if (data.active) {
+                        ind.textContent = 'ACTIVE';
+                        ind.className = 'maint-status active';
+                    } else {
+                        ind.textContent = 'NORMAL';
+                        ind.className = 'maint-status inactive';
+                    }
+
                     document.getElementById('maint-reason').value = data.reason || '';
                 }
             } catch (e) { console.error('Load settings failed', e); }
         }
 
-        async function saveSettings() {
+        async function saveSettings(isActive) {
             // FORCE PASSWORD PROMPT
-            const confirmPass = prompt("⚠️ CONFIRM ACTION\nPlease re-enter ADMIN PASSWORD to change shutdown status:");
+            const confirmPass = prompt(`⚠️ CONFIRM ACTION\nPlease re-enter ADMIN PASSWORD to ${isActive ? 'ENABLE' : 'DISABLE'} shutdown:`);
             if (!confirmPass) return;
 
             try {
@@ -525,7 +576,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         password: confirmPass, // Use the FRESH password
-                        active: document.getElementById('maint-toggle').checked,
+                        active: isActive,
                         reason: document.getElementById('maint-reason').value
                     })
                 });
@@ -534,6 +585,7 @@
                     alert('Settings Saved Successfully');
                     // If password was correct, update local cache too just in case
                     PASSWORD = confirmPass;
+                    loadSettings(); // Refresh UI
                 } else {
                     const data = await res.json();
                     alert('Failed: ' + (data.error || 'Server Error'));
