@@ -3473,55 +3473,6 @@
             }
         }
 
-            if (textEl) textEl.textContent = 'Loading lyrics...';
-            if (syncedEl) syncedEl.innerHTML = ''; // Clear synced view
-
-            // Fallback for missing artist (handling search result structure)
-            // Fallback for missing artist (handling search result structure)
-            // LEGACY LOGIC: Split artist by comma to get primary artist only (matches old stable commit)
-            let artist = (track.artists && track.artists[0] && track.artists[0].name) || 'Unknown Artist';
-            if (artist.includes(',')) artist = artist.split(',')[0].trim();
-
-            const trackName = track.name;
-            const duration = Math.floor(track.duration_ms / 1000); // Define duration!
-
-            // Use internal API adapter (Restoring original architecture)
-            // This handles CORS, User-Agent, and robust searching on the backend.
-
-            try {
-                if (textEl) textEl.textContent = 'Fetching lyrics...';
-
-                // Call our own backend API
-                let url = `/api/get-lyrics?title=${encodeURIComponent(trackName)}&artist=${encodeURIComponent(artist)}`;
-                if (duration) url += `&duration=${duration}`;
-
-                const res = await fetch(url);
-                const data = await res.json();
-
-                if (res.ok) {
-                    currentLyrics.plain = data.plainLyrics || 'Lyrics found but no text available.';
-                    currentLyrics.synced = data.syncedLyrics || '';
-
-                    // Force refresh UI
-                    if (currentLyrics.synced && !container.classList.contains('hidden')) {
-                        setLyricsMode('synced');
-                    } else {
-                        setLyricsMode('plain'); // Will update textEl
-                        if (textEl) textEl.textContent = currentLyrics.plain;
-                    }
-                } else {
-                    throw new Error(data.error || 'No lyrics found');
-                }
-            } catch (e) {
-                console.log('Lyrics fetch failed:', e);
-                const errorMsg = 'No lyrics found.';
-                currentLyrics.plain = errorMsg;
-                currentLyrics.synced = '';
-
-                if (textEl) textEl.textContent = errorMsg;
-                setLyricsMode('plain');
-            }
-        }
 
         function initLyricsFeature() {
             if (window.lyricsFeatureInitialized) return;
