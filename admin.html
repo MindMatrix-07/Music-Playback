@@ -293,7 +293,7 @@
 
     <script>
         let GLOBAL_DATA = { users: [], spam: [] };
-        let PASSWORD = localStorage.getItem('admin_pass') || '';
+        let PASSWORD = '';
 
         // --- AUTH ---
         async function login() {
@@ -310,7 +310,6 @@
 
                 if (res.ok) {
                     PASSWORD = pass;
-                    localStorage.setItem('admin_pass', pass);
                     document.getElementById('auth-overlay').classList.add('hidden');
                     document.getElementById('dashboard').classList.remove('hidden');
                     const data = await res.json();
@@ -330,11 +329,8 @@
             location.reload();
         }
 
-        // Auto-login check
-        if (PASSWORD) {
-            document.getElementById('login-pass').value = PASSWORD;
-            login();
-        }
+        // Auto-login removed
+
 
         // --- POLING ---
         let refreshInterval;
@@ -538,7 +534,6 @@
                     alert('Settings Saved Successfully');
                     // If password was correct, update local cache too just in case
                     PASSWORD = confirmPass;
-                    localStorage.setItem('admin_pass', confirmPass);
                 } else {
                     const data = await res.json();
                     alert('Failed: ' + (data.error || 'Server Error'));
