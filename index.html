@@ -2216,9 +2216,20 @@
             <!-- Actions Row -->
             <div class="settings-actions" style="margin-top: 30px; margin-bottom: 20px;">
                 <button id="deleteKeyBtn" class="secondary-btn"
-                    style="margin-right: auto; color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3);">Delete</button>
+                    style="margin-right: auto; color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3);">Delete
+                    Key</button>
                 <button id="closeSettingsBtn" class="secondary-btn">Cancel</button>
                 <button id="saveSettingsBtn" class="primary-btn">Save Key</button>
+            </div>
+
+            <!-- Account Management (Danger Zone) -->
+            <div class="setting-item"
+                style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-bottom: 0;">
+                <label style="color: var(--text-secondary); font-size: 0.85rem;">Account</label>
+                <button id="deleteAccountBtn" class="secondary-btn"
+                    style="width: 100%; font-size: 0.85rem; padding: 8px; color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3);">
+                    🗑️ Delete Account Data
+                </button>
             </div>
 
             <!-- Diagnostics Section (Footer) -->
@@ -2237,6 +2248,26 @@
     </div>
 
     <script>
+        // ... (Existing variables) ...
+
+        // --- DELETE ACCOUNT LOGIC ---
+        document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+            if (!confirm('⚠️ Are you sure?\n\nThis will permanently delete your Discord binding from our database.\nYou will be logged out immediately.')) return;
+
+            try {
+                const res = await fetch('/api/auth/user', { method: 'DELETE' });
+                if (res.ok) {
+                    alert('Account data deleted successfully.');
+                    logout(); // reuse existing logout function
+                } else {
+                    const data = await res.json();
+                    alert('Failed: ' + (data.error || 'Server Error'));
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Network Error');
+            }
+        });
         let currentPlatform = 'spotify';
         let selectedTrack = null;
         let spotifyUser = null;
