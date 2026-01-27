@@ -1,5 +1,5 @@
 
-import { createCodeCommon } from '../../_utils/db-service.js';
+import { createCodeCommon } from '../_utils/db-service.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {

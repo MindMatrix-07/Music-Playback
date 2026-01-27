@@ -134,7 +134,15 @@
                     body: JSON.stringify({ code, password })
                 });
 
-                const data = await res.json();
+                // Try to parse JSON, but handle HTML/Text errors (like 500 crashes)
+                let data;
+                const contentType = res.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    throw new Error(`Server Error (${res.status}): ${text.substring(0, 100)}`);
+                }
 
                 if (res.ok) {
                     msgEl.textContent = data.message;
@@ -142,11 +150,12 @@
                     document.getElementById('code').value = ''; // Clear code
                     localStorage.setItem('admin_pass', password); // Remember password
                 } else {
-                    msgEl.textContent = data.error;
+                    msgEl.textContent = data.error || 'Unknown Error';
                     msgEl.className = 'error';
                 }
             } catch (e) {
-                msgEl.textContent = 'Connection failed';
+                console.error(e);
+                msgEl.textContent = e.message || 'Connection failed';
                 msgEl.className = 'error';
             }
         }
