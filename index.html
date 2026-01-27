@@ -1066,38 +1066,13 @@
 
         /* Mobile Styles */
         
-        .lyrics-container {
-            margin-top: 30px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
-            animation: fadeIn 0.4s ease;
-        }
+        
 
-        .lyrics-container.hidden {
-            display: none;
-        }
+        
 
-        .lyrics-header {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-        }
+        
 
-        .warning-banner {
-            background: rgba(251, 146, 60, 0.1);
-            color: #fb923c;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            border: 1px solid rgba(251, 146, 60, 0.3);
-            font-weight: 600;
-        }
+        
 
         .copy-btn {
             background: transparent;
@@ -1132,11 +1107,7 @@
         }
 
         /* Lyrics View Styling */
-        .lyrics-container {
-            max-height: 500px;
-            display: flex;
-            flex-direction: column;
-        }
+        
 
         .lyrics-content {
             white-space: pre-wrap;
@@ -1623,188 +1594,131 @@
             text-decoration: underline;
         }
 
-        /* Lyrics Styles (Fresh) */
-        .lyrics-container {
-            margin-top: 30px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
-            animation: fadeIn 0.4s ease;
-        }
+        /* New Lyrics Module Styling */
+.lyrics-module {
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 400px;
+    max-height: 600px;
+    animation: slideUp 0.6s ease;
+}
 
-        .lyrics-container.hidden {
-            display: none;
-        }
+.lyrics-module.hidden { display: none !important; }
 
-        .lyrics-header {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-        }
+.lyrics-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
 
-        .warning-banner {
-            background: rgba(251, 146, 60, 0.1);
-            color: #fb923c;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            border: 1px solid rgba(251, 146, 60, 0.3);
-            font-weight: 600;
-        }
+.lyrics-tabs {
+    display: flex;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: 12px;
+}
 
-        .copy-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 6px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
+.tab-btn {
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-        .copy-btn:hover {
-            border-color: var(--text-primary);
-            color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.05);
-        }
+.tab-btn.active {
+    background: var(--spotify-green);
+    color: white;
+    box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+}
 
-        .lyrics-content {
-            white-space: pre-wrap;
-            font-family: inherit;
-            line-height: 1.8;
-            color: var(--text-primary);
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
-            font-size: 1.05rem;
-        }
+body.apple-active .tab-btn.active {
+    background: var(--apple-gradient);
+    box-shadow: 0 4px 15px rgba(250, 35, 59, 0.3);
+}
 
-        body.apple-active .meta-link {
-            color: var(--apple-pink);
-        }
+.lyrics-view-area {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
 
-        /* Lyrics View Styling */
-        .lyrics-container {
-            max-height: 500px;
-            display: flex;
-            flex-direction: column;
-        }
+.lyrics-view-area::-webkit-scrollbar { width: 6px; }
+.lyrics-view-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
 
-        .lyrics-content {
-            white-space: pre-wrap;
-            line-height: 1.8;
-            font-size: 1.1rem;
-            color: var(--text-primary);
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
+.plain-lyrics {
+    white-space: pre-wrap;
+    line-height: 2;
+    font-size: 1.15rem;
+    color: var(--text-primary);
+    text-align: center;
+}
 
-        .lyrics-synced-view {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
+.synced-lyrics-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 100px 0; 
+}
 
-        .lyric-line {
-            display: flex;
-            gap: 15px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: background 0.2s;
-            cursor: pointer;
-        }
+.synced-line {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.2);
+    transition: all 0.4s ease;
+    cursor: pointer;
+    text-align: center;
+    filter: blur(2px);
+    transform: scale(0.95);
+}
 
-        .lyric-line:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
+.synced-line.active {
+    color: #fff;
+    filter: blur(0);
+    transform: scale(1.1);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
 
-        .lyric-time {
-            font-family: monospace;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            min-width: 50px;
-            opacity: 0.6;
-        }
+.loading-lyrics {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 15px;
+    color: var(--text-secondary);
+}
 
-        .lyric-text {
-            color: var(--text-primary);
-            font-size: 1.05rem;
-            line-height: 1.4;
-        }
-
-        .lyrics-mode-toggle {
-            display: flex;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 4px;
-            border-radius: 10px;
-            gap: 4px;
-        }
-
-        .mode-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            padding: 6px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .mode-btn.active {
-            background: var(--spotify-green);
-            color: white;
-        }
-
-        body.apple-active .mode-btn.active {
-            background: var(--apple-gradient);
-        }
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
         /* Mobile Adjustments */
         
-        .lyrics-container {
-            margin-top: 30px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
-            animation: fadeIn 0.4s ease;
-        }
+        
 
-        .lyrics-container.hidden {
-            display: none;
-        }
+        
 
-        .lyrics-header {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-        }
+        
 
-        .warning-banner {
-            background: rgba(251, 146, 60, 0.1);
-            color: #fb923c;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            border: 1px solid rgba(251, 146, 60, 0.3);
-            font-weight: 600;
-        }
+        
 
         .copy-btn {
             background: transparent;
@@ -1839,11 +1753,7 @@
         }
 
         /* Lyrics View Styling */
-        .lyrics-container {
-            max-height: 500px;
-            display: flex;
-            flex-direction: column;
-        }
+        
 
         .lyrics-content {
             white-space: pre-wrap;
@@ -2561,24 +2471,18 @@
             </div>
         </section>
 
-        <section id="lyricsContainer" class="lyrics-container hidden">
-            <div class="lyrics-header"
-                style="display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.2);">
-                <div class="lyrics-mode-toggle">
-                    <button class="mode-btn active" id="viewPlainBtn" onclick="setLyricsMode('plain')">Plain</button>
-                    <button class="mode-btn" id="viewSyncedBtn" onclick="setLyricsMode('synced')">Synced</button>
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <button id="copyLyricsBtn" class="copy-btn">Copy</button>
-                </div>
-            </div>
-            <div class="warning-banner"
-                style="padding: 10px; text-align: center; background: rgba(255, 166, 0, 0.05); color: #ffaa00; font-size: 0.8rem; border-bottom: 1px solid rgba(255, 166, 0, 0.1);">
-                ⚠️ Intended for reference purposes only
-            </div>
-            <div id="lyricsText" class="lyrics-content">Select a song to fetch lyrics.</div>
-            <div id="lyricsSynced" class="lyrics-synced-view hidden"></div>
-        </section>
+        <section id="lyricsModule" class="lyrics-module hidden">
+    <div class="lyrics-top-bar">
+        <div class="lyrics-tabs">
+            <button class="tab-btn active" id="tabPlain" onclick="switchLyricsTab('plain')">Plain</button>
+            <button class="tab-btn" id="tabSynced" onclick="switchLyricsTab('synced')">Synced</button>
+        </div>
+        <button class="copy-btn" id="copyLyricsBtn" onclick="copyCurrentLyrics()">Copy Lyrics</button>
+    </div>
+    
+    <div id="lyricsViewArea" class="lyrics-view-area">
+    </div>
+</section>
         <!-- Footer -->
         <footer
             style="margin-top: 60px; padding-bottom: 20px; text-align: center; border-top: 1px solid var(--border-color); padding-top: 20px;">
@@ -3045,7 +2949,7 @@
             fetchMetadata(track);
 
             // Auto-fetch synced lyrics immediately
-            autoFetchLyrics(track);
+            fetchLyrics(track);
 
             // Update Dynamic Background
             updateBgImage();
@@ -3259,292 +3163,153 @@
             }
         }
 
-        // Global state for parsed synced lyrics
-        let parsedSyncedLyrics = [];
+        // --- NEW LYRICS MODULE (Re-implemented from Scratch) ---
+let lyricsData = { plain: '', synced: [], rawSynced: '' };
+let currentLyricsTab = 'plain';
 
-        // Updated parse function to store data globally
-        function renderSyncedLyrics(lrc) {
-            const container = document.getElementById('lyricsSynced');
-            container.innerHTML = '';
-            parsedSyncedLyrics = []; // Reset
+async function fetchLyrics(track) {
+    console.log('Fetching lyrics with new module for:', track.name);
+    const module = document.getElementById('lyricsModule');
+    const view = document.getElementById('lyricsViewArea');
 
-            if (!lrc) {
-                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">No synced lyrics available for this track.</div>';
-                return;
-            }
+    if (module) module.classList.remove('hidden');
+    if (view) view.innerHTML = '<div class="loading-lyrics"><span>Fetching lyrics...</span></div>';
 
-            const lines = lrc.split('\n');
-            const lrcRegex = /^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
+    lyricsData = { plain: '', synced: [], rawSynced: '' };
 
-            lines.forEach((line, index) => {
-                const match = line.trim().match(lrcRegex);
-                if (match) {
-                    const mins = parseInt(match[1]);
-                    const secs = parseInt(match[2]);
-                    const frac = match[3];
-                    const ms = frac.length === 3 ? parseInt(frac) : parseInt(frac) * 10;
-                    const time = mins * 60 + secs + (ms / 1000);
-                    const text = match[4].trim();
-
-                    if (text) {
-                        const lineEl = document.createElement('div');
-                        lineEl.className = 'lyric-line';
-                        lineEl.dataset.time = time;
-                        lineEl.dataset.index = index;
-                        lineEl.innerHTML = `
-                            <span class="lyric-time">${match[1]}:${match[2]}</span>
-                            <span class="lyric-text">${escapeHtml(text)}</span>
-                        `;
-                        // Click to seek (Preview only)
-                        lineEl.addEventListener('click', () => {
-                            if (previewAudio && previewAudio.src) {
-                                previewAudio.currentTime = time;
-                                if (previewAudio.paused) previewAudio.play();
-                            }
-                        });
-                        container.appendChild(lineEl);
-                        parsedSyncedLyrics.push({ time, el: lineEl });
-                    }
-                }
-            });
-
-            if (container.children.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">Could not parse synced lyrics format.</div>';
-            } else {
-                // Add Manual Sync Button if not preview
-                if (!document.getElementById('manualSyncBtn')) {
-                    const btn = document.createElement('button');
-                    btn.id = 'manualSyncBtn';
-                    btn.textContent = 'Start Sync Timer';
-                    btn.className = 'mode-btn'; // Re-use style
-                    btn.style.marginLeft = 'auto';
-                    btn.style.fontSize = '0.7rem';
-                    btn.style.opacity = '0.8';
-                    btn.onclick = () => window.startManualSync();
-
-                    // Append to header if not exists
-                    const header = document.querySelector('.lyrics-header');
-                    if (header && !header.contains(document.getElementById('manualSyncBtn'))) header.appendChild(btn);
-                }
-            }
-        }
-
-        // Sync Engine
-        function updateSyncedLyrics(currentTime) {
-            if (!parsedSyncedLyrics.length || document.getElementById('lyricsSynced').classList.contains('hidden')) return;
-
-            let activeIndex = -1;
-            // Find the current active line
-            for (let i = 0; i < parsedSyncedLyrics.length; i++) {
-                if (parsedSyncedLyrics[i].time <= currentTime) {
-                    activeIndex = i;
-                } else {
-                    break;
-                }
-            }
-
-            if (activeIndex !== -1) {
-                const activeLine = parsedSyncedLyrics[activeIndex];
-                // Update active class
-                document.querySelectorAll('.lyric-line.active').forEach(el => el.classList.remove('active'));
-                activeLine.el.classList.add('active');
-
-                // Smooth Scroll
-                const container = document.getElementById('lyricsSynced');
-                const offset = activeLine.el.offsetTop - container.offsetTop - (container.clientHeight / 2) + (activeLine.el.clientHeight / 2);
-                container.scrollTo({ top: offset, behavior: 'smooth' });
-            }
-        }
-
-        // Auto Fetch
-        // Auto Fetch
-async function autoFetchLyrics(track) {
-    console.log('Using optimized lrclib fetcher for:', track.name);
-    currentLyrics = { plain: 'Loading...', synced: '' }; // Reset with loading state
-    parsedSyncedLyrics = [];
-
-    // Update UI immediately if visible
-    const container = document.getElementById('lyricsContainer');
-    const textEl = document.getElementById('lyricsText');
-    const syncedEl = document.getElementById('lyricsSynced');
-
-    // Auto-Show Lyrics Panel (User Request)
-    if (container.classList.contains('hidden')) {
-        container.classList.remove('hidden');
-    }
-
-    if (textEl) textEl.textContent = 'Loading lyrics...';
-    if (syncedEl) syncedEl.innerHTML = ''; // Clear synced view
-
-    // 1. Prepare Metadata
-    const artist = (track.artists && track.artists[0] && track.artists[0].name) || 'Unknown Artist';
-    const trackName = track.name;
-    let duration = Math.floor(track.duration_ms / 1000);
-    if (isNaN(duration) || duration <= 0) duration = '';
-
-    // 2. Helper: Clean Title
-    const cleanTitle = (t) => {
-        return t
-            .replace(/\s*\(.*remaster.*\)/i, '')
-            .replace(/\s*-\s*.*remaster.*/i, '')
-            .replace(/\s*\(.*feat.*\)/i, '')
-            .replace(/\s*\[.*feat.*\]/i, '')
-            .replace(/\s*\(.*mix.*\)/i, '')
-            .replace(/\s*\(.*edit.*\)/i, '')
-            .replace(/\s*\(.*from.*\)/i, '')
-            .replace(/\s*-\s*from.*/i, '')
-            .trim();
-    };
-
-    const cleanTrackName = cleanTitle(trackName);
-    const timeoutFetch = (url, ms = 15000) => {
-        const controller = new AbortController();
-        const id = setTimeout(() => controller.abort(), ms);
-        return fetch(url, { signal: controller.signal })
-            .then(res => { clearTimeout(id); return res; });
-    };
+    const artist = (track.artists && track.artists[0]?.name) || track.artist || 'Unknown';
+    const title = track.name;
+    const duration = Math.floor(track.duration_ms / 1000);
 
     try {
-        // 3. Attempt 1: Direct Match
-        let url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(trackName)}`;
+        let url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`;
         if (duration) url += `&duration=${duration}`;
 
-        let res = await timeoutFetch(url);
-
-        // 3b. Attempt 1b: Direct Match with Cleaned Title
-        if (!res.ok && cleanTrackName !== trackName) {
-            let cleanUrl = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(cleanTrackName)}`;
-            if (duration) cleanUrl += `&duration=${duration}`;
-            res = await timeoutFetch(cleanUrl);
-        }
+        const res = await fetch(url);
+        let data;
 
         if (res.ok) {
-            const data = await res.json();
-            currentLyrics.plain = data.plainLyrics || 'Lyrics found but no plain text available.';
-            currentLyrics.synced = data.syncedLyrics || '';
-            if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
+            data = await res.json();
         } else {
-            // 4. Attempt 2: Search API
-            if (textEl) textEl.textContent = 'Searching...';
-            const searchRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(cleanTrackName + ' ' + artist)}`);
-            const searchData = await searchRes.json();
+            const sRes = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(title + ' ' + artist)}`);
+            const sData = await sRes.json();
+            if (sData && sData.length > 0) data = sData[0];
+        }
 
-            if (searchData && searchData.length > 0) {
-                const match = searchData[0];
-                currentLyrics.plain = match.plainLyrics || 'Lyrics found but no plain text available.';
-                currentLyrics.synced = match.syncedLyrics || '';
-                if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
+        if (data) {
+            lyricsData.plain = data.plainLyrics || 'Only synced lyrics available.';
+            lyricsData.rawSynced = data.syncedLyrics || '';
+            parseSyncedLyrics(data.syncedLyrics);
+
+            if (lyricsData.synced.length > 0) {
+                switchLyricsTab('synced');
             } else {
-                // 5. Attempt 3: Deep Search
-                const aggressiveTitle = trackName.replace(/\s*\(.*?\)/g, '').replace(/\s*\[.*?\]/g, '').trim();
-                if (aggressiveTitle !== cleanTrackName && aggressiveTitle !== trackName) {
-                    if (textEl) textEl.textContent = 'Trying deep search...';
-                    const deepRes = await timeoutFetch(`https://lrclib.net/api/search?q=${encodeURIComponent(aggressiveTitle + ' ' + artist)}`);
-                    const deepData = await deepRes.json();
-
-                    if (deepData && deepData.length > 0) {
-                        const match = deepData[0];
-                        currentLyrics.plain = match.plainLyrics || 'Lyrics found but no plain text available.';
-                        currentLyrics.synced = match.syncedLyrics || '';
-                        if (currentLyrics.synced) setLyricsMode('synced'); else setLyricsMode('plain');
-                        return;
-                    }
-                }
-                throw new Error(`No lyrics found for "${cleanTrackName}"`);
+                switchLyricsTab('plain');
             }
+        } else {
+            throw new Error('No lyrics found');
         }
     } catch (e) {
-        console.log('Lyrics fetch failed:', e);
-        const errorMsg = 'No lyrics found for this song.';
-        currentLyrics.plain = errorMsg;
-        currentLyrics.synced = '';
-        if (textEl) textEl.textContent = errorMsg;
-        setLyricsMode('plain');
+        if (view) view.innerHTML = '<div class="loading-lyrics"><span>No lyrics found for this track.</span></div>';
     }
 }
 
+function parseSyncedLyrics(lrc) {
+    if (!lrc) return;
+    const lines = lrc.split('\n');
+    const lrcRegex = /^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
 
-        function initLyricsFeature() {
-            if (window.lyricsFeatureInitialized) return;
-            window.lyricsFeatureInitialized = true;
+    lines.forEach(line => {
+        const match = line.trim().match(lrcRegex);
+        if (match) {
+            const time = parseInt(match[1]) * 60 + parseInt(match[2]) + parseInt(match[3]) / 1000;
+            const text = match[4].trim();
+            if (text) lyricsData.synced.push({ time, text });
+        }
+    });
+}
 
-            const btn = document.getElementById('refLyricsBtn');
-            const container = document.getElementById('lyricsContainer');
-            // ... (rest is same, but remove fetch trigger from click) ...
+function switchLyricsTab(tab) {
+    currentLyricsTab = tab;
+    const tPlain = document.getElementById('tabPlain');
+    const tSynced = document.getElementById('tabSynced');
+    if (tPlain) tPlain.classList.toggle('active', tab === 'plain');
+    if (tSynced) tSynced.classList.toggle('active', tab === 'synced');
 
-            if (!btn || !container) return;
+    renderLyrics();
+}
 
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (!container.classList.contains('hidden')) {
-                    container.classList.add('hidden');
-                } else {
-                    container.classList.remove('hidden');
-                    // Refresh View State (in case fetch finished while hidden)
-                    if (currentLyrics.synced && lyricsMode === 'synced') {
-                        renderSyncedLyrics(currentLyrics.synced);
-                    } else {
-                        const textEl = document.getElementById('lyricsText');
-                        if (textEl) textEl.textContent = currentLyrics.plain || 'Select a song to fetch lyrics.';
-                    }
+function renderLyrics() {
+    const view = document.getElementById('lyricsViewArea');
+    if (!view) return;
 
-                    // Sync immediately if playing
-                    if (previewAudio && !previewAudio.paused) updateSyncedLyrics(previewAudio.currentTime);
-                }
-            });
-
-
-
-            // Copy
-            const copyBtn = document.getElementById('copyLyricsBtn');
-            if (copyBtn) {
-                copyBtn.addEventListener('click', () => {
-                    const text = lyricsMode === 'plain' ? currentLyrics.plain : currentLyrics.synced;
-                    if (!text) return;
-
-                    navigator.clipboard.writeText(text).then(() => {
-                        const originalText = copyBtn.textContent;
-                        copyBtn.textContent = 'Copied!';
-                        setTimeout(() => copyBtn.textContent = originalText, 2000);
-                    }).catch(err => console.error('Copy failed:', err));
-                });
-            }
+    if (currentLyricsTab === 'plain') {
+        view.innerHTML = `<div class="plain-lyrics">${lyricsData.plain || 'No plain lyrics available.'}</div>`;
+    } else {
+        if (lyricsData.synced.length === 0) {
+            view.innerHTML = '<div class="loading-lyrics">No synced lyrics available.</div>';
+            return;
         }
 
-        // Manual Timer Fallback (Best Effort for non-preview)
-        let manualSyncInterval;
-        let manualStartTime;
+        let html = '<div class="synced-lyrics-container">';
+        lyricsData.synced.forEach((line, i) => {
+            html += `<div class="synced-line" id="line-${i}" onclick="seekTo(${line.time})">${line.text}</div>`;
+        });
+        html += '</div>';
+        view.innerHTML = html;
 
-        window.startManualSync = function () {
-            if (manualSyncInterval) clearInterval(manualSyncInterval);
-            manualStartTime = Date.now();
+        // Ensure player is hooked
+        if (previewAudio) {
+            const syncHandler = () => syncLyrics(previewAudio.currentTime);
+            previewAudio.removeEventListener('timeupdate', syncHandler);
+            previewAudio.addEventListener('timeupdate', syncHandler);
+        }
+    }
+}
 
-            // Banner
-            const container = document.getElementById('lyricsSynced');
-            const bannerId = 'manualSyncBanner';
-            let banner = document.getElementById(bannerId);
-            if (!banner) {
-                banner = document.createElement('div');
-                banner.id = bannerId;
-                banner.style.textAlign = 'center';
-                banner.style.marginBottom = '10px';
-                banner.style.opacity = '0.7';
-                banner.style.fontSize = '0.8rem';
-                banner.innerHTML = `Manual Sync Active <button onclick="stopManualSync()" style="background:rgba(255,255,255,0.2); border:none; margin-left:5px; color:white; padding:2px 6px; border-radius:4px; cursor:pointer;">Stop</button>`;
-                container.prepend(banner);
-            }
+function seekTo(time) {
+    if (previewAudio && previewAudio.src) {
+        previewAudio.currentTime = time;
+        if (previewAudio.paused) previewAudio.play();
+    }
+}
 
-            manualSyncInterval = setInterval(() => {
-                const elapsed = (Date.now() - manualStartTime) / 1000;
-                updateSyncedLyrics(elapsed);
-            }, 200);
-        };
+function syncLyrics(currentTime) {
+    if (currentLyricsTab !== 'synced' || lyricsData.synced.length === 0) return;
 
-        window.stopManualSync = function () {
-            if (manualSyncInterval) clearInterval(manualSyncInterval);
-            const banner = document.getElementById('manualSyncBanner');
-            if (banner) banner.remove();
-        };
+    let activeIndex = -1;
+    for (let i = 0; i < lyricsData.synced.length; i++) {
+        if (lyricsData.synced[i].time <= currentTime) {
+            activeIndex = i;
+        } else {
+            break;
+        }
+    }
+
+    if (activeIndex !== -1) {
+        const lines = document.querySelectorAll('.synced-line');
+        lines.forEach(l => l.classList.remove('active'));
+
+        const activeLine = document.getElementById(`line-${activeIndex}`);
+        if (activeLine && !activeLine.classList.contains('active')) {
+            activeLine.classList.add('active');
+            activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+}
+
+async function copyCurrentLyrics() {
+    const text = currentLyricsTab === 'plain' ? lyricsData.plain : lyricsData.rawSynced;
+    if (!text) return;
+    try {
+        await navigator.clipboard.writeText(text);
+        const btn = document.getElementById('copyLyricsBtn');
+        const old = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = old, 2000);
+    } catch (e) { }
+}
+
 
         // Settings Logic
         function initSettings() {
@@ -3734,7 +3499,7 @@ async function autoFetchLyrics(track) {
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initPreviewAudio();
-            initLyricsFeature();
+            
             initSettings();
             checkAuthCallback();
             checkStoredUser();
@@ -4294,7 +4059,7 @@ async function autoFetchLyrics(track) {
 
             // Initialize Features
             initPreviewAudio();
-            initLyricsFeature();
+            
             if (typeof initSettings === 'function') initSettings();
         });
 
@@ -4303,3 +4068,20 @@ async function autoFetchLyrics(track) {
 </body>
 
 </html>
+
+        /* Mobile Lyrics Module */
+        @media (max-width: 768px) {
+            .lyrics-module {
+                padding: 15px;
+                margin-top: 20px;
+                border-radius: 16px;
+                min-height: 300px;
+            }
+            .synced-line {
+                font-size: 1.1rem;
+            }
+            .tab-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
