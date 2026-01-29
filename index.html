@@ -289,7 +289,9 @@
             background: transparent;
             border: none;
             color: var(--text-secondary);
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             padding: 5px;
             display: flex;
             align-items: center;
@@ -316,7 +318,9 @@
             font-size: 1rem;
             font-weight: 600;
             color: white;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             transition: all 0.3s ease;
             font-family: inherit;
             text-decoration: none;
@@ -358,7 +362,9 @@
             border: 2px solid var(--border-color);
             border-radius: 16px;
             background: var(--bg-card);
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
@@ -493,7 +499,9 @@
             font-size: 1rem;
             font-weight: 600;
             color: white;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             transition: all 0.3s ease;
             font-family: inherit;
         }
@@ -588,7 +596,9 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             transition: all 0.2s ease;
         }
 
@@ -789,7 +799,9 @@
             border: none;
             background: var(--spotify-green);
             color: white;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -812,7 +824,9 @@
             background: var(--border-color);
             border-radius: 2px;
             overflow: hidden;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .preview-progress-bar {
@@ -854,7 +868,9 @@
             border-radius: 50px;
             font-size: 0.9rem;
             font-weight: 600;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             text-decoration: none;
             transition: all 0.2s ease;
         }
@@ -915,7 +931,9 @@
             color: var(--text-primary);
             font-size: 0.95rem;
             font-weight: 600;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             transition: all 0.3s ease;
             text-decoration: none;
             font-family: inherit;
@@ -1065,14 +1083,14 @@
         }
 
         /* Mobile Styles */
-        
-        
 
-        
 
-        
 
-        
+
+
+
+
+
 
         .copy-btn {
             background: transparent;
@@ -1080,7 +1098,9 @@
             color: var(--text-secondary);
             padding: 6px 14px;
             border-radius: 8px;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             font-size: 0.85rem;
             transition: all 0.2s;
         }
@@ -1107,7 +1127,7 @@
         }
 
         /* Lyrics View Styling */
-        
+
 
         .lyrics-content {
             white-space: pre-wrap;
@@ -1134,7 +1154,9 @@
             padding: 8px 12px;
             border-radius: 8px;
             transition: background 0.2s;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .lyric-line:hover {
@@ -1169,7 +1191,9 @@
             color: var(--text-secondary);
             padding: 6px 16px;
             border-radius: 8px;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             font-size: 0.85rem;
             font-weight: 600;
             transition: all 0.2s;
@@ -1185,7 +1209,7 @@
         }
 
 
-@media (max-width: 768px) {
+        @media (max-width: 768px) {
             .container {
                 padding: 20px 15px;
             }
@@ -1595,130 +1619,149 @@
         }
 
         /* New Lyrics Module Styling */
-.lyrics-module {
-    margin-top: 30px;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 24px;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    min-height: 400px;
-    max-height: 600px;
-    animation: slideUp 0.6s ease;
-}
+        .lyrics-module {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 400px;
+            max-height: 600px;
+            animation: slideUp 0.6s ease;
+        }
 
-.lyrics-module.hidden { display: none !important; }
+        .lyrics-module.hidden {
+            display: none !important;
+        }
 
-.lyrics-top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
+        .lyrics-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
-.lyrics-tabs {
-    display: flex;
-    gap: 8px;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 4px;
-    border-radius: 12px;
-}
+        .lyrics-tabs {
+            display: flex;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            border-radius: 12px;
+        }
 
-.tab-btn {
-    padding: 8px 20px;
-    border-radius: 8px;
-    border: none;
-    background: transparent;
-    color: var(--text-secondary);
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+        .tab-btn {
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-.tab-btn.active {
-    background: var(--spotify-green);
-    color: white;
-    box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
-}
+        .tab-btn.active {
+            background: var(--spotify-green);
+            color: white;
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+        }
 
-body.apple-active .tab-btn.active {
-    background: var(--apple-gradient);
-    box-shadow: 0 4px 15px rgba(250, 35, 59, 0.3);
-}
+        body.apple-active .tab-btn.active {
+            background: var(--apple-gradient);
+            box-shadow: 0 4px 15px rgba(250, 35, 59, 0.3);
+        }
 
-.lyrics-view-area {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 10px;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
-}
+        .lyrics-view-area {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+        }
 
-.lyrics-view-area::-webkit-scrollbar { width: 6px; }
-.lyrics-view-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        .lyrics-view-area::-webkit-scrollbar {
+            width: 6px;
+        }
 
-.plain-lyrics {
-    white-space: pre-wrap;
-    line-height: 2;
-    font-size: 1.15rem;
-    color: var(--text-primary);
-    text-align: center;
-}
+        .lyrics-view-area::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
 
-.synced-lyrics-container {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    padding: 100px 0; 
-}
+        .plain-lyrics {
+            white-space: pre-wrap;
+            line-height: 2;
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            text-align: center;
+        }
 
-.synced-line {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.2);
-    transition: all 0.4s ease;
-    cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
-    text-align: center;
-    filter: blur(2px);
-    transform: scale(0.95);
-}
+        .synced-lyrics-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 100px 0;
+        }
 
-.synced-line.active {
-    color: #fff;
-    filter: blur(0);
-    transform: scale(1.1);
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-}
+        .synced-line {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            text-align: center;
+            filter: blur(2px);
+            transform: scale(0.95);
+        }
 
-.loading-lyrics {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    gap: 15px;
-    color: var(--text-secondary);
-}
+        .synced-line.active {
+            color: #fff;
+            filter: blur(0);
+            transform: scale(1.1);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
 
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+        .loading-lyrics {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 15px;
+            color: var(--text-secondary);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         /* Mobile Adjustments */
-        
-        
 
-        
 
-        
 
-        
+
+
+
+
+
 
         .copy-btn {
             background: transparent;
@@ -1726,7 +1769,9 @@ body.apple-active .tab-btn.active {
             color: var(--text-secondary);
             padding: 6px 14px;
             border-radius: 8px;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             font-size: 0.85rem;
             transition: all 0.2s;
         }
@@ -1753,7 +1798,7 @@ body.apple-active .tab-btn.active {
         }
 
         /* Lyrics View Styling */
-        
+
 
         .lyrics-content {
             white-space: pre-wrap;
@@ -1780,7 +1825,9 @@ body.apple-active .tab-btn.active {
             padding: 8px 12px;
             border-radius: 8px;
             transition: background 0.2s;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .lyric-line:hover {
@@ -1815,7 +1862,9 @@ body.apple-active .tab-btn.active {
             color: var(--text-secondary);
             padding: 6px 16px;
             border-radius: 8px;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             font-size: 0.85rem;
             font-weight: 600;
             transition: all 0.2s;
@@ -1831,7 +1880,7 @@ body.apple-active .tab-btn.active {
         }
 
 
-@media (max-width: 768px) {
+        @media (max-width: 768px) {
             .metadata-grid {
                 grid-template-columns: 1fr;
                 gap: 30px;
@@ -1858,7 +1907,9 @@ body.apple-active .tab-btn.active {
             background: transparent;
             border: none;
             color: var(--text-secondary);
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             z-index: 100;
             padding: 10px;
             border-radius: 50%;
@@ -1916,7 +1967,9 @@ body.apple-active .tab-btn.active {
             background: none;
             border: none;
             color: var(--spotify-green);
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             display: flex;
             justify-content: space-between;
             width: 100%;
@@ -2014,7 +2067,9 @@ body.apple-active .tab-btn.active {
             padding: 10px 24px;
             border-radius: 8px;
             font-weight: 600;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             transition: transform 0.2s;
         }
 
@@ -2028,7 +2083,9 @@ body.apple-active .tab-btn.active {
             border: 1px solid var(--border-color);
             padding: 10px 20px;
             border-radius: 8px;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             transition: all 0.2s;
         }
 
@@ -2127,15 +2184,18 @@ body.apple-active .tab-btn.active {
             text-align: center;
             padding: 20px;
         }
-    
+
         /* Performance Optimizations */
-        #dynamic-bg, .bg-blob, .synced-line, .track-item {
+        #dynamic-bg,
+        .bg-blob,
+        .synced-line,
+        .track-item {
             will-change: transform, opacity;
         }
+
         .synced-line {
             will-change: transform, color, filter;
         }
-    
     </style>
 </head>
 
@@ -2481,20 +2541,21 @@ body.apple-active .tab-btn.active {
         </section>
 
         <section id="lyricsModule" class="lyrics-module hidden">
-    <div class="lyrics-top-bar">
-        <div class="lyrics-tabs">
-            <button class="tab-btn active" id="tabPlain" onclick="switchLyricsTab('plain')">Plain</button>
-            <button class="tab-btn" id="tabSynced" onclick="switchLyricsTab('synced')">Synced</button>
-        </div>
-        <button class="copy-btn" id="copyLyricsBtn" onclick="copyCurrentLyrics()">Copy Lyrics</button>
-    </div>
-    
-        <div id="syncStatusBanner" style="padding: 10px; text-align: center; background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); font-size: 0.85rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.5s ease;">
-        Tap a line below 👆 when you hear the vocals to sync lyrics
-    </div>
-    <div id="lyricsViewArea" class="lyrics-view-area">
-    </div>
-</section>
+            <div class="lyrics-top-bar">
+                <div class="lyrics-tabs">
+                    <button class="tab-btn active" id="tabPlain" onclick="switchLyricsTab('plain')">Plain</button>
+                    <button class="tab-btn" id="tabSynced" onclick="switchLyricsTab('synced')">Synced</button>
+                </div>
+                <button class="copy-btn" id="copyLyricsBtn" onclick="copyCurrentLyrics()">Copy Lyrics</button>
+            </div>
+
+            <div id="syncStatusBanner"
+                style="padding: 10px; text-align: center; background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); font-size: 0.85rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.5s ease;">
+                Tap a line below 👆 when you hear the vocals to sync lyrics
+            </div>
+            <div id="lyricsViewArea" class="lyrics-view-area">
+            </div>
+        </section>
         <!-- Footer -->
         <footer
             style="margin-top: 60px; padding-bottom: 20px; text-align: center; border-top: 1px solid var(--border-color); padding-top: 20px;">
@@ -2625,7 +2686,7 @@ body.apple-active .tab-btn.active {
         let selectedTrack = null;
         let spotifyUser = null;
         let previewAudio = null;
-        
+
         // DOM Cache for performance
         const ui = {
             searchInput: null,
@@ -2649,7 +2710,7 @@ body.apple-active .tab-btn.active {
                 this.metadataSection = document.getElementById('metadataSection');
             }
         };
-    
+
         let isPlaying = false;
 
         // Check for OAuth callback tokens in URL hash
@@ -2915,10 +2976,10 @@ body.apple-active .tab-btn.active {
                 .replace(/'/g, "&#039;");
         }
 
-                function renderTrackList(tracks) {
+        function renderTrackList(tracks) {
             if (!ui.trackList) ui.init();
             ui.trackList.innerHTML = '';
-            
+
             const fragment = document.createDocumentFragment();
 
             tracks.forEach(track => {
@@ -3210,12 +3271,17 @@ body.apple-active .tab-btn.active {
         let virtualSyncAnchored = false;
         let virtualTimerId = null;
 
+        // Auto-scroll Optimization State
+        let lastActiveIndex = -1;
+        let autoScrollEnabled = true;
+        let scrollTimeout = null;
+
         async function fetchLyrics(track) {
             console.log("Fetching lyrics with manual sync module for:", track.name);
             const module = document.getElementById("lyricsModule");
             const view = document.getElementById("lyricsViewArea");
             const banner = document.getElementById("syncStatusBanner");
-            
+
             // Reset Virtual Player
             virtualSyncAnchored = false;
             if (virtualTimerId) clearInterval(virtualTimerId);
@@ -3228,9 +3294,9 @@ body.apple-active .tab-btn.active {
 
             if (module) module.classList.remove("hidden");
             if (view) view.innerHTML = '<div class="loading-lyrics"><span>Fetching lyrics...</span></div>';
-            
+
             lyricsData = { plain: '', synced: [], rawSynced: '' };
-            
+
             const artist = (track.artists && track.artists[0]?.name) || track.artist || 'Unknown';
             const title = track.name;
             const duration = Math.floor(track.duration_ms / 1000);
@@ -3238,10 +3304,10 @@ body.apple-active .tab-btn.active {
             try {
                 let url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`;
                 if (duration) url += `&duration=${duration}`;
-                
+
                 const res = await fetch(url);
                 let data;
-                
+
                 if (res.ok) {
                     data = await res.json();
                 } else {
@@ -3254,7 +3320,7 @@ body.apple-active .tab-btn.active {
                     lyricsData.plain = data.plainLyrics || 'Only synced lyrics available.';
                     lyricsData.rawSynced = data.syncedLyrics || '';
                     parseSyncedLyrics(data.syncedLyrics);
-                    
+
                     if (lyricsData.synced.length > 0) {
                         switchLyricsTab('synced');
                     } else {
@@ -3276,7 +3342,7 @@ body.apple-active .tab-btn.active {
             if (!lrc) return;
             const lines = lrc.split('\n');
             const lrcRegex = /^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
-            
+
             lines.forEach(line => {
                 const match = line.trim().match(lrcRegex);
                 if (match) {
@@ -3302,7 +3368,7 @@ body.apple-active .tab-btn.active {
                     banner.style.display = "none";
                 }
             }
-            
+
             renderLyrics();
         }
 
@@ -3317,19 +3383,36 @@ body.apple-active .tab-btn.active {
                     view.innerHTML = '<div class="loading-lyrics">No synced lyrics available.</div>';
                     return;
                 }
-                
+
                 let html = '<div class="synced-lyrics-container">';
                 lyricsData.synced.forEach((line, i) => {
                     html += `<div class="synced-line" id="line-${i}" onclick="seekTo(${line.time})">${line.text}</div>`;
                 });
                 html += '</div>';
                 view.innerHTML = html;
-                
+
                 // Ensure player is hooked
                 if (previewAudio) {
-                     const syncHandler = () => { if (!virtualSyncAnchored) syncLyrics(previewAudio.currentTime); };
-                     previewAudio.removeEventListener('timeupdate', syncHandler);
-                     previewAudio.addEventListener('timeupdate', syncHandler);
+                    const syncHandler = () => { if (!virtualSyncAnchored) syncLyrics(previewAudio.currentTime); };
+                    previewAudio.removeEventListener('timeupdate', syncHandler);
+                    previewAudio.addEventListener('timeupdate', syncHandler);
+                }
+
+                // Setup manual scroll detection for auto-scroll pause
+                const lyricsArea = document.getElementById('lyricsViewArea');
+                if (lyricsArea && !lyricsArea.scrollListenerAdded) {
+                    lyricsArea.scrollListenerAdded = true;
+                    lyricsArea.addEventListener('scroll', () => {
+                        // If we are scrolling, and it's not from our auto-scroll logic
+                        if (lyricsArea.classList.contains('is-scrolling-auto')) return;
+
+                        // Disable auto-scroll for 5 seconds upon user interaction
+                        autoScrollEnabled = false;
+                        clearTimeout(scrollTimeout);
+                        scrollTimeout = setTimeout(() => {
+                            autoScrollEnabled = true;
+                        }, 5000);
+                    });
                 }
             }
         }
@@ -3349,7 +3432,7 @@ body.apple-active .tab-btn.active {
             virtualTimerId = setInterval(() => {
                 const elapsed = (Date.now() - virtualStartTime) / 1000;
                 syncLyrics(elapsed);
-                
+
                 if (selectedTrack && elapsed > (selectedTrack.duration_ms / 1000) + 10) {
                     clearInterval(virtualTimerId);
                     virtualSyncAnchored = false;
@@ -3366,7 +3449,7 @@ body.apple-active .tab-btn.active {
 
         function syncLyrics(currentTime) {
             if (currentLyricsTab !== 'synced' || lyricsData.synced.length === 0) return;
-            
+
             let activeIndex = -1;
             for (let i = 0; i < lyricsData.synced.length; i++) {
                 if (lyricsData.synced[i].time <= currentTime) {
@@ -3375,15 +3458,25 @@ body.apple-active .tab-btn.active {
                     break;
                 }
             }
-            
-            if (activeIndex !== -1) {
+
+            if (activeIndex !== -1 && activeIndex !== lastActiveIndex) {
+                lastActiveIndex = activeIndex;
                 const lines = document.querySelectorAll('.synced-line');
                 lines.forEach(l => l.classList.remove('active'));
-                
+
                 const activeLine = document.getElementById(`line-${activeIndex}`);
-                if (activeLine && !activeLine.classList.contains('active')) {
+                if (activeLine) {
                     activeLine.classList.add('active');
-                    activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    if (autoScrollEnabled) {
+                        const viewArea = document.getElementById('lyricsViewArea');
+                        if (viewArea) {
+                            viewArea.classList.add('is-scrolling-auto');
+                            activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            // Remove helper class after animation
+                            setTimeout(() => viewArea.classList.remove('is-scrolling-auto'), 1000);
+                        }
+                    }
                 }
             }
         }
@@ -3397,7 +3490,7 @@ body.apple-active .tab-btn.active {
                 const old = btn.textContent;
                 btn.textContent = 'Copied!';
                 setTimeout(() => btn.textContent = old, 2000);
-            } catch (e) {}
+            } catch (e) { }
         }
 
         // Settings Logic
@@ -3589,7 +3682,7 @@ body.apple-active .tab-btn.active {
         document.addEventListener('DOMContentLoaded', () => {
             ui.init();
             initPreviewAudio();
-            
+
             initSettings();
             checkAuthCallback();
             checkStoredUser();
@@ -3802,7 +3895,9 @@ body.apple-active .tab-btn.active {
             border-radius: 50px;
             font-size: 1.1rem;
             font-weight: 600;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             transition: transform 0.2s;
             margin-top: 10px;
         }
@@ -3827,7 +3922,9 @@ body.apple-active .tab-btn.active {
             border-radius: 50px;
             font-size: 1rem;
             font-weight: 600;
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
             display: inline-flex;
             align-items: center;
             gap: 10px;
@@ -4149,7 +4246,7 @@ body.apple-active .tab-btn.active {
 
             // Initialize Features
             initPreviewAudio();
-            
+
             if (typeof initSettings === 'function') initSettings();
         });
 
