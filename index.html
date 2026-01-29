@@ -1985,16 +1985,18 @@
 
         .guide-content {
             max-height: 0;
+            opacity: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
+            transition: all 0.3s ease-in-out;
             color: var(--text-secondary);
             font-size: 0.85rem;
         }
 
         .guide-content.expanded {
-            max-height: 400px;
-            margin-top: 10px;
-            padding-bottom: 10px;
+            max-height: 1000px;
+            opacity: 1;
+            margin-top: 15px;
+            padding-bottom: 5px;
         }
 
         .back-btn {
@@ -3587,12 +3589,14 @@
             });
 
             // Guide Toggle
-            if (toggleGuideBtn && guideContent && guideArrow) {
-                toggleGuideBtn.addEventListener('click', () => {
-                    guideContent.classList.toggle('expanded');
-                    const isExpanded = guideContent.classList.contains('expanded');
-                    guideArrow.style.transform = isExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
-                });
+            if (toggleGuideBtn && guideContent) {
+                toggleGuideBtn.onclick = (e) => {
+                    e.preventDefault();
+                    const isExpanded = guideContent.classList.toggle('expanded');
+                    if (guideArrow) {
+                        guideArrow.style.transform = isExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+                    }
+                };
             }
 
             // Save functionality
