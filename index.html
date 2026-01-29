@@ -2127,6 +2127,15 @@ body.apple-active .tab-btn.active {
             text-align: center;
             padding: 20px;
         }
+    
+        /* Performance Optimizations */
+        #dynamic-bg, .bg-blob, .synced-line, .track-item {
+            will-change: transform, opacity;
+        }
+        .synced-line {
+            will-change: transform, color, filter;
+        }
+    
     </style>
 </head>
 
@@ -2616,6 +2625,31 @@ body.apple-active .tab-btn.active {
         let selectedTrack = null;
         let spotifyUser = null;
         let previewAudio = null;
+        
+        // DOM Cache for performance
+        const ui = {
+            searchInput: null,
+            trackList: null,
+            lyricsModule: null,
+            lyricsViewArea: null,
+            syncStatusBanner: null,
+            loading: null,
+            placeholder: null,
+            errorMessage: null,
+            metadataSection: null,
+            init() {
+                this.searchInput = document.getElementById('searchInput');
+                this.trackList = document.getElementById('trackList');
+                this.lyricsModule = document.getElementById('lyricsModule');
+                this.lyricsViewArea = document.getElementById('lyricsViewArea');
+                this.syncStatusBanner = document.getElementById('syncStatusBanner');
+                this.loading = document.getElementById('loading');
+                this.placeholder = document.getElementById('placeholder');
+                this.errorMessage = document.getElementById('errorMessage');
+                this.metadataSection = document.getElementById('metadataSection');
+            }
+        };
+    
         let isPlaying = false;
 
         // Check for OAuth callback tokens in URL hash
@@ -2735,7 +2769,7 @@ body.apple-active .tab-btn.active {
             document.getElementById('spotifyWrapper').classList.remove('active');
             document.getElementById('appleWrapper').classList.remove('active');
             document.getElementById('previewPlayer').classList.remove('active');
-            document.getElementById('loading').classList.remove('active');
+            ui.loading?.classList.remove('active');
             document.getElementById('errorMessage').classList.remove('active');
             stopPreview();
         }
@@ -2841,7 +2875,7 @@ body.apple-active .tab-btn.active {
 
             hideAllEmbeds();
             hidePlaceholder();
-            document.getElementById('loading').classList.add('active');
+            ui.loading?.classList.add('active');
             hideSearchResults();
 
             try {
@@ -2881,16 +2915,16 @@ body.apple-active .tab-btn.active {
                 .replace(/'/g, "&#039;");
         }
 
-        function renderTrackList(tracks) {
-            const trackList = document.getElementById('trackList');
-            trackList.innerHTML = '';
+                function renderTrackList(tracks) {
+            if (!ui.trackList) ui.init();
+            ui.trackList.innerHTML = '';
+            
+            const fragment = document.createDocumentFragment();
 
             tracks.forEach(track => {
                 const trackEl = document.createElement('div');
                 trackEl.className = 'track-item';
                 trackEl.dataset.trackId = track.id;
-
-                // Use escapeHtml for all dynamic text to prevent XSS
                 trackEl.innerHTML = `
                     <img class="track-image protected-img" src="${track.image || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%232a2a2a%22 width=%22100%22 height=%22100%22/></svg>'}" 
                         alt="${escapeHtml(track.name)}"
@@ -2904,9 +2938,10 @@ body.apple-active .tab-btn.active {
                 `;
 
                 trackEl.addEventListener('click', () => selectTrack(track));
-                trackList.appendChild(trackEl);
+                fragment.appendChild(trackEl);
             });
 
+            ui.trackList.appendChild(fragment);
             showSearchResults();
         }
 
@@ -3552,6 +3587,7 @@ body.apple-active .tab-btn.active {
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            ui.init();
             initPreviewAudio();
             
             initSettings();
