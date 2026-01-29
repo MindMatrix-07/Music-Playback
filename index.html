@@ -3227,10 +3227,20 @@
                             </div>
                         `;
                     } else if (ytResult.error) {
+                        let errorMsg = "Connection Error";
+                        const lowMsg = (ytResult.message || "").toLowerCase();
+
+                        if (lowMsg.includes('quota')) errorMsg = "Daily Quota Exceeded";
+                        else if (lowMsg.includes('not valid')) errorMsg = "Invalid API Key";
+                        else if (lowMsg.includes('disabled') || lowMsg.includes('not been used')) errorMsg = "API Not Enabled in Cloud Console";
+                        else if (lowMsg.includes('failed to fetch')) errorMsg = "Network Blocked (check VPN/CORS)";
+                        else if (ytResult.message) errorMsg = ytResult.message;
+
                         ytContainer.innerHTML = `
                             <div class="yt-label">Video Error</div>
-                            <div style="height:150px; display:flex; align-items:center; justify-content:center; background:#000; color:#ff6b6b; padding:20px; text-align:center;">
-                                <p style="font-size:0.8rem;">${ytResult.message.includes('quota') ? 'Daily Quota Exceeded' : 'Connection Error'}</p>
+                            <div style="height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#010101; color:#ff6b6b; padding:20px; text-align:center; gap:8px; border-radius:8px;">
+                                <p style="font-size:0.85rem; font-weight:600; margin:0;">${errorMsg}</p>
+                                <button onclick="document.getElementById('settingsBtn').click()" class="secondary-btn" style="padding:4px 10px; font-size:0.75rem; color:#fff; border-color:rgba(255,255,255,0.2);">Check Settings</button>
                             </div>
                         `;
                     } else if (ytResult.id) {
@@ -3659,17 +3669,21 @@
 
             try {
                 const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&key=${apiKey}`);
+
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({}));
+                    const message = (errorData.error && errorData.error.message) || `HTTP Error ${res.status}`;
+                    throw new Error(message);
+                }
+
                 const data = await res.json();
-
-                if (data.error) throw new Error(data.error.message);
-
                 if (data.items && data.items.length > 0) {
                     return { id: data.items[0].id.videoId };
                 }
                 return { id: null };
             } catch (err) {
                 console.error('YouTube API Error:', err);
-                return { error: 'api_error', message: err.message };
+                return { error: 'api_error', message: err.message || "Unknown error" };
             }
         }
 
