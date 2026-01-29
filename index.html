@@ -3406,295 +3406,322 @@
                         // If we are scrolling, and it's not from our auto-scroll logic
                         if (lyricsArea.classList.contains('is-scrolling-auto')) return;
 
-                        // Disable auto-scroll for 5 seconds upon user interaction
+                        // Disable auto-scroll for 2 seconds upon user interaction
                         autoScrollEnabled = false;
                         clearTimeout(scrollTimeout);
                         scrollTimeout = setTimeout(() => {
                             autoScrollEnabled = true;
-                        }, 5000);
+                            // Immediately snap back once re-enabled
+                            if (lastActiveIndex !== -1) {
+                                const activeLine = document.getElementById(`line-${lastActiveIndex}`);
+                                if (activeLine) {
+                                    lyricsArea.classList.add('is-scrolling-auto');
+                                    activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    setTimeout(() => lyricsArea.classList.remove('is-scrolling-auto'), 1000);
+                                }
+                            }
+                        }, 2000);
                     });
                 }
-            }
-        }
+                function seekTo(time) {
+                    if (previewAudio && previewAudio.src && !previewAudio.paused) {
+                        previewAudio.currentTime = time;
+                        return;
+                    }
 
-        function seekTo(time) {
-            if (previewAudio && previewAudio.src && !previewAudio.paused) {
-                previewAudio.currentTime = time;
-                return;
-            }
+                    // Manual Sync Mode
+                    console.log("Anchoring Virtual Player at:", time);
+                    virtualStartTime = Date.now() - (time * 1000);
+                    virtualSyncAnchored = true;
 
-            // Manual Sync Mode
-            console.log("Anchoring Virtual Player at:", time);
-            virtualStartTime = Date.now() - (time * 1000);
-            virtualSyncAnchored = true;
+                    if (virtualTimerId) clearInterval(virtualTimerId);
+                    virtualTimerId = setInterval(() => {
+                        const elapsed = (Date.now() - virtualStartTime) / 1000;
+                        syncLyrics(elapsed);
 
-            if (virtualTimerId) clearInterval(virtualTimerId);
-            virtualTimerId = setInterval(() => {
-                const elapsed = (Date.now() - virtualStartTime) / 1000;
-                syncLyrics(elapsed);
+                        if (selectedTrack && elapsed > (selectedTrack.duration_ms / 1000) + 10) {
+                            clearInterval(virtualTimerId);
+                            virtualSyncAnchored = false;
+                        }
+                    }, 200);
 
-                if (selectedTrack && elapsed > (selectedTrack.duration_ms / 1000) + 10) {
-                    clearInterval(virtualTimerId);
-                    virtualSyncAnchored = false;
+                    // UI Update: Green Rectangular Box Dialogue
+                    let banner = document.getElementById("syncStatusBanner");
+                    if (banner) {
+                        banner.textContent = "Lyrics synced! Tracking music internally...";
+                        banner.style.color = "#fff";
+                        banner.style.background = "#1db954";
+                        banner.style.padding = "12px";
+                        banner.style.borderRadius = "8px";
+                        banner.style.fontWeight = "600";
+                        banner.style.margin = "10px";
+                        banner.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+                        banner.style.display = "block";
+
+                        // Disappear after 3 seconds
+                        setTimeout(() => {
+                            banner.style.opacity = "0";
+                            banner.style.transform = "translateY(-10px)";
+                            setTimeout(() => {
+                                banner.style.display = "none";
+                                // Reset styles for next music fetch/instruction
+                                banner.style.opacity = "1";
+                                banner.style.transform = "translateY(0)";
+                            }, 500);
+                        }, 3000);
+                    }
                 }
-            }, 200);
 
-            let banner = document.getElementById("syncStatusBanner");
-            if (banner) {
-                banner.textContent = "Lyrics synced! Tracking music internally...";
-                banner.style.color = "#1db954";
-                banner.style.background = "rgba(29, 185, 84, 0.1)";
-            }
-        }
+                function syncLyrics(currentTime) {
+                    if (currentLyricsTab !== 'synced' || lyricsData.synced.length === 0) return;
 
-        function syncLyrics(currentTime) {
-            if (currentLyricsTab !== 'synced' || lyricsData.synced.length === 0) return;
+                    let activeIndex = -1;
+                    for (let i = 0; i < lyricsData.synced.length; i++) {
+                        if (lyricsData.synced[i].time <= currentTime) {
+                            activeIndex = i;
+                        } else {
+                            break;
+                        }
+                    }
 
-            let activeIndex = -1;
-            for (let i = 0; i < lyricsData.synced.length; i++) {
-                if (lyricsData.synced[i].time <= currentTime) {
-                    activeIndex = i;
-                } else {
-                    break;
-                }
-            }
+                    if (activeIndex !== -1 && activeIndex !== lastActiveIndex) {
+                        lastActiveIndex = activeIndex;
+                        const lines = document.querySelectorAll('.synced-line');
+                        lines.forEach(l => l.classList.remove('active'));
 
-            if (activeIndex !== -1 && activeIndex !== lastActiveIndex) {
-                lastActiveIndex = activeIndex;
-                const lines = document.querySelectorAll('.synced-line');
-                lines.forEach(l => l.classList.remove('active'));
+                        const activeLine = document.getElementById(`line-${activeIndex}`);
+                        if (activeLine) {
+                            activeLine.classList.add('active');
 
-                const activeLine = document.getElementById(`line-${activeIndex}`);
-                if (activeLine) {
-                    activeLine.classList.add('active');
-
-                    if (autoScrollEnabled) {
-                        const viewArea = document.getElementById('lyricsViewArea');
-                        if (viewArea) {
-                            viewArea.classList.add('is-scrolling-auto');
-                            activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            // Remove helper class after animation
-                            setTimeout(() => viewArea.classList.remove('is-scrolling-auto'), 1000);
+                            if (autoScrollEnabled) {
+                                const viewArea = document.getElementById('lyricsViewArea');
+                                if (viewArea) {
+                                    viewArea.classList.add('is-scrolling-auto');
+                                    // Use scrollIntoView with block:center but ensure it doesn't affect page scroll
+                                    // Alternatively, calculate top manually if scrollIntoView still causes jumps
+                                    activeLine.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+                                    // Remove helper class after animation
+                                    setTimeout(() => viewArea.classList.remove('is-scrolling-auto'), 1000);
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
 
-        async function copyCurrentLyrics() {
-            const text = currentLyricsTab === 'plain' ? lyricsData.plain : lyricsData.rawSynced;
-            if (!text) return;
-            try {
-                await navigator.clipboard.writeText(text);
-                const btn = document.getElementById('copyLyricsBtn');
-                const old = btn.textContent;
-                btn.textContent = 'Copied!';
-                setTimeout(() => btn.textContent = old, 2000);
-            } catch (e) { }
-        }
-
-        // Settings Logic
-        function initSettings() {
-            const settingsModal = document.getElementById('settingsModal');
-            const settingsBtn = document.getElementById('settingsBtn');
-            const ytInput = document.getElementById('ytApiKeyInput');
-            const saveBtn = document.getElementById('saveSettingsBtn');
-            const closeBtn = document.getElementById('closeSettingsBtn');
-            const deleteBtn = document.getElementById('deleteKeyBtn');
-            const toggleGuideBtn = document.getElementById('toggleGuideBtn');
-            const guideContent = document.getElementById('guideContent');
-            const guideArrow = document.getElementById('guideArrow');
-
-            if (!settingsBtn) return;
-
-            settingsBtn.addEventListener('click', () => {
-                ytInput.value = localStorage.getItem('yt_api_key') || '';
-                settingsModal.classList.remove('hidden');
-            });
-
-            closeBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
-
-            // Guide Toggle
-            if (toggleGuideBtn && guideContent && guideArrow) {
-                toggleGuideBtn.addEventListener('click', () => {
-                    guideContent.classList.toggle('expanded');
-                    const isExpanded = guideContent.classList.contains('expanded');
-                    guideArrow.style.transform = isExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
-                });
-            }
-
-            // Save functionality
-            saveBtn.addEventListener('click', () => {
-                const key = ytInput.value.trim();
-                if (key) {
-                    localStorage.setItem('yt_api_key', key);
-                    settingsModal.classList.add('hidden');
-                    // Retry video if track selected
-                    if (selectedTrack) {
-                        const ytContainer = document.getElementById('youtubeContainer');
-                        const ytEmbed = document.getElementById('youtubeEmbed');
-                        // If container is visible but empty/error, retry
-                        if (ytContainer && !ytContainer.classList.contains('hidden')) {
-                            fetchMetadata(selectedTrack);
-                        }
-                    }
-                } else {
-                    alert('Please enter a valid key.');
+                async function copyCurrentLyrics() {
+                    const text = currentLyricsTab === 'plain' ? lyricsData.plain : lyricsData.rawSynced;
+                    if (!text) return;
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        const btn = document.getElementById('copyLyricsBtn');
+                        const old = btn.textContent;
+                        btn.textContent = 'Copied!';
+                        setTimeout(() => btn.textContent = old, 2000);
+                    } catch (e) { }
                 }
-            });
 
-            // Delete functionality
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', () => {
-                    if (confirm('Are you sure you want to remove your API Key from this device?')) {
-                        localStorage.removeItem('yt_api_key');
-                        ytInput.value = '';
-                        alert('Key removed from local storage.');
-                        settingsModal.classList.add('hidden');
+                // Settings Logic
+                function initSettings() {
+                    const settingsModal = document.getElementById('settingsModal');
+                    const settingsBtn = document.getElementById('settingsBtn');
+                    const ytInput = document.getElementById('ytApiKeyInput');
+                    const saveBtn = document.getElementById('saveSettingsBtn');
+                    const closeBtn = document.getElementById('closeSettingsBtn');
+                    const deleteBtn = document.getElementById('deleteKeyBtn');
+                    const toggleGuideBtn = document.getElementById('toggleGuideBtn');
+                    const guideContent = document.getElementById('guideContent');
+                    const guideArrow = document.getElementById('guideArrow');
+
+                    if (!settingsBtn) return;
+
+                    settingsBtn.addEventListener('click', () => {
+                        ytInput.value = localStorage.getItem('yt_api_key') || '';
+                        settingsModal.classList.remove('hidden');
+                    });
+
+                    closeBtn.addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+                    // Guide Toggle
+                    if (toggleGuideBtn && guideContent && guideArrow) {
+                        toggleGuideBtn.addEventListener('click', () => {
+                            guideContent.classList.toggle('expanded');
+                            const isExpanded = guideContent.classList.contains('expanded');
+                            guideArrow.style.transform = isExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+                        });
                     }
-                });
-            }
 
-            // Diagnostics Copy
-            const internalCopyBtn = document.getElementById('internalCopyLogBtn');
-            const internalConfirm = document.getElementById('internalClipConfirm');
-            if (internalCopyBtn) {
-                internalCopyBtn.addEventListener('click', () => {
-                    const diag = {
-                        timestamp: new Date().toISOString(),
-                        userAgent: navigator.userAgent,
-                        screen: window.innerWidth + 'x' + window.innerHeight,
-                        platform: currentPlatform,
-                        hasDeviceID: !!localStorage.getItem('device_binding_id'),
-                        deviceID: localStorage.getItem('device_binding_id'),
-                        hasYTKey: !!localStorage.getItem('yt_api_key'), // SECURE: Only copies true/false
-                        authCookie: document.cookie.includes('auth_token'),
-                        referrer: document.referrer
+                    // Save functionality
+                    saveBtn.addEventListener('click', () => {
+                        const key = ytInput.value.trim();
+                        if (key) {
+                            localStorage.setItem('yt_api_key', key);
+                            settingsModal.classList.add('hidden');
+                            // Retry video if track selected
+                            if (selectedTrack) {
+                                const ytContainer = document.getElementById('youtubeContainer');
+                                const ytEmbed = document.getElementById('youtubeEmbed');
+                                // If container is visible but empty/error, retry
+                                if (ytContainer && !ytContainer.classList.contains('hidden')) {
+                                    fetchMetadata(selectedTrack);
+                                }
+                            }
+                        } else {
+                            alert('Please enter a valid key.');
+                        }
+                    });
+
+                    // Delete functionality
+                    if (deleteBtn) {
+                        deleteBtn.addEventListener('click', () => {
+                            if (confirm('Are you sure you want to remove your API Key from this device?')) {
+                                localStorage.removeItem('yt_api_key');
+                                ytInput.value = '';
+                                alert('Key removed from local storage.');
+                                settingsModal.classList.add('hidden');
+                            }
+                        });
+                    }
+
+                    // Diagnostics Copy
+                    const internalCopyBtn = document.getElementById('internalCopyLogBtn');
+                    const internalConfirm = document.getElementById('internalClipConfirm');
+                    if (internalCopyBtn) {
+                        internalCopyBtn.addEventListener('click', () => {
+                            const diag = {
+                                timestamp: new Date().toISOString(),
+                                userAgent: navigator.userAgent,
+                                screen: window.innerWidth + 'x' + window.innerHeight,
+                                platform: currentPlatform,
+                                hasDeviceID: !!localStorage.getItem('device_binding_id'),
+                                deviceID: localStorage.getItem('device_binding_id'),
+                                hasYTKey: !!localStorage.getItem('yt_api_key'), // SECURE: Only copies true/false
+                                authCookie: document.cookie.includes('auth_token'),
+                                referrer: document.referrer
+                            };
+
+                            navigator.clipboard.writeText(JSON.stringify(diag, null, 2)).then(() => {
+                                internalConfirm.style.opacity = '1';
+                                setTimeout(() => internalConfirm.style.opacity = '0', 2000);
+                            });
+                        });
+                    }
+                }
+
+                // Official YouTube Search (Client-Side)
+                async function searchYouTubeClient(query) {
+                    const apiKey = localStorage.getItem('yt_api_key');
+                    if (!apiKey) return { error: 'missing_key' };
+
+                    try {
+                        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&key=${apiKey}`);
+                        const data = await res.json();
+
+                        if (data.error) throw new Error(data.error.message);
+
+                        if (data.items && data.items.length > 0) {
+                            return { id: data.items[0].id.videoId };
+                        }
+                        return { id: null };
+                    } catch (err) {
+                        console.error('YouTube API Error:', err);
+                        return { error: 'api_error', message: err.message };
+                    }
+                }
+
+                // Debug Helper
+                function debugLog(msg) {
+                    // Visual log removed
+                    console.log(msg);
+                }
+
+                // Spotify Iframe API
+                let embedController = null;
+                let pendingSpotifyTrack = null;
+
+                window.onSpotifyIframeApiReady = (IFrameAPI) => {
+                    debugLog('Spotify API Ready');
+                    const element = document.getElementById('spotifyEmbed');
+                    const options = {
+                        uri: 'spotify:track:4cOdK2wGLETKBW3PvgPWqT', // Placeholder
+                        width: '100%',
+                        height: '152',
+                        theme: '0'
                     };
+                    const callback = (EmbedController) => {
+                        debugLog('EmbedController Created');
+                        embedController = EmbedController;
 
-                    navigator.clipboard.writeText(JSON.stringify(diag, null, 2)).then(() => {
-                        internalConfirm.style.opacity = '1';
-                        setTimeout(() => internalConfirm.style.opacity = '0', 2000);
-                    });
+                        // Check if a track was waiting for the controller
+                        if (pendingSpotifyTrack) {
+                            debugLog('Found pending track, loading...');
+                            loadAndPlaySpotify(pendingSpotifyTrack);
+                            pendingSpotifyTrack = null;
+                        }
+                    };
+                    IFrameAPI.createController(element, options, callback);
+                };
+
+                function loadAndPlaySpotify(trackId) {
+                    if (!embedController) {
+                        debugLog('Error: Controller missing during load attempt');
+                        return;
+                    }
+
+                    debugLog(`Loading URI: spotify:track:${trackId}`);
+                    embedController.loadUri(`spotify:track:${trackId}`);
+                    document.getElementById('spotifyWrapper').classList.add('active');
+
+                    // "Trigger autoclick once after 2 seconds" logic
+                    debugLog('Scheduling play in 2s...');
+                    setTimeout(() => {
+                        debugLog('Attempting embedController.play()...');
+                        embedController.play(); // No promise returned by this API usually, but we capture flow
+                        // Add a follow-up check
+                        setTimeout(() => debugLog('Play command sent. If no sound, Browser Policy likely blocked it.'), 500);
+                    }, 2000);
+                }
+
+                // URL Parameters Handler (Auto-Search/Play)
+                async function checkUrlParams() {
+                    const params = new URLSearchParams(window.location.search);
+                    const query = params.get('q') || params.get('search');
+
+                    if (query) {
+                        debugLog(`Found query: ${query}`);
+                        const searchInput = document.getElementById('searchInput');
+                        searchInput.value = query;
+
+                        // Trigger search
+                        await searchMusic();
+
+                        // Auto-select first result if available
+                        const trackList = document.getElementById('trackList');
+                        if (trackList && trackList.firstChild) {
+                            debugLog('Auto-selecting first result');
+                            trackList.firstChild.click();
+                        } else {
+                            debugLog('No results found to select');
+                        }
+                    }
+                }
+
+                // Initialize
+                document.addEventListener('DOMContentLoaded', () => {
+                    ui.init();
+                    initPreviewAudio();
+
+                    initSettings();
+                    checkAuthCallback();
+                    checkStoredUser();
+                    selectPlatform('spotify');
+
+                    // Check for external search query
+                    checkUrlParams();
                 });
-            }
-        }
-
-        // Official YouTube Search (Client-Side)
-        async function searchYouTubeClient(query) {
-            const apiKey = localStorage.getItem('yt_api_key');
-            if (!apiKey) return { error: 'missing_key' };
-
-            try {
-                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&key=${apiKey}`);
-                const data = await res.json();
-
-                if (data.error) throw new Error(data.error.message);
-
-                if (data.items && data.items.length > 0) {
-                    return { id: data.items[0].id.videoId };
-                }
-                return { id: null };
-            } catch (err) {
-                console.error('YouTube API Error:', err);
-                return { error: 'api_error', message: err.message };
-            }
-        }
-
-        // Debug Helper
-        function debugLog(msg) {
-            // Visual log removed
-            console.log(msg);
-        }
-
-        // Spotify Iframe API
-        let embedController = null;
-        let pendingSpotifyTrack = null;
-
-        window.onSpotifyIframeApiReady = (IFrameAPI) => {
-            debugLog('Spotify API Ready');
-            const element = document.getElementById('spotifyEmbed');
-            const options = {
-                uri: 'spotify:track:4cOdK2wGLETKBW3PvgPWqT', // Placeholder
-                width: '100%',
-                height: '152',
-                theme: '0'
-            };
-            const callback = (EmbedController) => {
-                debugLog('EmbedController Created');
-                embedController = EmbedController;
-
-                // Check if a track was waiting for the controller
-                if (pendingSpotifyTrack) {
-                    debugLog('Found pending track, loading...');
-                    loadAndPlaySpotify(pendingSpotifyTrack);
-                    pendingSpotifyTrack = null;
-                }
-            };
-            IFrameAPI.createController(element, options, callback);
-        };
-
-        function loadAndPlaySpotify(trackId) {
-            if (!embedController) {
-                debugLog('Error: Controller missing during load attempt');
-                return;
-            }
-
-            debugLog(`Loading URI: spotify:track:${trackId}`);
-            embedController.loadUri(`spotify:track:${trackId}`);
-            document.getElementById('spotifyWrapper').classList.add('active');
-
-            // "Trigger autoclick once after 2 seconds" logic
-            debugLog('Scheduling play in 2s...');
-            setTimeout(() => {
-                debugLog('Attempting embedController.play()...');
-                embedController.play(); // No promise returned by this API usually, but we capture flow
-                // Add a follow-up check
-                setTimeout(() => debugLog('Play command sent. If no sound, Browser Policy likely blocked it.'), 500);
-            }, 2000);
-        }
-
-        // URL Parameters Handler (Auto-Search/Play)
-        async function checkUrlParams() {
-            const params = new URLSearchParams(window.location.search);
-            const query = params.get('q') || params.get('search');
-
-            if (query) {
-                debugLog(`Found query: ${query}`);
-                const searchInput = document.getElementById('searchInput');
-                searchInput.value = query;
-
-                // Trigger search
-                await searchMusic();
-
-                // Auto-select first result if available
-                const trackList = document.getElementById('trackList');
-                if (trackList && trackList.firstChild) {
-                    debugLog('Auto-selecting first result');
-                    trackList.firstChild.click();
-                } else {
-                    debugLog('No results found to select');
-                }
-            }
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            ui.init();
-            initPreviewAudio();
-
-            initSettings();
-            checkAuthCallback();
-            checkStoredUser();
-            selectPlatform('spotify');
-
-            // Check for external search query
-            checkUrlParams();
-        });
     </script>
     <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
     <script>
-        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+                window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
 
@@ -4005,250 +4032,250 @@
     </style>
 
     <script>
-        // Auth Logic
-        (async function checkAuth() {
-            const overlay = document.getElementById('accessOverlay');
-            const discordStep = document.getElementById('discordLoginStep');
-            const codeStep = document.getElementById('codeEntryStep');
+                // Auth Logic
+                (async function checkAuth() {
+                    const overlay = document.getElementById('accessOverlay');
+                    const discordStep = document.getElementById('discordLoginStep');
+                    const codeStep = document.getElementById('codeEntryStep');
 
-            const codeInput = document.getElementById('accessCodeInput');
-            const btn = document.getElementById('accessSubmitBtn');
-            const errorMsg = document.getElementById('accessError');
-            const copyBtn = document.getElementById('copyLogBtn');
-            const clipConfirm = document.getElementById('clipConfirm');
-            const skipBtn = document.getElementById('skipDiscordBtn');
+                    const codeInput = document.getElementById('accessCodeInput');
+                    const btn = document.getElementById('accessSubmitBtn');
+                    const errorMsg = document.getElementById('accessError');
+                    const copyBtn = document.getElementById('copyLogBtn');
+                    const clipConfirm = document.getElementById('clipConfirm');
+                    const skipBtn = document.getElementById('skipDiscordBtn');
 
-            // 1. Get/Create Persistent Device ID
-            let deviceId = localStorage.getItem('device_binding_id');
-            if (!deviceId) {
-                deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
-                localStorage.setItem('device_binding_id', deviceId);
-            }
-
-            // Skip handler
-            if (skipBtn) {
-                skipBtn.addEventListener('click', () => {
-                    discordStep.classList.add('hidden');
-                    codeStep.classList.remove('hidden');
-                    // Hide avatar
-                    document.querySelector('.user-preview').style.display = 'none';
-                });
-            }
-
-            // ... (Error Logging Logic Same as Before) ...
-            let lastErrorLog = { timestamp: '', browser: navigator.userAgent, error: '', details: null };
-            function showError(msg, details = null) {
-                errorMsg.textContent = msg;
-                copyBtn.classList.remove('hidden');
-
-                // Sanitize details to REMOVE API Keys
-                let safeDetails = details;
-                if (details && typeof details === 'object') {
-                    safeDetails = JSON.parse(JSON.stringify(details)); // Deep copy
-                    // Explicitly remove sensitive keys
-                    if (safeDetails.yt_api_key) safeDetails.yt_api_key = '[REDACTED]';
-                    if (safeDetails.apiKey) safeDetails.apiKey = '[REDACTED]';
-                    if (safeDetails.headers) delete safeDetails.headers; // Remove headers incase of tokens
-                }
-
-                lastErrorLog = { timestamp: new Date().toISOString(), error: msg, details: safeDetails };
-                console.error('Captured Error:', lastErrorLog);
-            }
-            copyBtn.addEventListener('click', () => {
-                navigator.clipboard.writeText(JSON.stringify(lastErrorLog, null, 2));
-                clipConfirm.style.opacity = '1';
-                setTimeout(() => clipConfirm.style.opacity = '0', 2000);
-            });
-
-            // 1. Check Auth Status
-            try {
-                // Show loader (it should be visible by default in HTML, but ensuring logic flow)
-                const loadingStep = document.getElementById('loadingStep');
-
-                const res = await fetch('/api/auth/status?_=' + Date.now());
-                const data = await res.json();
-
-                // Hide loader
-                if (loadingStep) loadingStep.classList.add('hidden');
-
-                if (data.maintenance) {
-                    document.getElementById('maintOverlay').classList.remove('hidden');
-                    if (data.reason) document.getElementById('maintReason').textContent = data.reason;
-                    return; // Stop everything
-                } else {
-                    document.getElementById('maintOverlay').classList.add('hidden');
-                }
-
-                if (data.authenticated) {
-                    // Fully Authorized
-                    overlay.classList.add('hidden');
-                    document.getElementById('appContent').style.display = 'block';
-                    return;
-                }
-
-                // Not authorized, but maybe logged in to Discord?
-                if (data.discordUser) {
-                    // Show Code Entry Step
-                    discordStep.classList.add('hidden');
-                    codeStep.classList.remove('hidden');
-
-                    discordUsername.textContent = data.discordUser.username;
-                    if (data.discordUser.avatar) {
-                        discordAvatar.src = `https://cdn.discordapp.com/avatars/${data.discordUser.id}/${data.discordUser.avatar}.png`;
-                    } else {
-                        // Default avatar
-                        discordAvatar.src = 'https://cdn.discordapp.com/embed/avatars/0.png';
+                    // 1. Get/Create Persistent Device ID
+                    let deviceId = localStorage.getItem('device_binding_id');
+                    if (!deviceId) {
+                        deviceId = 'dev_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+                        localStorage.setItem('device_binding_id', deviceId);
                     }
-                } else {
-                    // Not logged in at all -> Show Discord Login Button (Default)
-                    discordStep.classList.remove('hidden');
-                    codeStep.classList.add('hidden');
-                }
 
-            } catch (e) {
-                console.error('Auth Check Failed', e);
-                // On error, better to show login than get stuck
-                if (document.getElementById('loadingStep')) document.getElementById('loadingStep').classList.add('hidden');
-                discordStep.classList.remove('hidden');
-            }
+                    // Skip handler
+                    if (skipBtn) {
+                        skipBtn.addEventListener('click', () => {
+                            discordStep.classList.add('hidden');
+                            codeStep.classList.remove('hidden');
+                            // Hide avatar
+                            document.querySelector('.user-preview').style.display = 'none';
+                        });
+                    }
 
-            // 2. Login Flow (Code Submission only)
-            async function attemptLogin() {
-                const code = codeInput.value.trim();
-                // Name is now handled by backend (Discord Name or Anonymous)
+                    // ... (Error Logging Logic Same as Before) ...
+                    let lastErrorLog = { timestamp: '', browser: navigator.userAgent, error: '', details: null };
+                    function showError(msg, details = null) {
+                        errorMsg.textContent = msg;
+                        copyBtn.classList.remove('hidden');
 
-                if (!code) {
-                    errorMsg.textContent = 'Please enter the code.';
-                    codeInput.focus();
-                    return;
-                }
+                        // Sanitize details to REMOVE API Keys
+                        let safeDetails = details;
+                        if (details && typeof details === 'object') {
+                            safeDetails = JSON.parse(JSON.stringify(details)); // Deep copy
+                            // Explicitly remove sensitive keys
+                            if (safeDetails.yt_api_key) safeDetails.yt_api_key = '[REDACTED]';
+                            if (safeDetails.apiKey) safeDetails.apiKey = '[REDACTED]';
+                            if (safeDetails.headers) delete safeDetails.headers; // Remove headers incase of tokens
+                        }
 
-                btn.disabled = true;
-                btn.style.opacity = '0.5';
-                errorMsg.textContent = 'Linking Account...';
-                copyBtn.classList.add('hidden');
-
-                try {
-                    const res = await fetch('/api/verify-access', {
-                        method: 'POST',
-                        credentials: 'include', // Force sending cookies
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            code: code,
-                            name: '', // Empty name will trigger backend fallback
-                            deviceId: deviceId // Send logic for fallback
-                        })
+                        lastErrorLog = { timestamp: new Date().toISOString(), error: msg, details: safeDetails };
+                        console.error('Captured Error:', lastErrorLog);
+                    }
+                    copyBtn.addEventListener('click', () => {
+                        navigator.clipboard.writeText(JSON.stringify(lastErrorLog, null, 2));
+                        clipConfirm.style.opacity = '1';
+                        setTimeout(() => clipConfirm.style.opacity = '0', 2000);
                     });
 
-                    let data;
+                    // 1. Check Auth Status
                     try {
-                        data = await res.json();
-                    } catch (jsonErr) {
-                        throw new Error('Server returned invalid JSON (Crash/500). Response Status: ' + res.status);
-                    }
+                        // Show loader (it should be visible by default in HTML, but ensuring logic flow)
+                        const loadingStep = document.getElementById('loadingStep');
 
-                    if (res.ok) {
-                        // Success -> Fade out overlay
-                        overlay.classList.add('hidden');
-                        document.getElementById('appContent').style.display = 'block'; // Reveal App
-                    } else {
-                        // Error
-                        showError(data.error || 'Invalid code', data.debug || data);
-                        // Keep values so they can fix typose
-                    }
-                } catch (e) {
-                    console.error(e);
-                    // Network or JSON error
-                    showError('Connection Error: ' + (e.message || 'Unknown'), { stack: e.stack });
-                } finally {
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                }
-            }
+                        const res = await fetch('/api/auth/status?_=' + Date.now());
+                        const data = await res.json();
 
-            btn.addEventListener('click', attemptLogin);
+                        // Hide loader
+                        if (loadingStep) loadingStep.classList.add('hidden');
 
-            // Allow Enter key on input
-            codeInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') attemptLogin();
-            });
+                        if (data.maintenance) {
+                            document.getElementById('maintOverlay').classList.remove('hidden');
+                            if (data.reason) document.getElementById('maintReason').textContent = data.reason;
+                            return; // Stop everything
+                        } else {
+                            document.getElementById('maintOverlay').classList.add('hidden');
+                        }
 
-            // Focus input specifically when overlay is visible
-            if (!overlay.classList.contains('hidden')) {
-                codeInput.focus();
-            }
-        })();
-        // --- Dynamic Background ---
-        function toggleBgAnim() {
-            const enabled = document.getElementById('bg-anim-toggle').checked;
-            localStorage.setItem('bg_anim_enabled', enabled);
-            updateBgState();
-        }
+                        if (data.authenticated) {
+                            // Fully Authorized
+                            overlay.classList.add('hidden');
+                            document.getElementById('appContent').style.display = 'block';
+                            return;
+                        }
 
-        function updateBgState() {
-            const enabled = localStorage.getItem('bg_anim_enabled') === 'true';
-            document.getElementById('bg-anim-toggle').checked = enabled;
-            const bg = document.getElementById('dynamic-bg');
-            if (bg) {
-                bg.style.opacity = enabled ? '1' : '0';
-                if (!enabled) bg.style.backgroundImage = 'none'; // Clear to save resources
-                else updateBgImage(); // Restore if re-enabled
-            }
-        }
+                        // Not authorized, but maybe logged in to Discord?
+                        if (data.discordUser) {
+                            // Show Code Entry Step
+                            discordStep.classList.add('hidden');
+                            codeStep.classList.remove('hidden');
 
-        function getDominantColor(imageUrl) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.crossOrigin = "Anonymous";
-                img.src = imageUrl;
-                img.onload = () => {
-                    try {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 1;
-                        canvas.height = 1;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, 1, 1);
-                        const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
-                        resolve(`rgb(${r}, ${g}, ${b})`);
+                            discordUsername.textContent = data.discordUser.username;
+                            if (data.discordUser.avatar) {
+                                discordAvatar.src = `https://cdn.discordapp.com/avatars/${data.discordUser.id}/${data.discordUser.avatar}.png`;
+                            } else {
+                                // Default avatar
+                                discordAvatar.src = 'https://cdn.discordapp.com/embed/avatars/0.png';
+                            }
+                        } else {
+                            // Not logged in at all -> Show Discord Login Button (Default)
+                            discordStep.classList.remove('hidden');
+                            codeStep.classList.add('hidden');
+                        }
+
                     } catch (e) {
-                        console.warn('CORS denied for image color extraction', e);
-                        resolve('#222');
+                        console.error('Auth Check Failed', e);
+                        // On error, better to show login than get stuck
+                        if (document.getElementById('loadingStep')) document.getElementById('loadingStep').classList.add('hidden');
+                        discordStep.classList.remove('hidden');
                     }
-                };
-                img.onerror = () => resolve('#222');
-            });
-        }
 
-        async function updateBgImage() {
-            const enabled = localStorage.getItem('bg_anim_enabled') === 'true';
-            if (!enabled || !selectedTrack) return;
+                    // 2. Login Flow (Code Submission only)
+                    async function attemptLogin() {
+                        const code = codeInput.value.trim();
+                        // Name is now handled by backend (Discord Name or Anonymous)
 
-            const bg = document.getElementById('dynamic-bg');
-            if (bg && selectedTrack.image) {
-                const color = await getDominantColor(selectedTrack.image);
-                // Set custom property for smooth transition (supported browsers)
-                bg.style.setProperty('--bg-dominant', color);
-                // Set explicitly for immediate update/fallback
-                bg.style.background = `radial-gradient(circle at top left, ${color} 0%, rgba(0, 0, 0, 1) 60%)`;
-            }
-        }
+                        if (!code) {
+                            errorMsg.textContent = 'Please enter the code.';
+                            codeInput.focus();
+                            return;
+                        }
 
-        // Initialize
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            // Default to true if not set
-            if (localStorage.getItem('bg_anim_enabled') === null) {
-                localStorage.setItem('bg_anim_enabled', 'true');
-            }
-            // Update toggle state immediately
-            document.getElementById('bg-anim-toggle').checked = localStorage.getItem('bg_anim_enabled') === 'true';
-            updateBgState();
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                        errorMsg.textContent = 'Linking Account...';
+                        copyBtn.classList.add('hidden');
 
-            // Initialize Features
-            initPreviewAudio();
+                        try {
+                            const res = await fetch('/api/verify-access', {
+                                method: 'POST',
+                                credentials: 'include', // Force sending cookies
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    code: code,
+                                    name: '', // Empty name will trigger backend fallback
+                                    deviceId: deviceId // Send logic for fallback
+                                })
+                            });
 
-            if (typeof initSettings === 'function') initSettings();
-        });
+                            let data;
+                            try {
+                                data = await res.json();
+                            } catch (jsonErr) {
+                                throw new Error('Server returned invalid JSON (Crash/500). Response Status: ' + res.status);
+                            }
+
+                            if (res.ok) {
+                                // Success -> Fade out overlay
+                                overlay.classList.add('hidden');
+                                document.getElementById('appContent').style.display = 'block'; // Reveal App
+                            } else {
+                                // Error
+                                showError(data.error || 'Invalid code', data.debug || data);
+                                // Keep values so they can fix typose
+                            }
+                        } catch (e) {
+                            console.error(e);
+                            // Network or JSON error
+                            showError('Connection Error: ' + (e.message || 'Unknown'), { stack: e.stack });
+                        } finally {
+                            btn.disabled = false;
+                            btn.style.opacity = '1';
+                        }
+                    }
+
+                    btn.addEventListener('click', attemptLogin);
+
+                    // Allow Enter key on input
+                    codeInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') attemptLogin();
+                    });
+
+                    // Focus input specifically when overlay is visible
+                    if (!overlay.classList.contains('hidden')) {
+                        codeInput.focus();
+                    }
+                })();
+                // --- Dynamic Background ---
+                function toggleBgAnim() {
+                    const enabled = document.getElementById('bg-anim-toggle').checked;
+                    localStorage.setItem('bg_anim_enabled', enabled);
+                    updateBgState();
+                }
+
+                function updateBgState() {
+                    const enabled = localStorage.getItem('bg_anim_enabled') === 'true';
+                    document.getElementById('bg-anim-toggle').checked = enabled;
+                    const bg = document.getElementById('dynamic-bg');
+                    if (bg) {
+                        bg.style.opacity = enabled ? '1' : '0';
+                        if (!enabled) bg.style.backgroundImage = 'none'; // Clear to save resources
+                        else updateBgImage(); // Restore if re-enabled
+                    }
+                }
+
+                function getDominantColor(imageUrl) {
+                    return new Promise((resolve) => {
+                        const img = new Image();
+                        img.crossOrigin = "Anonymous";
+                        img.src = imageUrl;
+                        img.onload = () => {
+                            try {
+                                const canvas = document.createElement('canvas');
+                                canvas.width = 1;
+                                canvas.height = 1;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, 1, 1);
+                                const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+                                resolve(`rgb(${r}, ${g}, ${b})`);
+                            } catch (e) {
+                                console.warn('CORS denied for image color extraction', e);
+                                resolve('#222');
+                            }
+                        };
+                        img.onerror = () => resolve('#222');
+                    });
+                }
+
+                async function updateBgImage() {
+                    const enabled = localStorage.getItem('bg_anim_enabled') === 'true';
+                    if (!enabled || !selectedTrack) return;
+
+                    const bg = document.getElementById('dynamic-bg');
+                    if (bg && selectedTrack.image) {
+                        const color = await getDominantColor(selectedTrack.image);
+                        // Set custom property for smooth transition (supported browsers)
+                        bg.style.setProperty('--bg-dominant', color);
+                        // Set explicitly for immediate update/fallback
+                        bg.style.background = `radial-gradient(circle at top left, ${color} 0%, rgba(0, 0, 0, 1) 60%)`;
+                    }
+                }
+
+                // Initialize
+                // Initialize
+                document.addEventListener('DOMContentLoaded', () => {
+                    // Default to true if not set
+                    if (localStorage.getItem('bg_anim_enabled') === null) {
+                        localStorage.setItem('bg_anim_enabled', 'true');
+                    }
+                    // Update toggle state immediately
+                    document.getElementById('bg-anim-toggle').checked = localStorage.getItem('bg_anim_enabled') === 'true';
+                    updateBgState();
+
+                    // Initialize Features
+                    initPreviewAudio();
+
+                    if (typeof initSettings === 'function') initSettings();
+                });
 
         // Hook into existing track play logic (you'll need to call updateBgImage() where tracks are played)
     </script>
