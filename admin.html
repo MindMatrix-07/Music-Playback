@@ -26,7 +26,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #111;
+            background: #000;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -246,8 +246,6 @@
                 justify-content: space-between;
             }
 
-
-
             /* Stack specific controls */
             .maintenance-controls {
                 flex-direction: column;
@@ -283,10 +281,15 @@
     <!-- AUTH OVERLAY -->
     <div id="auth-overlay">
         <div class="card" style="width: 300px; text-align: center;">
-            <h2>Admin Login</h2>
+            <h2>🔒 Admin Access</h2>
             <input type="password" id="login-pass" placeholder="Enter Admin Password">
-            <button onclick="login()">Enter Dashboard</button>
-            <p id="login-msg" style="color: #ff5555; margin-top: 1rem;"></p>
+
+            <!-- TURNSTILE WIDGET (Managed) -->
+            <div id="turnstile-widget" style="margin: 15px 0; display:flex; justify-content:center; min-height: 65px;">
+            </div>
+
+            <button onclick="login()" style="width:100%">Enter Dashboard</button>
+            <p id="login-msg" style="color: #ff5555; margin-top: 1rem; font-size: 0.9rem;"></p>
         </div>
     </div>
 
@@ -392,46 +395,82 @@
         </div>
     </div>
 
+    <!-- Cloudflare Turnstile Script -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" async
+        defer></script>
+
     <script>
         let GLOBAL_DATA = { users: [], spam: [] };
         let PASSWORD = '';
+        let TURNSTILE_ID = null;
 
         // --- AUTH ---
+        window.onloadTurnstileCallback = function () {
+            TURNSTILE_ID = turnstile.render('#turnstile-widget', {
+                sitekey: '0x4AAAAAACWB7e-MvXHMPIyT', // ADMIN SITE KEY
+                theme: 'dark'
+            });
+        };
+
+        // Check Session
+        if (sessionStorage.getItem('admin_pass')) {
+            // Clear persistent storage if exists from old version
+            if (localStorage.getItem('admin_pass')) localStorage.removeItem('admin_pass');
+
+            // Try auto-login with session token (no captcha needed for session resume)
+            const savedPass = sessionStorage.getItem('admin_pass');
+            verifyLogin(savedPass, null, true);
+        }
+
         async function login() {
             const pass = document.getElementById('login-pass').value;
             if (!pass) return;
 
-            // Test auth by fetching stats
+            // Get Captcha
+            let token = null;
+            if (TURNSTILE_ID !== null) token = turnstile.getResponse(TURNSTILE_ID);
+
+            verifyLogin(pass, token, false);
+        }
+
+        async function verifyLogin(pass, token, isAuto) {
+            const msg = document.getElementById('login-msg');
+            if (!isAuto) msg.textContent = "Verifying...";
+
             try {
                 const res = await fetch('/api/admin/handler?action=stats', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: pass })
+                    body: JSON.stringify({
+                        password: pass,
+                        token: token // Send Captcha Token
+                    })
                 });
 
                 if (res.ok) {
                     PASSWORD = pass;
+                    sessionStorage.setItem('admin_pass', pass); // Session Only
+
                     document.getElementById('auth-overlay').classList.add('hidden');
                     document.getElementById('dashboard').classList.remove('hidden');
+
                     const data = await res.json();
                     loadDashboard(data);
                     startAutoRefresh();
                 } else {
-                    let data = {};
-                    try { data = await res.json(); } catch (e) { }
-                    document.getElementById('login-msg').textContent = data.error || 'Login Failed (Check Console)';
-                    console.error('Login Failed:', res.status, data);
+                    const data = await res.json();
+                    if (!isAuto) {
+                        msg.textContent = data.error || 'Login Failed';
+                        if (TURNSTILE_ID !== null) turnstile.reset(TURNSTILE_ID);
+                    }
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error(e); if (!isAuto) msg.textContent = "Network Error"; }
         }
 
         function logout() {
-            localStorage.removeItem('admin_pass');
+            sessionStorage.removeItem('admin_pass');
             location.reload();
         }
-
-        // Auto-login removed
-
 
         // --- POLING ---
         let refreshInterval;
@@ -439,13 +478,12 @@
             if (refreshInterval) clearInterval(refreshInterval);
             refreshInterval = setInterval(async () => {
                 if (!PASSWORD || document.getElementById('dashboard').classList.contains('hidden')) return;
-
                 try {
-                    // Silent refetch
+                    // Start silent refresh
                     const res = await fetch('/api/admin/handler?action=stats', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ password: PASSWORD })
+                        body: JSON.stringify({ password: PASSWORD }) // No captcha needed for refresh
                     });
                     if (res.ok) {
                         const data = await res.json();
@@ -541,8 +579,7 @@
                         </div>
                     `;
                     document.getElementById('new-code').value = '';
-                    // Refresh data
-                    login();
+                    login(); // Refresh
                 } else {
                     msg.innerHTML = `<span style="color:#ff5555">${data.error}</span>`;
                 }
@@ -564,7 +601,6 @@
                 });
 
                 if (res.ok) {
-                    // Update local state and re-render for instant feedback
                     const user = GLOBAL_DATA.users.find(u => u.code === code);
                     if (user) user.isBlocked = !isCurrentlyBlocked;
                     renderUsers();
@@ -596,10 +632,8 @@
 
                 if (res.ok) {
                     alert(`User '${code}' has been deleted.`);
-                    // Update local state
                     GLOBAL_DATA.users = GLOBAL_DATA.users.filter(u => u.code !== code);
                     renderUsers();
-                    // Refetch stats to update counters
                     loadSettings();
                 } else {
                     const data = await res.json();
@@ -684,7 +718,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        password: confirmPass, // Use the FRESH password
+                        password: confirmPass, // FRESH password
                         active: isActive,
                         reason: document.getElementById('maint-reason').value
                     })
@@ -692,9 +726,8 @@
 
                 if (res.ok) {
                     alert('Settings Saved Successfully');
-                    // If password was correct, update local cache too just in case
                     PASSWORD = confirmPass;
-                    loadSettings(); // Refresh UI
+                    loadSettings();
                 } else {
                     const data = await res.json();
                     alert('Failed: ' + (data.error || 'Server Error'));

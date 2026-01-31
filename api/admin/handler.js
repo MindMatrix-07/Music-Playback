@@ -24,6 +24,7 @@ export default async function handler(req, res) {
 
     // 3. Constant-Time Password Check
     const { password } = req.body;
+    const { action } = req.query; // Need action early for logic
     const envPassword = process.env.ADMIN_PASSWORD || '';
 
     // Prevent empty password bypass or crashing on length mismatch
@@ -45,7 +46,27 @@ export default async function handler(req, res) {
         return res.status(401).json({ error: 'Unauthorized: Invalid Password' });
     }
 
-    const { action } = req.query;
+    // 4. Verify Turnstile (Only for Login/Stats)
+    // We treat 'stats' as the "Login" action since it's the first thing fetched.
+    if (action === 'stats') {
+        const { token } = req.body;
+        const secret = '0x4AAAAAACWB7VZx0nQNmqGFaNDPoLLBrIY'; // ADMIN SECRET KEY
+
+        if (secret && token) {
+            const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    secret: secret,
+                    response: token
+                })
+            });
+            const verifyData = await verifyRes.json();
+            if (!verifyData.success) {
+                return res.status(403).json({ error: 'Captcha Validation Failed' });
+            }
+        }
+    }
 
     try {
         await connectToDatabase();

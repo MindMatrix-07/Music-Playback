@@ -4159,6 +4159,9 @@
                 </div>
 
                 <button id="accessSubmitBtn" class="full-width-btn">Unlock Access</button>
+
+                <!-- Turnstile Invisible Widget -->
+                <div id="turnstile-access-widget" style="display: none;"></div>
             </div>
 
             <div class="error-wrapper" style="margin-top: 15px;">
@@ -4400,6 +4403,22 @@
                 localStorage.setItem('device_binding_id', deviceId);
             }
 
+            // --- TURNSTILE (Invisible) ---
+            let ACCESS_TURNSTILE_ID = null;
+
+            window.onloadTurnstileCallback = function () {
+                // Render Invisible Widget
+                // Note: We use the 'turnstile-access-widget' div we just added
+                ACCESS_TURNSTILE_ID = turnstile.render('#turnstile-access-widget', {
+                    sitekey: '0x4AAAAAACWB9F4nekxBbFPV', // PUBLIC INVISIBLE KEY
+                    callback: function (token) {
+                        // If Turnstile solves automatically (or after challenge), complete the login
+                        completeAccessLogin(token);
+                    },
+                    'refresh-expired': 'auto' // Auto regenerate
+                });
+            };
+
             // Skip handler
             if (skipBtn) {
                 skipBtn.addEventListener('click', () => {
@@ -4418,12 +4437,17 @@
 
                 // Sanitize details to REMOVE API Keys
                 let safeDetails = details;
-                if (details && typeof details === 'object') {
-                    safeDetails = JSON.parse(JSON.stringify(details)); // Deep copy
-                    // Explicitly remove sensitive keys
-                    if (safeDetails.yt_api_key) safeDetails.yt_api_key = '[REDACTED]';
-                    if (safeDetails.apiKey) safeDetails.apiKey = '[REDACTED]';
-                    if (safeDetails.headers) delete safeDetails.headers; // Remove headers incase of tokens
+                try {
+                    if (details && typeof details === 'object') {
+                        safeDetails = JSON.parse(JSON.stringify(details)); // Deep copy
+                        // Explicitly remove sensitive keys
+                        if (safeDetails.yt_api_key) safeDetails.yt_api_key = '[REDACTED]';
+                        if (safeDetails.apiKey) safeDetails.apiKey = '[REDACTED]';
+                        if (safeDetails.headers) delete safeDetails.headers; // Remove headers incase of tokens
+                    }
+                } catch (e) {
+                    console.warn("Error sanitizing error details:", e);
+                    safeDetails = { originalDetails: details, sanitizationError: e.message };
                 }
 
                 lastErrorLog = { timestamp: new Date().toISOString(), error: msg, details: safeDetails };
@@ -4433,6 +4457,84 @@
                 navigator.clipboard.writeText(JSON.stringify(lastErrorLog, null, 2));
                 clipConfirm.style.opacity = '1';
                 setTimeout(() => clipConfirm.style.opacity = '0', 2000);
+            });
+
+            // Core Login Function
+            async function attemptLogin() {
+                // Trigger Turnstile Execution
+                errorMsg.textContent = 'Verifying security...';
+
+                // If invisible widget is ready, "execute" it (or get response if already valid)
+                if (ACCESS_TURNSTILE_ID !== null) {
+                    // Check if we already have a response (rare for invisible unless auto-run)
+                    const token = turnstile.getResponse(ACCESS_TURNSTILE_ID);
+                    if (token) {
+                        completeAccessLogin(token);
+                    } else {
+                        // Force execution (this might pop up a challenge)
+                        turnstile.execute(ACCESS_TURNSTILE_ID);
+                    }
+                } else {
+                    // If Turnstile didn't load for some reason, try to proceed (backend might reject)
+                    completeAccessLogin(null);
+                }
+            }
+
+            async function completeAccessLogin(captchaToken) {
+                const code = codeInput.value.trim().toUpperCase();
+                if (!code) {
+                    showError('Please enter code');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                errorMsg.textContent = 'Linking Account...';
+                copyBtn.classList.add('hidden');
+
+                try {
+                    const res = await fetch('/api/verify-access', {
+                        method: 'POST',
+                        credentials: 'include', // Force sending cookies
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            code: code,
+                            name: '', // Empty name will trigger backend fallback
+                            deviceId: deviceId, // Send logic for fallback
+                            token: captchaToken // SEND CAPTCHA
+                        })
+                    });
+
+                    // ... existing response handling ...
+                    let data;
+                    try {
+                        data = await res.json();
+                    } catch (jsonErr) {
+                        throw new Error('Server returned invalid JSON. Status: ' + res.status);
+                    }
+
+                    if (res.ok) {
+                        // Success -> Fade out overlay
+                        overlay.classList.add('hidden');
+                        document.getElementById('appContent').style.display = 'block';
+                    } else {
+                        // Error
+                        showError(data.error || 'Invalid code', data.debug || data);
+                        if (ACCESS_TURNSTILE_ID !== null) turnstile.reset(ACCESS_TURNSTILE_ID);
+                    }
+                } catch (e) {
+                    showError('Connection Error: ' + (e.message || 'Unknown'), { stack: e.stack });
+                } finally {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }
+            }
+
+            btn.addEventListener('click', attemptLogin);
+
+            // Allow Enter key on input
+            codeInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') attemptLogin();
             });
 
             // 1. Check Auth Status
@@ -4484,69 +4586,8 @@
                 console.error('Auth Check Failed', e);
                 // On error, better to show login than get stuck
                 if (document.getElementById('loadingStep')) document.getElementById('loadingStep').classList.add('hidden');
-                discordStep.classList.remove('hidden');
+                if (document.getElementById('discordLoginStep')) document.getElementById('discordLoginStep').classList.remove('hidden');
             }
-
-            // 2. Login Flow (Code Submission only)
-            async function attemptLogin() {
-                const code = codeInput.value.trim();
-                // Name is now handled by backend (Discord Name or Anonymous)
-
-                if (!code) {
-                    errorMsg.textContent = 'Please enter the code.';
-                    codeInput.focus();
-                    return;
-                }
-
-                btn.disabled = true;
-                btn.style.opacity = '0.5';
-                errorMsg.textContent = 'Linking Account...';
-                copyBtn.classList.add('hidden');
-
-                try {
-                    const res = await fetch('/api/verify-access', {
-                        method: 'POST',
-                        credentials: 'include', // Force sending cookies
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            code: code,
-                            name: '', // Empty name will trigger backend fallback
-                            deviceId: deviceId // Send logic for fallback
-                        })
-                    });
-
-                    let data;
-                    try {
-                        data = await res.json();
-                    } catch (jsonErr) {
-                        throw new Error('Server returned invalid JSON (Crash/500). Response Status: ' + res.status);
-                    }
-
-                    if (res.ok) {
-                        // Success -> Fade out overlay
-                        overlay.classList.add('hidden');
-                        document.getElementById('appContent').style.display = 'block'; // Reveal App
-                    } else {
-                        // Error
-                        showError(data.error || 'Invalid code', data.debug || data);
-                        // Keep values so they can fix typose
-                    }
-                } catch (e) {
-                    console.error(e);
-                    // Network or JSON error
-                    showError('Connection Error: ' + (e.message || 'Unknown'), { stack: e.stack });
-                } finally {
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                }
-            }
-
-            btn.addEventListener('click', attemptLogin);
-
-            // Allow Enter key on input
-            codeInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') attemptLogin();
-            });
 
             // Focus input specifically when overlay is visible
             if (!overlay.classList.contains('hidden')) {

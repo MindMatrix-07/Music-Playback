@@ -34,6 +34,33 @@ export default async function handler(req, res) {
         authType = 'DEVICE';
     }
 
+    // --- TURNSTILE VERIFICATION ---
+    // Only verify if not a local bypass
+    if (code !== '852852258') {
+        const { token } = req.body;
+        const secret = '0x4AAAAAACWB9B5E8QeITNuJ8s6ZElfPCSg'; // PUBLIC INVISIBLE SECRET KEY
+
+        // If no token provided? (Strict Mode: Fail)
+        // Note: During dev, if frontend didn't send it yet, this blocks.
+        if (!token) {
+            return res.status(403).json({ error: 'Security Check Failed (Missing Captcha). Please refresh.' });
+        }
+
+        const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                secret: secret,
+                response: token
+            })
+        });
+        const verifyData = await verifyRes.json();
+        if (!verifyData.success) {
+            return res.status(403).json({ error: 'Security Validation Failed (Captcha)' });
+        }
+    }
+    // ------------------------------
+
     // BYPASS FOR LOCAL TESTING
     if (code === '852852258') {
         const token = await signSession({
