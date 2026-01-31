@@ -63,6 +63,10 @@
             --apple-red: #FA2D55;
             --apple-gradient: linear-gradient(135deg, #FC3C44 0%, #FA2D55 50%, #FB5C74 100%);
 
+            --youtube-red: #FF0000;
+            --youtube-dark: #CC0000;
+            --youtube-gradient: linear-gradient(135deg, #FF0000 0%, #CC0000 100%);
+
             --bg-dark: #0a0a0a;
             --bg-card: #141414;
             --bg-card-hover: #1a1a1a;
@@ -167,6 +171,17 @@
             animation-delay: -10s;
         }
 
+        .bg-blob.youtube {
+            background: var(--youtube-gradient);
+            width: 400px;
+            height: 400px;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            filter: blur(90px);
+        }
+
         body.spotify-active .bg-blob.spotify {
             opacity: 0.3;
         }
@@ -180,9 +195,13 @@
             opacity: 0.2;
         }
 
-        body.apple-active .bg-blob.secondary {
-            background: var(--apple-gradient);
-            opacity: 0.2;
+        body.youtube-active .bg-blob.youtube {
+            opacity: 0.25;
+        }
+
+        body.youtube-active .bg-blob.secondary {
+            background: var(--youtube-gradient);
+            opacity: 0.15;
         }
 
         @keyframes float {
@@ -268,7 +287,23 @@
             width: fit-content;
             margin-left: auto;
             margin-right: auto;
-            border: 1px solid var(--spotify-green);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.3s ease;
+        }
+
+        body.spotify-active .user-profile {
+            border-color: var(--spotify-green);
+        }
+
+        body.apple-active .user-profile {
+            border-color: var(--apple-pink);
+        }
+
+        body.youtube-active .user-profile {
+            border-color: var(--youtube-red);
         }
 
         .user-avatar {
@@ -282,7 +317,38 @@
         .user-name {
             font-weight: 600;
             font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        body.spotify-active .user-name {
             color: var(--spotify-green);
+        }
+
+        body.apple-active .user-name {
+            color: var(--apple-pink);
+        }
+
+        body.youtube-active .user-name {
+            color: var(--youtube-red);
+        }
+
+        /* App Wrapper - Contains all content with max-width */
+        .app-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        @media (max-width: 768px) {
+            .app-wrapper {
+                padding: 0 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-wrapper {
+                padding: 0 15px;
+            }
         }
 
         .logout-btn {
@@ -389,6 +455,10 @@
             background: var(--apple-gradient);
         }
 
+        .platform-btn.youtube::before {
+            background: var(--youtube-gradient);
+        }
+
         .platform-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -408,6 +478,10 @@
 
         .platform-btn.apple.active {
             box-shadow: 0 0 30px rgba(252, 60, 68, 0.4);
+        }
+
+        .platform-btn.youtube.active {
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
         }
 
         .platform-logo {
@@ -477,6 +551,10 @@
             color: var(--apple-pink);
         }
 
+        body.youtube-active .search-icon {
+            color: var(--youtube-red);
+        }
+
         .search-input {
             flex: 1;
             background: transparent;
@@ -512,6 +590,10 @@
 
         body.apple-active .search-btn {
             background: var(--apple-gradient);
+        }
+
+        body.youtube-active .search-btn {
+            background: var(--youtube-gradient);
         }
 
         .search-btn:hover {
@@ -1126,6 +1208,10 @@
             color: var(--apple-pink);
         }
 
+        body.youtube-active .meta-link {
+            color: var(--youtube-red);
+        }
+
         /* Lyrics View Styling */
 
 
@@ -1206,6 +1292,10 @@
 
         body.apple-active .mode-btn.active {
             background: var(--apple-gradient);
+        }
+
+        body.youtube-active .mode-btn.active {
+            background: var(--youtube-gradient);
         }
 
 
@@ -1305,6 +1395,10 @@
                but default inline style uses var(--spotify-active) etc. */
             body.apple-active .search-btn {
                 background: var(--apple-gradient);
+            }
+
+            body.youtube-active .search-btn {
+                background: var(--youtube-gradient);
             }
 
             /* Compact Track Items */
@@ -1510,10 +1604,16 @@
 
         .youtube-container {
             width: 100%;
+            max-width: 360px;
+            /* Slightly larger than standard 300px album art */
+            aspect-ratio: 16 / 9;
+            /* Standard YouTube ratio */
             border-radius: 12px;
             overflow: hidden;
             background: black;
             border: 1px solid var(--border-color);
+            margin: 0 auto;
+            /* Center the player */
         }
 
         .yt-label {
@@ -2295,200 +2395,228 @@
     <div class="background-animation">
         <div class="bg-blob spotify"></div>
         <div class="bg-blob apple"></div>
+        <div class="bg-blob youtube"></div>
         <div class="bg-blob secondary"></div>
     </div>
 
     <div class="container" id="appContent" style="display: none;">
-        <!-- Settings Button -->
-        <button id="settingsBtn" class="settings-icon-btn" title="Settings">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path
-                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73L12.22 2z">
-                </path>
-                <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-        </button>
-
-        <!-- Header -->
-        <header class="header">
-            <div class="header-title-wrapper">
-
-                <h1>Music Playback</h1>
-            </div>
-            <p>Search and play music from your favorite platform</p>
-        </header>
-
-        <!-- User Profile (shown when logged in with Spotify) -->
-        <div class="user-profile hidden" id="userProfile">
-            <img class="user-avatar" id="userAvatar" src="" alt="Profile">
-            <span class="user-name" id="userName">User</span>
-            <button class="logout-btn" onclick="logout()" title="Logout">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                    <polyline points="16 17 21 12 16 7"></polyline>
-                    <line x1="21" y1="12" x2="9" y2="12"></line>
+        <div class="app-wrapper"> <!-- App wrapper for max-width constraint -->
+            <!-- Settings Button -->
+            <button id="settingsBtn" class="settings-icon-btn" title="Settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73L12.22 2z">
+                    </path>
+                    <circle cx="12" cy="12" r="3"></circle>
                 </svg>
             </button>
-        </div>
 
-        <!-- Login Section (only shown for Spotify when not logged in) -->
-        <div class="login-section hidden" id="loginSection">
-            <a href="/api/spotify-login" class="login-btn spotify">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                        d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
-                </svg>
-                Login with Spotify
-            </a>
-            <p class="login-subtitle">Login to play full tracks</p>
-        </div>
+            <!-- Header -->
+            <header class="header">
+                <div class="header-title-wrapper">
 
-        <!-- Platform Toggle -->
-        <div class="platform-toggle">
-            <button class="platform-btn spotify active" onclick="selectPlatform('spotify')">
-                <svg class="platform-logo" viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                        d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
-                </svg>
-                <span class="platform-name">Spotify</span>
-            </button>
-            <button class="platform-btn apple" onclick="selectPlatform('apple')">
-                <svg class="platform-logo" viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                        d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 00-1.877-.726 10.496 10.496 0 00-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.802.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 001.57-.1c.822-.106 1.596-.35 2.295-.81a5.046 5.046 0 001.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.09-.46-.827-.19-1.94.69-2.53.38-.254.82-.385 1.264-.497.378-.095.762-.163 1.14-.254.33-.08.53-.29.617-.613.03-.11.04-.225.04-.34-.002-1.633 0-3.265 0-4.898v-.163c-.035.018-.058.027-.078.04l-5.317 1.396v.124c0 2.57 0 5.14-.002 7.71 0 .403-.047.8-.204 1.175-.264.63-.72 1.054-1.378 1.266-.35.113-.72.18-1.09.21-.87.067-1.65-.17-2.2-.86-.67-.84-.52-2.19.32-2.9.394-.327.856-.5 1.34-.613.478-.11.96-.195 1.44-.3.328-.072.538-.27.64-.59.04-.12.06-.25.06-.38V7.47c0-.16.03-.31.1-.46.1-.2.26-.33.47-.39.16-.04.32-.07.48-.1 1.9-.39 3.8-.79 5.69-1.18.21-.05.42-.08.63-.08.38.01.65.25.72.64.02.1.03.2.03.31v3.9z" />
-                </svg>
-                <span class="platform-name">Apple Music</span>
-            </button>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="search-container">
-            <div class="search-wrapper">
-                <div class="search-inner">
-                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                    <input type="text" class="search-input" id="searchInput"
-                        placeholder="Search Spotify for songs, artists, albums..." onkeypress="handleKeyPress(event)">
-                    <button class="search-btn" onclick="searchMusic()">Search</button>
+                    <h1>Music Playback</h1>
                 </div>
+                <p>Search and play music from your favorite platform</p>
+            </header>
+
+            <!-- User Profile (shown when logged in with Spotify) -->
+            <div class="user-profile hidden" id="userProfile">
+                <img class="user-avatar" id="userAvatar" src="" alt="Profile">
+                <span class="user-name" id="userName">User</span>
+                <button class="logout-btn" onclick="logout()" title="Logout">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
             </div>
-        </div>
 
-        <!-- Search Results -->
-        <div class="search-results hidden" id="searchResults">
-            <h3 class="results-header">Search Results</h3>
-            <div class="track-list" id="trackList"></div>
-        </div>
-
-        <!-- Player Section -->
-        <section class="player-section">
-            <h2 class="player-title">Now Playing</h2>
-            <div class="embed-container" id="embedContainer">
-                <!-- Placeholder -->
-                <div class="embed-placeholder" id="placeholder">
-                    <svg class="embed-placeholder-icon" viewBox="0 0 24 24" fill="currentColor">
+            <!-- Login Section (only shown for Spotify when not logged in) -->
+            <div class="login-section hidden" id="loginSection">
+                <a href="/api/spotify-login" class="login-btn spotify">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
                         <path
-                            d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                            d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
                     </svg>
-                    <p>Search for music to start playing</p>
-                </div>
+                    Login with Spotify
+                </a>
+                <p class="login-subtitle">Login to play full tracks</p>
+            </div>
 
-                <!-- Loading -->
-                <div class="loading" id="loading">
+            <!-- Platform Toggle -->
+            <div class="platform-toggle">
+                <button class="platform-btn spotify active" onclick="selectPlatform('spotify')">
+                    <svg class="platform-logo" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+                    </svg>
+                    <span class="platform-name">Spotify</span>
+                </button>
+                <button class="platform-btn apple" onclick="selectPlatform('apple')">
+                    <svg class="platform-logo" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 00-1.877-.726 10.496 10.496 0 00-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.802.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 001.57-.1c.822-.106 1.596-.35 2.295-.81a5.046 5.046 0 001.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.09-.46-.827-.19-1.94.69-2.53.38-.254.82-.385 1.264-.497.378-.095.762-.163 1.14-.254.33-.08.53-.29.617-.613.03-.11.04-.225.04-.34-.002-1.633 0-3.265 0-4.898v-.163c-.035.018-.058.027-.078.04l-5.317 1.396v.124c0 2.57 0 5.14-.002 7.71 0 .403-.047.8-.204 1.175-.264.63-.72 1.054-1.378 1.266-.35.113-.72.18-1.09.21-.87.067-1.65-.17-2.2-.86-.67-.84-.52-2.19.32-2.9.394-.327.856-.5 1.34-.613.478-.11.96-.195 1.44-.3.328-.072.538-.27.64-.59.04-.12.06-.25.06-.38V7.47c0-.16.03-.31.1-.46.1-.2.26-.33.47-.39.16-.04.32-.07.48-.1 1.9-.39 3.8-.79 5.69-1.18.21-.05.42-.08.63-.08.38.01.65.25.72.64.02.1.03.2.03.31v3.9z" />
+                    </svg>
+                    <span class="platform-name">Apple Music</span>
+                </button>
+                <button class="platform-btn youtube" onclick="selectPlatform('youtube')">
+                    <svg class="platform-logo" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                    </svg>
+                    <span class="platform-name">YouTube</span>
+                </button>
+            </div>
 
-                    <p class="loading-text">Finding your music...</p>
-                    <div class="loading-dots">
-                        <div class="loading-dot"></div>
-                        <div class="loading-dot"></div>
-                        <div class="loading-dot"></div>
-                    </div>
-                </div>
-
-                <!-- Error -->
-                <div class="error-message" id="errorMessage"></div>
-
-                <!-- Preview Player (for non-logged-in Spotify users) -->
-                <div class="preview-player" id="previewPlayer">
-                    <div class="preview-card">
-                        <img class="preview-album-art protected-img" id="previewAlbumArt" src="" alt="Album Art"
-                            draggable="false" oncontextmenu="return false;">
-                        <div class="preview-info">
-                            <div class="preview-track-name" id="previewTrackName">Track Name</div>
-                            <div class="preview-artist" id="previewArtist">Artist</div>
-                            <span class="preview-badge">30s Preview</span>
-                        </div>
-                    </div>
-                    <div class="preview-controls">
-                        <button class="preview-play-btn" id="previewPlayBtn" onclick="togglePreview()">
-                            <svg id="previewPlayIcon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                        </button>
-                        <div class="preview-progress" id="previewProgress" onclick="seekPreview(event)">
-                            <div class="preview-progress-bar" id="previewProgressBar"></div>
-                        </div>
-                        <span class="preview-time" id="previewTime">0:00 / 0:30</span>
-                    </div>
-                    <div class="preview-login-prompt">
-                        <p>Login with your Spotify account to play full tracks</p>
-                        <a href="/api/spotify-login" class="preview-login-btn">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
-                            </svg>
-                            Login with Spotify
-                        </a>
-                    </div>
-                    <div class="open-buttons">
-                        <a href="#" class="open-btn spotify" id="previewOpenBtn" target="_blank">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
-                            </svg>
-                            Open in Spotify
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Spotify Embed Wrapper (for logged-in users) -->
-                <div class="embed-wrapper" id="spotifyWrapper">
-                    <iframe id="spotifyEmbed" class="spotify-embed" style="border-radius:12px" src="" width="100%"
-                        height="152" frameBorder="0" allowfullscreen=""
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                        loading="lazy">
-                    </iframe>
-                    <div class="open-buttons">
-                        <a href="#" class="open-btn spotify" id="openSpotifyBtn" target="_blank">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
-                            </svg>
-                            Open in Spotify
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Apple Music Embed Wrapper -->
-                <div class="embed-wrapper" id="appleWrapper">
-                    <iframe id="appleEmbed" class="apple-embed" src="" width="100%" height="175" frameBorder="0"
-                        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
-                        style="border-radius: 12px; overflow: hidden; background: transparent;"
-                        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation">
-                    </iframe>
-                    <div class="open-buttons">
-                        <a href="#" class="open-btn apple" id="openAppleBtn" target="_blank">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 00-1.877-.726 10.496 10.496 0 00-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.802.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 001.57-.1c.822-.106 1.596-.35 2.295-.81a5.046 5.046 0 001.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.09-.46-.827-.19-1.94.69-2.53.38-.254.82-.385 1.264-.497.378-.095.762-.163 1.14-.254.33-.08.53-.29.617-.613.03-.11.04-.225.04-.34-.002-1.633 0-3.265 0-4.898v-.163c-.035.018-.058.027-.078.04l-5.317 1.396v.124c0 2.57 0 5.14-.002 7.71 0 .403-.047.8-.204 1.175-.264.63-.72 1.054-1.378 1.266-.35.113-.72.18-1.09.21-.87.067-1.65-.17-2.2-.86-.67-.84-.52-2.19.32-2.9.394-.327.856-.5 1.34-.613.478-.11.96-.195 1.44-.3.328-.072.538-.27.64-.59.04-.12.06-.25.06-.38V7.47c0-.16.03-.31.1-.46.1-.2.26-.33.47-.39.16-.04.32-.07.48-.1 1.9-.39 3.8-.79 5.69-1.18.21-.05.42-.08.63-.08.38.01.65.25.72.64.02.1.03.2.03.31v3.9z" />
-                            </svg>
-                            Open in Apple Music
-                        </a>
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <div class="search-inner">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" class="search-input" id="searchInput"
+                            placeholder="Search Spotify for songs, artists, albums..."
+                            onkeypress="handleKeyPress(event)">
+                        <button class="search-btn" onclick="searchMusic()">Search</button>
                     </div>
                 </div>
             </div>
+
+            <!-- Search Results -->
+            <div class="search-results hidden" id="searchResults">
+                <h3 class="results-header">Search Results</h3>
+                <div class="track-list" id="trackList"></div>
+            </div>
+
+            <!-- Player Section -->
+            <section class="player-section">
+                <h2 class="player-title">Now Playing</h2>
+                <div class="embed-container" id="embedContainer">
+                    <!-- Placeholder -->
+                    <div class="embed-placeholder" id="placeholder">
+                        <svg class="embed-placeholder-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                        </svg>
+                        <p>Search for music to start playing</p>
+                    </div>
+
+                    <!-- Loading -->
+                    <div class="loading" id="loading">
+
+                        <p class="loading-text">Finding your music...</p>
+                        <div class="loading-dots">
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                            <div class="loading-dot"></div>
+                        </div>
+                    </div>
+
+                    <!-- Error -->
+                    <div class="error-message" id="errorMessage"></div>
+
+                    <!-- Preview Player (for non-logged-in Spotify users) -->
+                    <div class="preview-player" id="previewPlayer">
+                        <div class="preview-card">
+                            <img class="preview-album-art protected-img" id="previewAlbumArt" src="" alt="Album Art"
+                                draggable="false" oncontextmenu="return false;">
+                            <div class="preview-info">
+                                <div class="preview-track-name" id="previewTrackName">Track Name</div>
+                                <div class="preview-artist" id="previewArtist">Artist</div>
+                                <span class="preview-badge">30s Preview</span>
+                            </div>
+                        </div>
+                        <div class="preview-controls">
+                            <button class="preview-play-btn" id="previewPlayBtn" onclick="togglePreview()">
+                                <svg id="previewPlayIcon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z" />
+                                </svg>
+                            </button>
+                            <div class="preview-progress" id="previewProgress" onclick="seekPreview(event)">
+                                <div class="preview-progress-bar" id="previewProgressBar"></div>
+                            </div>
+                            <span class="preview-time" id="previewTime">0:00 / 0:30</span>
+                        </div>
+                        <div class="preview-login-prompt">
+                            <p>Login with your Spotify account to play full tracks</p>
+                            <a href="/api/spotify-login" class="preview-login-btn">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+                                </svg>
+                                Login with Spotify
+                            </a>
+                        </div>
+                        <div class="open-buttons">
+                            <a href="#" class="open-btn spotify" id="previewOpenBtn" target="_blank">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+                                </svg>
+                                Open in Spotify
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Spotify Embed Wrapper (for logged-in users) -->
+                    <div class="embed-wrapper" id="spotifyWrapper">
+                        <iframe id="spotifyEmbed" class="spotify-embed" style="border-radius:12px" src="" width="100%"
+                            height="152" frameBorder="0" allowfullscreen=""
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            loading="lazy">
+                        </iframe>
+                        <div class="open-buttons">
+                            <a href="#" class="open-btn spotify" id="openSpotifyBtn" target="_blank">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
+                                </svg>
+                                Open in Spotify
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Apple Music Embed Wrapper -->
+                    <div class="embed-wrapper" id="appleWrapper">
+                        <iframe id="appleEmbed" class="apple-embed" src="" width="100%" height="175" frameBorder="0"
+                            allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+                            style="border-radius: 12px; overflow: hidden; background: transparent;"
+                            sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation">
+                        </iframe>
+                        <div class="open-buttons">
+                            <a href="#" class="open-btn apple" id="openAppleBtn" target="_blank">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 00-1.877-.726 10.496 10.496 0 00-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026-.747.043-1.49.123-2.193.4-1.336.53-2.3 1.452-2.865 2.78-.192.448-.292.925-.363 1.408-.056.392-.088.785-.1 1.18 0 .032-.007.062-.01.093v12.223c.01.14.017.283.027.424.05.815.154 1.624.497 2.373.65 1.42 1.738 2.353 3.234 2.802.42.127.856.187 1.293.228.555.053 1.11.06 1.667.06h11.03a12.5 12.5 0 001.57-.1c.822-.106 1.596-.35 2.295-.81a5.046 5.046 0 001.88-2.207c.186-.42.293-.87.37-1.324.113-.675.138-1.358.137-2.04-.002-3.8 0-7.595-.003-11.393zm-6.423 3.99v5.712c0 .417-.058.827-.244 1.206-.29.59-.76.962-1.388 1.14-.35.1-.706.157-1.07.173-.95.042-1.8-.335-2.22-1.09-.46-.827-.19-1.94.69-2.53.38-.254.82-.385 1.264-.497.378-.095.762-.163 1.14-.254.33-.08.53-.29.617-.613.03-.11.04-.225.04-.34-.002-1.633 0-3.265 0-4.898v-.163c-.035.018-.058.027-.078.04l-5.317 1.396v.124c0 2.57 0 5.14-.002 7.71 0 .403-.047.8-.204 1.175-.264.63-.72 1.054-1.378 1.266-.35.113-.72.18-1.09.21-.87.067-1.65-.17-2.2-.86-.67-.84-.52-2.19.32-2.9.394-.327.856-.5 1.34-.613.478-.11.96-.195 1.44-.3.328-.072.538-.27.64-.59.04-.12.06-.25.06-.38V7.47c0-.16.03-.31.1-.46.1-.2.26-.33.47-.39.16-.04.32-.07.48-.1 1.9-.39 3.8-.79 5.69-1.18.21-.05.42-.08.63-.08.38.01.65.25.72.64.02.1.03.2.03.31v3.9z" />
+                                </svg>
+                                Open in Apple Music
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- YouTube Embed Wrapper -->
+                    <div class="embed-wrapper" id="youtubeWrapper">
+                        <iframe id="youtubeEmbed" class="youtube-embed" src="" width="100%" height="200" frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen style="border-radius: 12px; overflow: hidden; background: #000;">
+                        </iframe>
+                        <div class="open-buttons">
+                            <a href="#" class="open-btn youtube" id="openYoutubeBtn" target="_blank">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                                </svg>
+                                Open in YouTube
+                            </a>
+                        </div>
+                    </div>
+                </div>
+        </div>
         </section>
 
         <!-- Metadata Section -->
@@ -2596,7 +2724,8 @@
                 any way officially connected with Spotify, Apple Music, YouTube, or any of their subsidiaries or
                 affiliates.</p>
         </footer>
-    </div>
+    </div> <!-- Close app-wrapper -->
+    </div> <!-- Close appContent -->
 
     <!-- Hidden Audio Element for Preview -->
     <audio id="previewAudio" preload="none"></audio>
@@ -2617,6 +2746,20 @@
             <div class="setting-item">
                 <label for="ytApiKeyInput">YouTube Data API Key</label>
                 <input type="password" id="ytApiKeyInput" placeholder="Paste your API Key here">
+            </div>
+
+            <div class="setting-item">
+                <label for="googleApiKeyInput">Google Search API Key (Optional)</label>
+                <input type="password" id="googleApiKeyInput" placeholder="For Custom Search (if different)">
+            </div>
+
+            <div class="setting-item">
+                <label for="ytCxInput">Search Engine ID (CX)</label>
+                <input type="text" id="ytCxInput" placeholder="Paste your CX ID here">
+                <p class="setting-hint" style="margin-top: 5px;">Required for Official Audio search.</p>
+            </div>
+
+            <div class="setting-item">
                 <p class="setting-hint">
                     Required to play official music videos.
                     <br>
@@ -2639,22 +2782,65 @@
                 <p class="setting-hint">Smoothly blurred album art that moves gently in the background.</p>
             </div>
 
-            <div class="guide-collapsible">
-                <button id="toggleGuideBtn" class="guide-toggle-btn">
-                    <span>❓ How to get a YouTube API Key</span>
-                    <span id="guideArrow" style="transition: transform 0.3s;">▼</span>
+            <!-- Help Section -->
+            <div class="setting-item"
+                style="margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                <button id="toggleMasterGuideBtn" class="guide-toggle-btn" style="font-size: 1rem;">
+                    <span>📘 Help & Guides</span>
+                    <span id="masterGuideArrow" style="transition: transform 0.3s;">▼</span>
                 </button>
-                <div id="guideContent" class="guide-content">
-                    <ol class="steps-list">
-                        <li>Go to <a href="https://console.cloud.google.com/" target="_blank"
-                                style="color:var(--spotify-green)">Google Cloud Console</a>.</li>
-                        <li>Create a new <b>Project</b> (e.g., "Music App").</li>
-                        <li>Go to <b>APIs & Services > Library</b>.</li>
-                        <li>Search for "YouTube Data API v3" and click <b>Enable</b>.</li>
-                        <li>Go to <b>Credentials > Create Credentials > API Key</b>.</li>
-                        <li>Copy the key and paste it above!</li>
-                    </ol>
-                    <p class="guide-note">✨ It's free (10k daily quota) and requires no approval.</p>
+
+                <div id="masterGuideContent" class="guide-content" style="padding-left: 10px;">
+                    <!-- YouTube Guide -->
+                    <div class="guide-collapsible" style="margin-top: 10px;">
+                        <button id="toggleGuideBtn" class="guide-toggle-btn"
+                            style="color: var(--text-secondary); font-size: 0.85rem;">
+                            <span>How to get a YouTube API Key</span>
+                            <span id="guideArrow" style="transition: transform 0.3s;">▼</span>
+                        </button>
+                        <div id="guideContent" class="guide-content">
+                            <ol class="steps-list">
+                                <li>Go to <a href="https://console.cloud.google.com/" target="_blank"
+                                        style="color:var(--spotify-green)">Google Cloud Console</a>.</li>
+                                <li>Create a new <b>Project</b>.</li>
+                                <li>Enable <b>"YouTube Data API v3"</b>.</li>
+                                <li>Create an <b>API Key</b>.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Google Search Guide -->
+                    <div class="guide-collapsible" style="margin-top: 5px;">
+                        <button id="toggleGoogleGuideBtn" class="guide-toggle-btn"
+                            style="color: var(--text-secondary); font-size: 0.85rem;">
+                            <span>How to get a Google Search API Key</span>
+                            <span id="googleGuideArrow" style="transition: transform 0.3s;">▼</span>
+                        </button>
+                        <div id="googleGuideContent" class="guide-content">
+                            <ol class="steps-list">
+                                <li>In Google Cloud, enable <b>"Custom Search API"</b>.</li>
+                                <li>You can reuse your YouTube Key!</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- CX Guide -->
+                    <div class="guide-collapsible" style="margin-top: 5px;">
+                        <button id="toggleCxGuideBtn" class="guide-toggle-btn"
+                            style="color: var(--text-secondary); font-size: 0.85rem;">
+                            <span>How to get a CX ID</span>
+                            <span id="cxGuideArrow" style="transition: transform 0.3s;">▼</span>
+                        </button>
+                        <div id="cxGuideContent" class="guide-content">
+                            <ol class="steps-list">
+                                <li>Go to <a href="https://programmablesearchengine.google.com/controlpanel/all"
+                                        target="_blank" style="color:var(--spotify-green)">Programmable Search
+                                        Engine</a>.</li>
+                                <li>Add <b>youtube.com</b> to "Sites to search".</li>
+                                <li>Copy the <b>Search engine ID</b> (CX).</li>
+                            </ol>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2793,8 +2979,9 @@
                     loginSection.classList.remove('hidden');
                     userProfile.classList.add('hidden');
                 }
-            } else {
-                // Hide both for Apple Music
+                loginSection.classList.add('hidden');
+                userProfile.classList.add('hidden');
+            } else if (currentPlatform === 'youtube') {
                 loginSection.classList.add('hidden');
                 userProfile.classList.add('hidden');
             }
@@ -2822,29 +3009,47 @@
             if (platform === 'spotify') {
                 // Switching TO Spotify -> Stop Apple Music
                 const appleEmbed = document.getElementById('appleEmbed');
-                // Store src if needed later, but for now just clear to stop playback
+                const youtubeEmbed = document.getElementById('youtubeEmbed');
                 if (appleEmbed) appleEmbed.src = '';
-            } else {
-                // Switching TO Apple Music -> Stop Spotify
+                if (youtubeEmbed) youtubeEmbed.src = '';
+            } else if (platform === 'apple') {
+                // Switching TO Apple Music -> Stop Spotify/YouTube
                 const spotifyEmbed = document.getElementById('spotifyEmbed');
+                const youtubeEmbed = document.getElementById('youtubeEmbed');
                 if (spotifyEmbed) spotifyEmbed.src = '';
+                if (youtubeEmbed) youtubeEmbed.src = '';
+            } else {
+                // Switching TO YouTube -> Stop others
+                const spotifyEmbed = document.getElementById('spotifyEmbed');
+                const appleEmbed = document.getElementById('appleEmbed');
+                if (spotifyEmbed) spotifyEmbed.src = '';
+                if (appleEmbed) appleEmbed.src = '';
             }
 
-            document.body.classList.remove('spotify-active', 'apple-active');
+            document.body.classList.remove('spotify-active', 'apple-active', 'youtube-active');
             document.body.classList.add(`${platform}-active`);
 
             document.querySelectorAll('.platform-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`.platform-btn.${platform}`).classList.add('active');
 
-            document.getElementById('searchInput').placeholder =
-                `Search ${platform === 'spotify' ? 'Spotify' : 'Apple Music'} for songs, artists, albums...`;
+            const placeholders = {
+                spotify: 'Search Spotify for songs, artists, albums...',
+                apple: 'Search Apple Music for songs, artists, albums...',
+                youtube: 'Search YouTube for music videos...'
+            }
+            document.getElementById('searchInput').placeholder = placeholders[platform];
 
             // Update login section visibility
             updateUI();
 
             hideSearchResults();
             hideAllEmbeds();
-            showPlaceholder(`Search for music on ${platform === 'spotify' ? 'Spotify' : 'Apple Music'}`);
+            const emptyMsgs = {
+                spotify: 'Search for music on Spotify',
+                apple: 'Search for music on Apple Music',
+                youtube: 'Search for music on YouTube'
+            }
+            showPlaceholder(emptyMsgs[platform]);
         }
 
         function handleKeyPress(event) {
@@ -2860,6 +3065,7 @@
         function hideAllEmbeds() {
             document.getElementById('spotifyWrapper').classList.remove('active');
             document.getElementById('appleWrapper').classList.remove('active');
+            document.getElementById('youtubeWrapper').classList.remove('active');
             document.getElementById('previewPlayer').classList.remove('active');
             ui.loading?.classList.remove('active');
             document.getElementById('errorMessage').classList.remove('active');
@@ -2973,7 +3179,21 @@
             try {
                 const apiEndpoint = `/api/search?platform=${currentPlatform}&q=${encodeURIComponent(query)}&limit=8`;
 
-                const response = await fetch(apiEndpoint);
+                // Add Headers for YouTube
+                const headers = {};
+                if (currentPlatform === 'youtube') {
+                    const apiKey = localStorage.getItem('yt_api_key');
+                    const googleKey = localStorage.getItem('google_search_key');
+                    const cxId = localStorage.getItem('yt_cx_id');
+                    if (!apiKey) {
+                        throw new Error('Please set your YouTube API Key in Settings first.');
+                    }
+                    headers['x-youtube-key'] = apiKey;
+                    if (googleKey) headers['x-google-key'] = googleKey;
+                    if (cxId) headers['x-google-cx'] = cxId;
+                }
+
+                const response = await fetch(apiEndpoint, { headers });
                 const data = await response.json();
 
                 if (!response.ok) {
@@ -3065,16 +3285,25 @@
                 document.getElementById('appleWrapper').classList.remove('active');
                 document.getElementById('previewPlayer').classList.remove('active');
                 document.getElementById('spotifyWrapper').classList.add('active');
-            } else {
+            } else if (currentPlatform === 'apple') {
                 // Apple Music
                 const appleEmbed = document.getElementById('appleEmbed');
                 appleEmbed.src = `https://embed.music.apple.com/us/song/${track.id}`;
                 document.getElementById('openAppleBtn').href = track.appleUrl || `https://music.apple.com/song/${track.id}`;
                 document.getElementById('spotifyWrapper').classList.remove('active');
+                document.getElementById('youtubeWrapper').classList.remove('active');
                 document.getElementById('previewPlayer').classList.remove('active');
                 document.getElementById('appleWrapper').classList.add('active');
+            } else {
+                // YouTube
+                const youtubeEmbed = document.getElementById('youtubeEmbed');
+                youtubeEmbed.src = track.embedUrl;
+                document.getElementById('openYoutubeBtn').href = track.youtubeUrl;
+                document.getElementById('spotifyWrapper').classList.remove('active');
+                document.getElementById('appleWrapper').classList.remove('active');
+                document.getElementById('previewPlayer').classList.remove('active');
+                document.getElementById('youtubeWrapper').classList.add('active');
             }
-
             // Fetch and show metadata
             fetchMetadata(track);
 
@@ -3569,12 +3798,23 @@
             const settingsModal = document.getElementById('settingsModal');
             const settingsBtn = document.getElementById('settingsBtn');
             const ytInput = document.getElementById('ytApiKeyInput');
+            const googleInput = document.getElementById('googleApiKeyInput'); // NEW
+            const cxInput = document.getElementById('ytCxInput');
             const saveBtn = document.getElementById('saveSettingsBtn');
             const closeBtn = document.getElementById('closeSettingsBtn');
             const deleteBtn = document.getElementById('deleteKeyBtn');
             const toggleGuideBtn = document.getElementById('toggleGuideBtn');
             const guideContent = document.getElementById('guideContent');
             const guideArrow = document.getElementById('guideArrow');
+
+            const toggleCxGuideBtn = document.getElementById('toggleCxGuideBtn');
+            const cxGuideContent = document.getElementById('cxGuideContent');
+            const cxGuideArrow = document.getElementById('cxGuideArrow');
+
+            const toggleGoogleGuideBtn = document.getElementById('toggleGoogleGuideBtn');
+            const googleGuideContent = document.getElementById('googleGuideContent');
+            const googleGuideArrow = document.getElementById('googleGuideArrow');
+
             const backBtn = document.getElementById('backFromSettingsBtn');
 
             if (!settingsBtn || !settingsModal) {
@@ -3584,6 +3824,8 @@
 
             const openModal = () => {
                 if (ytInput) ytInput.value = localStorage.getItem('yt_api_key') || '';
+                if (googleInput) googleInput.value = localStorage.getItem('google_search_key') || '';
+                if (cxInput) cxInput.value = localStorage.getItem('yt_cx_id') || '';
                 settingsModal.classList.remove('hidden');
             };
 
@@ -3599,26 +3841,59 @@
             });
 
             // Guide Toggle
-            if (toggleGuideBtn && guideContent) {
-                toggleGuideBtn.onclick = (e) => {
-                    e.preventDefault();
-                    const isExpanded = guideContent.classList.toggle('expanded');
-                    if (guideArrow) {
-                        guideArrow.style.transform = isExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
-                    }
-                };
+            if (toggleGuideBtn && guideContent && guideArrow) {
+                toggleGuideBtn.addEventListener('click', () => {
+                    guideContent.classList.toggle('active');
+                    guideArrow.style.transform = guideContent.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+                });
+            }
+
+            if (toggleCxGuideBtn && cxGuideContent && cxGuideArrow) {
+                toggleCxGuideBtn.addEventListener('click', () => {
+                    cxGuideContent.classList.toggle('active');
+                    cxGuideArrow.style.transform = cxGuideContent.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+                });
+            }
+
+            const toggleMasterGuideBtn = document.getElementById('toggleMasterGuideBtn');
+            const masterGuideContent = document.getElementById('masterGuideContent');
+            const masterGuideArrow = document.getElementById('masterGuideArrow');
+
+            if (toggleMasterGuideBtn && masterGuideContent && masterGuideArrow) {
+                toggleMasterGuideBtn.addEventListener('click', () => {
+                    masterGuideContent.classList.toggle('active');
+                    masterGuideArrow.style.transform = masterGuideContent.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+                });
+            }
+
+            if (toggleGoogleGuideBtn && googleGuideContent && googleGuideArrow) {
+                toggleGoogleGuideBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent closing master
+                    googleGuideContent.classList.toggle('active');
+                    googleGuideArrow.style.transform = googleGuideContent.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+                });
             }
 
             // Save functionality
             if (saveBtn) {
                 saveBtn.addEventListener('click', () => {
                     const key = ytInput ? ytInput.value.trim() : '';
+                    const googleKey = googleInput ? googleInput.value.trim() : '';
+                    const cx = cxInput ? cxInput.value.trim() : '';
+
                     if (key) {
                         localStorage.setItem('yt_api_key', key);
+
+                        if (googleKey) localStorage.setItem('google_search_key', googleKey);
+                        else localStorage.removeItem('google_search_key');
+
+                        if (cx) localStorage.setItem('yt_cx_id', cx);
+                        else localStorage.removeItem('yt_cx_id');
+
                         settingsModal.classList.add('hidden');
                         if (selectedTrack) fetchMetadata(selectedTrack);
                     } else {
-                        alert('Please enter a valid key.');
+                        alert('YouTube API Key is required at minimum.');
                     }
                 });
             }
@@ -3626,10 +3901,14 @@
             // Delete functionality
             if (deleteBtn) {
                 deleteBtn.addEventListener('click', () => {
-                    if (confirm('Are you sure you want to remove your API Key from this device?')) {
+                    if (confirm('Are you sure you want to remove all API Keys from this device?')) {
                         localStorage.removeItem('yt_api_key');
+                        localStorage.removeItem('google_search_key');
+                        localStorage.removeItem('yt_cx_id');
                         if (ytInput) ytInput.value = '';
-                        alert('Key removed from local storage.');
+                        if (googleInput) googleInput.value = '';
+                        if (cxInput) cxInput.value = '';
+                        alert('Keys removed from local storage.');
                         settingsModal.classList.add('hidden');
                     }
                 });
@@ -3665,10 +3944,17 @@
         // Official YouTube Search (Client-Side)
         async function searchYouTubeClient(query) {
             const apiKey = localStorage.getItem('yt_api_key');
+            const googleSearchKey = localStorage.getItem('google_search_key'); // Get Google Search API Key
+
             if (!apiKey) return { error: 'missing_key' };
 
+            const headers = { 'Content-Type': 'application/json' };
+            if (googleSearchKey) {
+                headers['x-google-key'] = googleSearchKey; // Add custom header
+            }
+
             try {
-                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&key=${apiKey}`);
+                const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&key=${apiKey}`, { headers });
 
                 if (!res.ok) {
                     const errorData = await res.json().catch(() => ({}));
@@ -4338,6 +4624,7 @@
 
         // Hook into existing track play logic (you'll need to call updateBgImage() where tracks are played)
     </script>
+
 </body>
 
 </html>

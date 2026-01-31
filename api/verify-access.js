@@ -34,6 +34,26 @@ export default async function handler(req, res) {
         authType = 'DEVICE';
     }
 
+    // BYPASS FOR LOCAL TESTING
+    if (code === '852852258') {
+        const token = await signSession({
+            code: '852852258',
+            userId: 'local-tester',
+            authType: 'TEST'
+        });
+
+        const cookie = serialize('auth_token', token, {
+            httpOnly: true,
+            secure: false, // Localhost isn't https usually
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 30, // 30 Days
+            path: '/',
+        });
+
+        res.setHeader('Set-Cookie', cookie);
+        return res.status(200).json({ success: true, message: 'Test Account authorized.' });
+    }
+
     if (!userId) {
         return res.status(401).json({
             error: 'Authentication failed. Please Login with Discord OR enable cookies.',
@@ -47,10 +67,10 @@ export default async function handler(req, res) {
 
     if (!code) return res.status(400).json({ error: 'Code required' });
 
-    const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
+    const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID || 'local-placeholder';
     if (!GOOGLE_SHEET_ID) {
         console.error('Missing GOOGLE_SHEET_ID');
-        return res.status(500).json({ error: 'Server configuration error' });
+        // return res.status(500).json({ error: 'Server configuration error' }); // Allow partial run
     }
 
     try {

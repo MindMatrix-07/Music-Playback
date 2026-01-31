@@ -1,0 +1,315 @@
+[2026-01-30T10:31:30.544Z] Query: "sukoon"
+CX: Yes | GKey: Yes | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T10:31:37.786Z] Query: "sukoon arijitsingh"
+CX: Yes | GKey: Yes | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T10:38:02.145Z] Query: "sukoon arijitsingh"
+CX: Yes | GKey: Yes | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T10:38:07.368Z] Query: "sukoon arijitsingh"
+CX: Yes | GKey: Yes | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T10:40:48.067Z] Query: "sukoon arijit singh"
+CX: Yes | GKey: Yes | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T10:44:02.083Z] Query: "sukoon arijit singh"
+CX: Yes | GKey: Yes | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T10:45:45.291Z] Query: "sukoon"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T10:45:52.922Z] Query: "sukoon arijit singh"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T10:46:52.599Z] Query: "sukoon arijit singh"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T10:50:30.221Z] Query: "sukoon arijit singh"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T10:59:52.170Z] Query: "muskurahat arijit singh"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T11:00:04.001Z] Query: "muskurahat arijit singh"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T11:00:18.041Z] Query: "muskurahat"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T11:00:35.200Z] Query: "chiri thottu"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T11:00:47.770Z] Query: "sukoon"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T11:00:52.563Z] Query: "sukoon 2.0"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T11:01:06.623Z] Query: "sukoon salim sulaimaan"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T11:03:59.845Z] Query: "sukoon"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T11:08:44.445Z] Query: "sukoon arijit singh"
+CX: Yes | GKey: AIzaS... | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-30T11:10:29.180Z] Query: "sukoon arijit singh"
+CX: Yes | GKey: ...SEUBw | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---
+[2026-01-31T03:15:28.013Z] Query: "sukoon arijit singh"
+CX: Yes | GKey: ...SEUBw | YKey: Yes
+ERROR: {
+  "code": 403,
+  "message": "This project does not have the access to Custom Search JSON API.",
+  "errors": [
+    {
+      "message": "This project does not have the access to Custom Search JSON API.",
+      "domain": "global",
+      "reason": "forbidden"
+    }
+  ],
+  "status": "PERMISSION_DENIED"
+}
+---

@@ -1,0 +1,11 @@
+file:///C:/Users/HP/Downloads/Music-Playback-1/api/_utils/mongodb.js:7
+    throw new Error(
+          ^
+
+Error: Please define the MONGODB_URI environment variable inside .env.local
+    at file:///C:/Users/HP/Downloads/Music-Playback-1/api/_utils/mongodb.js:7:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.12.0
