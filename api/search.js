@@ -138,6 +138,8 @@ async function handleYouTubeSearch(req, q, limit, res) {
                 duration: t.playback_metadata?.duration || 0,
                 // Client handles playback using these IDs
                 youtubeId: t.playback_metadata?.youtube_id,
+                embedUrl: `https://www.youtube.com/embed/${t.playback_metadata?.youtube_id}`,
+                youtubeUrl: `https://www.youtube.com/watch?v=${t.playback_metadata?.youtube_id}`,
                 systemStatus: 'AVAILABLE'
             }));
 
