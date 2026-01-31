@@ -3205,6 +3205,9 @@
                 if (data.tracks && data.tracks.length > 0) {
                     renderTrackList(data.tracks);
                     showPlaceholder('Select a song to play');
+                } else if (data.message) {
+                    // System 2.0: Show Queue Message
+                    showPlaceholder(data.message);
                 } else {
                     showPlaceholder('No results found. Try a different search.');
                 }
