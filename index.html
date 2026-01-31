@@ -1299,246 +1299,261 @@
         }
 
 
+        /* Tablet / Mobile Optimization */
         @media (max-width: 768px) {
             .container {
-                padding: 20px 15px;
+                padding: 15px 12px;
+                /* Tighter container */
             }
 
             .header {
-                margin-bottom: 25px;
+                margin-bottom: 20px;
+                /* Reduced gap */
             }
 
             .header-title-wrapper {
                 flex-direction: row;
-                gap: 10px;
+                gap: 8px;
             }
 
             .site-logo {
-                height: 32px;
+                height: 36px;
+                /* Slightly larger for brand presence */
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+                /* Scaled down */
             }
 
             .header p {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
+                margin-top: 5px;
             }
 
             /* Compact Platform Toggle */
             .platform-toggle {
-                gap: 10px;
-                margin-bottom: 25px;
+                gap: 8px;
+                margin-bottom: 20px;
+                display: flex;
+                overflow-x: auto;
+                /* Allow Scroll if needed on tiny screens */
+                padding-bottom: 5px;
+                /* Space for scrollbar if any */
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                /* Hide scrollbar */
+            }
+
+            .platform-toggle::-webkit-scrollbar {
+                display: none;
             }
 
             .platform-btn {
-                padding: 10px 16px;
-                border-radius: 12px;
+                padding: 10px 14px;
+                border-radius: 14px;
                 flex: 1;
+                /* Distribute evenly */
                 justify-content: center;
+                min-width: 100px;
+                /* Ensure clickability */
+                font-size: 0.9rem;
             }
 
             .platform-logo {
-                width: 24px;
-                height: 24px;
+                width: 22px;
+                height: 22px;
             }
 
             .platform-name {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
             }
 
             /* Integrated Search Bar on Mobile */
             .search-container {
-                margin-bottom: 25px;
+                margin-bottom: 20px;
             }
 
             .search-wrapper {
                 border-radius: 50px;
-                padding: 3px;
-                /* slight border effect */
+                padding: 2px;
             }
 
             .search-inner {
-                padding: 4px;
-                padding-left: 15px;
+                padding: 4px 6px 4px 16px;
+                /* Tight padding */
                 border-radius: 48px;
-                display: flex;
-                align-items: center;
                 flex-wrap: nowrap;
                 gap: 8px;
-                position: relative;
             }
 
             .search-icon {
-                width: 20px;
-                height: 20px;
-                margin-right: 5px;
+                width: 18px;
+                height: 18px;
+                margin-right: 4px;
             }
 
             .search-input {
-                flex: 1;
                 font-size: 0.95rem;
-                padding: 10px 0;
-                min-width: 0;
-                /* allows text truncation if needed */
+                padding: 8px 0;
             }
 
             .search-btn {
-                padding: 8px 18px;
+                padding: 8px 16px;
                 font-size: 0.85rem;
-                border-radius: 50px;
-                flex-shrink: 0;
+                border-radius: 40px;
                 margin: 0;
-                font-weight: 700;
-                /* Ensure it stands out as a button */
-                background: var(--spotify-green);
-                color: white;
-            }
-
-            /* Adjust button color dynamically via existing body classes if needed, 
-               but default inline style uses var(--spotify-active) etc. */
-            body.apple-active .search-btn {
-                background: var(--apple-gradient);
-            }
-
-            body.youtube-active .search-btn {
-                background: var(--youtube-gradient);
+                font-weight: 600;
             }
 
             /* Compact Track Items */
             .track-list {
-                max-height: 50vh;
+                max-height: 45vh;
+                /* See more content */
             }
 
             .track-item {
-                padding: 10px;
+                padding: 8px 12px;
+                /* Slimmer rows */
                 gap: 12px;
+                border-radius: 10px;
             }
 
             .track-image {
-                width: 42px;
-                height: 42px;
+                width: 40px;
+                height: 40px;
+                border-radius: 6px;
             }
 
             .track-info {
-                gap: 2px;
+                gap: 1px;
             }
 
             .track-name {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
             }
 
             .track-artist {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
+            }
+
+            .track-duration {
+                font-size: 0.75rem;
             }
 
             /* Player & Embeds */
             .embed-container {
-                padding: 15px;
-                min-height: 150px;
+                padding: 10px;
+                min-height: 120px;
             }
 
             .open-buttons {
                 flex-direction: column;
-                gap: 10px;
+                gap: 8px;
             }
 
             .open-btn {
                 width: 100%;
                 justify-content: center;
-                padding: 10px 20px;
-            }
-
-            /* Preview Player */
-            .preview-card {
-                flex-direction: column;
-                text-align: center;
-                padding: 15px;
-            }
-
-            .preview-album-art {
-                width: 140px;
-                height: 140px;
-                margin-bottom: 10px;
-            }
-
-            .preview-track-name {
-                font-size: 1.2rem;
+                padding: 10px 16px;
+                font-size: 0.9rem;
+                border-radius: 12px;
             }
 
             /* Metadata Stack */
+            .metadata-section {
+                padding: 20px;
+                /* Reduced padding */
+                margin-top: 20px;
+                border-radius: 16px;
+            }
+
             .metadata-grid {
                 grid-template-columns: 1fr;
-                gap: 30px;
+                gap: 25px;
             }
 
             .meta-info-col {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr;
+                /* Single column for info */
                 gap: 15px;
-            }
-
-            .meta-item {
-                gap: 4px;
-            }
-
-            .meta-links-row {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
             }
 
             .meta-media-col {
                 order: -1;
-                display: flex;
-                flex-direction: column;
-                gap: 20px;
+                /* Media (YouTube) on top */
+                gap: 15px;
             }
 
-            /* Fix Artist Image Visibility */
-            .artist-images-area {
-                width: 100%;
-                max-height: none;
-                /* Let it flow */
-                overflow: visible;
-            }
-
-            .artist-image-container {
-                width: 100%;
-                /* Fixed width for better visibility control */
-                max-width: 250px;
-                margin: 0 auto;
-                /* Center it */
-                display: block;
-                /* Ensure block level */
-            }
-
-            .artist-card {
-                width: 100%;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
+            .youtube-container {
+                max-width: 100%;
+                /* Full width */
+                border-radius: 12px;
             }
 
             .youtube-container iframe {
                 height: 200px;
             }
-        }
 
-        /* Small Phones */
-        @media (max-width: 480px) {
-            .meta-info-col {
-                grid-template-columns: 1fr;
-            }
-
-            .platform-toggle {
-                flex-wrap: wrap;
-            }
-
-            /* Even tighter search on small screens */
-            .search-btn {
-                padding: 8px 12px;
-                font-size: 0.85rem;
+            /* Artist Images Scroll */
+            .artist-images-area {
+                flex-direction: row;
+                /* Horizontal scroll */
+                overflow-x: auto;
+                overflow-y: hidden;
+                justify-content: flex-start;
+                padding-bottom: 10px;
+                height: auto;
+                max-height: none;
+                gap: 12px;
             }
 
             .artist-image-container {
-                width: 160px;
-                /* Smaller image on very small screens */
+                width: 140px;
+                /* Compact cards */
+                flex-shrink: 0;
+                margin: 0;
+                max-width: none;
+            }
+        }
+
+        /* Small Phones (Extra Compact) */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px 10px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .access-card {
+                padding: 20px 15px !important;
+                border-radius: 20px !important;
+                width: 95% !important;
+            }
+
+            .access-header-logo img {
+                height: 28px !important;
+            }
+
+            .access-header-logo h1 {
+                font-size: 1.3rem !important;
+            }
+
+            .access-card h2 {
+                font-size: 1rem !important;
+                margin-bottom: 20px !important;
+            }
+
+            .access-field {
+                padding: 10px 12px !important;
+                font-size: 0.9rem !important;
+            }
+
+            .full-width-btn {
+                padding: 10px !important;
+                font-size: 1rem !important;
             }
         }
 
