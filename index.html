@@ -1541,142 +1541,136 @@
             color: var(--text-secondary);
         }
 
-        /* Polished Glass Player (Mobile) */
-        .preview-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
+        /* Mobile Rescue: Transparency & Airiness */
+        .preview-card,
+        .metadata-section,
+        .lyrics-module {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            padding: 0 !important;
+            margin-top: 30px !important;
         }
 
+        /* Player Specifics (Floating Content) */
         .preview-album-art {
-            width: 140px;
-            height: 140px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-            margin: 0 auto;
-        }
-
-        .track-info-preview {
-            text-align: center;
-            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+            /* Enhanced shadow for depth without container */
+            border-radius: 16px;
         }
 
         .preview-track-name {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 1.5rem !important;
+            font-weight: 700;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            margin-bottom: 8px !important;
         }
 
         .preview-artist-name {
-            font-size: 0.95rem;
+            font-size: 1.1rem !important;
             opacity: 0.9;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
         }
 
-        .open-buttons {
-            width: 100%;
-            flex-direction: column;
-            /* Stack buttons for easy tapping */
-            gap: 12px;
-        }
-
+        /* Buttons Update */
         .open-btn {
-            width: 100%;
-            justify-content: center;
-            padding: 14px;
-            font-size: 1rem;
-            background: rgba(0, 0, 0, 0.3);
-            /* Darker backdrop for contrast */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            backdrop-filter: none;
+            background: rgba(255, 255, 255, 0.15) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .open-btn:active {
-            transform: scale(0.98);
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        /* Polished Metadata Stack */
+        /* Metadata Rescue */
         .metadata-section {
-            background: transparent;
-            /* Remove boxiness */
-            border: none;
-            padding: 10px 5px;
-            margin-top: 20px;
+            margin-top: 10px !important;
         }
 
         .metadata-grid {
-            gap: 25px;
-        }
-
-        .meta-info-col {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            gap: 30px !important;
         }
 
         .meta-item {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 12px;
-        }
-
-        .meta-item:last-child {
-            border-bottom: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+            padding-bottom: 15px !important;
         }
 
         .meta-label {
-            font-size: 0.8rem;
-            opacity: 0.7;
-            margin-bottom: 4px;
-            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-size: 0.85rem !important;
+            opacity: 1 !important;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
         }
 
         .meta-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            font-size: 1.3rem !important;
+            font-weight: 700 !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        /* Cleaner Lyrics Module */
+        /* Button Grid for Links (Rescue) */
+        .meta-links-row {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px !important;
+            margin-top: 40px !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+
+        .meta-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 16px;
+            border-radius: 16px;
+            color: #fff !important;
+            text-decoration: none !important;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            font-size: 0.95rem !important;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .meta-link:active {
+            transform: scale(0.96);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Hide Visual Clutter */
+        .youtube-container {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+            margin-top: 20px;
+        }
+
+        /* Lyrics Floating */
         .lyrics-module {
-            background: rgba(0, 0, 0, 0.2);
-            /* Subtle dark tint */
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: none;
-            padding: 20px 15px;
+            background: rgba(0, 0, 0, 0.15) !important;
+            /* Very subtle for readability */
+            border-radius: 24px !important;
+            padding: 25px 20px !important;
         }
 
         .lyrics-top-bar {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-        }
-
-        .tab-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
 
         .tab-btn.active {
             background: #fff !important;
             color: #000 !important;
-            /* High contrast active state */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
         }
 
-        .lyrics-content {
-            font-size: 1.15rem;
-            line-height: 1.8;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        /* Ensure Video Error doesn't look broken */
+        .video-error-container {
+            background: rgba(0, 0, 0, 0.3) !important;
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
         }
 
 
