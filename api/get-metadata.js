@@ -144,8 +144,8 @@ export default async function handler(req, res) {
             }
         }
 
-        // 3. Cross-Reference (Spotify/YouTube <-> Apple)
-        if ((platform === 'spotify' || platform === 'youtube') && searchQuery.title) {
+        // 3. Cross-Reference (Spotify <-> Apple)
+        if (platform === 'spotify' && searchQuery.title) {
             try {
                 const term = `${searchQuery.title} ${searchQuery.artist}`;
                 const appleSearch = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=song&limit=1`);
