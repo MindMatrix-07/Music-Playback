@@ -1541,43 +1541,145 @@
             color: var(--text-secondary);
         }
 
-        /* Studio Metadata & Player */
+        /* Polished Glass Player (Mobile) */
         .preview-card {
-            padding: 15px;
-            background: var(--bg-studio);
-            border: 1px solid var(--border-studio);
-            border-radius: 12px;
-            gap: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
         }
 
-        .metadata-section {
-            padding: 15px;
-            background: var(--bg-studio);
-            border: 1px solid var(--border-studio);
+        .preview-album-art {
+            width: 140px;
+            height: 140px;
             border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            margin: 0 auto;
         }
 
-        .meta-info-col {
-            grid-template-columns: 1fr;
+        .track-info-preview {
+            text-align: center;
+            width: 100%;
+        }
+
+        .preview-track-name {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .preview-artist-name {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .open-buttons {
+            width: 100%;
+            flex-direction: column;
+            /* Stack buttons for easy tapping */
             gap: 12px;
         }
 
+        .open-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 14px;
+            font-size: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            /* Darker backdrop for contrast */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            backdrop-filter: none;
+        }
+
+        .open-btn:active {
+            transform: scale(0.98);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Polished Metadata Stack */
+        .metadata-section {
+            background: transparent;
+            /* Remove boxiness */
+            border: none;
+            padding: 10px 5px;
+            margin-top: 20px;
+        }
+
+        .metadata-grid {
+            gap: 25px;
+        }
+
+        .meta-info-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .meta-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
+        }
+
+        .meta-item:last-child {
+            border-bottom: none;
+        }
+
         .meta-label {
-            opacity: 0.4;
-            text-transform: uppercase;
-            font-size: 0.65rem;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
         }
 
         .meta-value {
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         }
 
+        /* Cleaner Lyrics Module */
         .lyrics-module {
-            background: var(--bg-studio) !important;
-            border: 1px solid var(--border-studio);
-            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            /* Subtle dark tint */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+            padding: 20px 15px;
         }
+
+        .lyrics-top-bar {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .tab-btn.active {
+            background: #fff !important;
+            color: #000 !important;
+            /* High contrast active state */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .lyrics-content {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+
 
         .lyrics-player-controls {
             background: rgba(10, 10, 10, 0.8) !important;
