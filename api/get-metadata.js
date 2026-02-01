@@ -81,7 +81,7 @@ export default async function handler(req, res) {
                 metadata.album = track.album?.name;
                 metadata.duration = track.duration_ms;
                 metadata.isrc = track.external_ids?.isrc;
-                metadata.releaseDate = track.album?.release_date;
+                metadata.releaseDate = track.album?.release_date ? track.album.release_date.substring(0, 10) : null;
                 metadata.year = metadata.releaseDate ? metadata.releaseDate.split('-')[0] : null;
                 metadata.popularity = track.popularity;
                 metadata.crossLinks.spotify = track.external_urls?.spotify;
@@ -114,8 +114,8 @@ export default async function handler(req, res) {
                 metadata.duration = track.trackTimeMillis;
                 metadata.crossLinks.apple = track.trackViewUrl;
                 metadata.genre = [track.primaryGenreName];
-                metadata.releaseDate = track.releaseDate;
-                metadata.year = track.releaseDate ? new Date(track.releaseDate).getFullYear().toString() : null;
+                metadata.releaseDate = track.releaseDate ? track.releaseDate.substring(0, 10) : null;
+                metadata.year = metadata.releaseDate ? metadata.releaseDate.split('-')[0] : null;
                 metadata.recordLabel = track.collectionCensoredName;
                 metadata.coverArt = track.artworkUrl100?.replace('100x100', '600x600');
                 metadata.language = track.country;
@@ -156,8 +156,8 @@ export default async function handler(req, res) {
                     if (!metadata.recordLabel) metadata.recordLabel = match.collectionCensoredName;
                     if (metadata.genre.length === 0) metadata.genre = [match.primaryGenreName];
                     if (!metadata.releaseDate) {
-                        metadata.releaseDate = match.releaseDate;
-                        metadata.year = new Date(match.releaseDate).getFullYear().toString();
+                        metadata.releaseDate = match.releaseDate ? match.releaseDate.substring(0, 10) : null;
+                        metadata.year = metadata.releaseDate ? metadata.releaseDate.split('-')[0] : null;
                     }
                     if (!metadata.album) metadata.album = match.collectionName;
                 }
@@ -183,8 +183,8 @@ export default async function handler(req, res) {
                             metadata.album = match.album.name;
                             metadata.duration = match.duration_ms;
                             metadata.coverArt = match.album.images[0]?.url;
-                            metadata.releaseDate = match.album.release_date;
-                            metadata.year = match.album.release_date.split('-')[0];
+                            metadata.releaseDate = match.album?.release_date ? match.album.release_date.substring(0, 10) : null;
+                            metadata.year = metadata.releaseDate ? metadata.releaseDate.split('-')[0] : null;
                             metadata.isrc = match.external_ids?.isrc;
                         } else {
                             if (!metadata.isrc) metadata.isrc = match.external_ids?.isrc;
@@ -192,8 +192,8 @@ export default async function handler(req, res) {
                             if (!metadata.duration) metadata.duration = match.duration_ms;
                             if (!metadata.coverArt) metadata.coverArt = match.album?.images?.[0]?.url;
                             if (!metadata.releaseDate) {
-                                metadata.releaseDate = match.album?.release_date;
-                                metadata.year = match.album?.release_date.split('-')[0];
+                                metadata.releaseDate = match.album?.release_date ? match.album.release_date.substring(0, 10) : null;
+                                metadata.year = metadata.releaseDate ? metadata.releaseDate.split('-')[0] : null;
                             }
                         }
                     }
