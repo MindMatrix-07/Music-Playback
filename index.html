@@ -3223,13 +3223,9 @@
             </div>
 
             <div class="setting-item">
-                <label for="googleApiKeyInput">Google Search API Key (Optional)</label>
-                <input type="password" id="googleApiKeyInput" placeholder="For Custom Search (if different)">
             </div>
 
             <div class="setting-item">
-                <label for="ytCxInput">Search Engine ID (CX)</label>
-                <input type="text" id="ytCxInput" placeholder="Paste your CX ID here">
                 <p class="setting-hint" style="margin-top: 5px;">Required for Official Audio search.</p>
             </div>
 
@@ -3285,71 +3281,64 @@
 
                     <!-- Google Search Guide -->
                     <div class="guide-collapsible" style="margin-top: 5px;">
-                        <button id="toggleGoogleGuideBtn" class="guide-toggle-btn"
-                            style="color: var(--text-secondary); font-size: 0.85rem;">
-                            <span>How to get a Google Search API Key</span>
-                            <span id="googleGuideArrow" style="transition: transform 0.3s;">▼</span>
+                        style="color: var(--text-secondary); font-size: 0.85rem;">
+                        <span>How to get a Google Search API Key</span>
+                        <span id="googleGuideArrow" style="transition: transform 0.3s;">▼</span>
                         </button>
-                        <div id="googleGuideContent" class="guide-content">
-                            <ol class="steps-list">
-                                <li>In Google Cloud, enable <b>"Custom Search API"</b>.</li>
-                                <li>You can reuse your YouTube Key!</li>
-                            </ol>
-                        </div>
-                    </div>
-
-                    <!-- CX Guide -->
-                    <div class="guide-collapsible" style="margin-top: 5px;">
-                        <button id="toggleCxGuideBtn" class="guide-toggle-btn"
-                            style="color: var(--text-secondary); font-size: 0.85rem;">
-                            <span>How to get a CX ID</span>
-                            <span id="cxGuideArrow" style="transition: transform 0.3s;">▼</span>
-                        </button>
-                        <div id="cxGuideContent" class="guide-content">
-                            <ol class="steps-list">
-                                <li>Go to <a href="https://programmablesearchengine.google.com/controlpanel/all"
-                                        target="_blank" style="color:var(--spotify-green)">Programmable Search
-                                        Engine</a>.</li>
-                                <li>Add <b>youtube.com</b> to "Sites to search".</li>
-                                <li>Copy the <b>Search engine ID</b> (CX).</li>
-                            </ol>
-                        </div>
+                        <ol class="steps-list">
+                            <li>In Google Cloud, enable <b>"Custom Search API"</b>.</li>
+                            <li>You can reuse your YouTube Key!</li>
+                        </ol>
                     </div>
                 </div>
-            </div>
 
-            <!-- Actions Row -->
-            <div class="settings-actions" style="margin-top: 30px; margin-bottom: 20px; display: flex; gap: 10px;">
-                <button id="deleteKeyBtn" class="secondary-btn"
-                    style="margin-right: auto; color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3);">Delete
-                    Key</button>
-                <button id="closeSettingsBtn" class="secondary-btn">Go Back</button>
-                <button id="saveSettingsBtn" class="primary-btn">Save Changes</button>
-            </div>
-
-            <!-- Account Management (Danger Zone) -->
-            <div class="setting-item"
-                style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-bottom: 0;">
-                <label style="color: var(--text-secondary); font-size: 0.85rem;">Account</label>
-                <button id="deleteAccountBtn" class="secondary-btn"
-                    style="width: 100%; font-size: 0.85rem; padding: 8px; color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3);">
-                    🗑️ Delete Account Data
-                </button>
-            </div>
-
-            <!-- Diagnostics Section (Footer) -->
-            <div class="setting-item"
-                style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-bottom: 0;">
-                <label style="color: var(--text-secondary); font-size: 0.85rem;">Troubleshooting</label>
-                <button id="internalCopyLogBtn" class="secondary-btn"
-                    style="width: 100%; font-size: 0.85rem; padding: 8px;">
-                    📋 Copy Diagnostic Info
-                </button>
-                <p id="internalClipConfirm"
-                    style="color: var(--spotify-green); font-size: 0.8rem; height: 1.2em; opacity: 0; text-align: center; margin-top: 5px; transition: opacity 0.3s;">
-                    Copied to clipboard!</p>
+                <!-- CX Guide -->
+                <div class="guide-collapsible" style="margin-top: 5px;">
+                    style="color: var(--text-secondary); font-size: 0.85rem;">
+                    <span>How to get a CX ID</span>
+                    <span id="cxGuideArrow" style="transition: transform 0.3s;">▼</span>
+                    </button>
+                    <ol class="steps-list">
+                        <li>Go to <a href="https://programmablesearchengine.google.com/controlpanel/all" target="_blank"
+                                style="color:var(--spotify-green)">Programmable Search
+                                Engine</a>.</li>
+                        <li>Add <b>youtube.com</b> to "Sites to search".</li>
+                        <li>Copy the <b>Search engine ID</b> (CX).</li>
+                    </ol>
+                </div>
             </div>
         </div>
+    </div>
+
+    <!-- Actions Row -->
+    <div class="settings-actions" style="margin-top: 30px; margin-bottom: 20px; display: flex; gap: 10px;">
+        <button id="deleteKeyBtn" class="secondary-btn"
+            style="margin-right: auto; color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3);">Delete
+            Key</button>
+        <button id="closeSettingsBtn" class="secondary-btn">Go Back</button>
+        <button id="saveSettingsBtn" class="primary-btn">Save Changes</button>
+    </div>
+
+    <!-- Account Management (Danger Zone) -->
+    <div class="setting-item" style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-bottom: 0;">
+        <label style="color: var(--text-secondary); font-size: 0.85rem;">Account</label>
+        <button id="deleteAccountBtn" class="secondary-btn"
+            style="width: 100%; font-size: 0.85rem; padding: 8px; color: #ff6b6b; border-color: rgba(255, 107, 107, 0.3);">
+            🗑️ Delete Account Data
+        </button>
+    </div>
+
+    <!-- Diagnostics Section (Footer) -->
+    <div class="setting-item" style="border-top: 1px solid var(--border-color); padding-top: 15px; margin-bottom: 0;">
+        <label style="color: var(--text-secondary); font-size: 0.85rem;">Troubleshooting</label>
+        <button id="internalCopyLogBtn" class="secondary-btn" style="width: 100%; font-size: 0.85rem; padding: 8px;">
+            📋 Copy Diagnostic Info
+        </button>
+        <p id="internalClipConfirm"
+            style="color: var(--spotify-green); font-size: 0.8rem; height: 1.2em; opacity: 0; text-align: center; margin-top: 5px; transition: opacity 0.3s;">
+            Copied to clipboard!</p>
+    </div>
+    </div>
     </div>
 
     <script>
@@ -4115,10 +4104,14 @@
             virtualSyncAnchored = false;
             if (virtualTimerId) clearInterval(virtualTimerId);
             if (banner) {
-                banner.textContent = "Tap a line below 👆 when you hear the vocals to sync lyrics";
-                banner.style.color = "var(--text-secondary)";
-                banner.style.background = "rgba(255, 255, 255, 0.05)";
-                banner.style.display = "block";
+                if (currentPlatform === 'youtube') {
+                    banner.style.display = "none";
+                } else {
+                    banner.textContent = "Tap a line below 👆 when you hear the vocals to sync lyrics";
+                    banner.style.color = "var(--text-secondary)";
+                    banner.style.background = "rgba(255, 255, 255, 0.05)";
+                    banner.style.display = "block";
+                }
             }
 
             if (module) module.classList.remove("hidden");
@@ -4438,8 +4431,6 @@
             const settingsModal = document.getElementById('settingsModal');
             const settingsBtn = document.getElementById('settingsBtn');
             const ytInput = document.getElementById('ytApiKeyInput');
-            const googleInput = document.getElementById('googleApiKeyInput'); // NEW
-            const cxInput = document.getElementById('ytCxInput');
             const saveBtn = document.getElementById('saveSettingsBtn');
             const closeBtn = document.getElementById('closeSettingsBtn');
             const deleteBtn = document.getElementById('deleteKeyBtn');
@@ -4447,12 +4438,8 @@
             const guideContent = document.getElementById('guideContent');
             const guideArrow = document.getElementById('guideArrow');
 
-            const toggleCxGuideBtn = document.getElementById('toggleCxGuideBtn');
-            const cxGuideContent = document.getElementById('cxGuideContent');
             const cxGuideArrow = document.getElementById('cxGuideArrow');
 
-            const toggleGoogleGuideBtn = document.getElementById('toggleGoogleGuideBtn');
-            const googleGuideContent = document.getElementById('googleGuideContent');
             const googleGuideArrow = document.getElementById('googleGuideArrow');
 
             const backBtn = document.getElementById('backFromSettingsBtn');
@@ -4464,8 +4451,6 @@
 
             const openModal = () => {
                 if (ytInput) ytInput.value = localStorage.getItem('yt_api_key') || '';
-                if (googleInput) googleInput.value = localStorage.getItem('google_search_key') || '';
-                if (cxInput) cxInput.value = localStorage.getItem('yt_cx_id') || '';
                 settingsModal.classList.remove('hidden');
             };
 
@@ -4488,110 +4473,80 @@
                 });
             }
 
-            if (toggleCxGuideBtn && cxGuideContent && cxGuideArrow) {
-                toggleCxGuideBtn.addEventListener('click', () => {
-                    cxGuideContent.classList.toggle('active');
-                    cxGuideArrow.style.transform = cxGuideContent.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+        });
+            }
+
+        const toggleMasterGuideBtn = document.getElementById('toggleMasterGuideBtn');
+        const masterGuideContent = document.getElementById('masterGuideContent');
+        const masterGuideArrow = document.getElementById('masterGuideArrow');
+
+        if (toggleMasterGuideBtn && masterGuideContent && masterGuideArrow) {
+            toggleMasterGuideBtn.addEventListener('click', () => {
+                masterGuideContent.classList.toggle('active');
+                masterGuideArrow.style.transform = masterGuideContent.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+            });
+        }
+
+        e.stopPropagation(); // Prevent closing master
                 });
             }
 
-            const toggleMasterGuideBtn = document.getElementById('toggleMasterGuideBtn');
-            const masterGuideContent = document.getElementById('masterGuideContent');
-            const masterGuideArrow = document.getElementById('masterGuideArrow');
+        // Save functionality
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                if (key) {
+                    localStorage.setItem('yt_api_key', key);
+                    settingsModal.classList.add('hidden');
+                    if (selectedTrack) fetchMetadata(selectedTrack);
+                } else {
+                    alert('YouTube API Key is required at minimum.');
+                }
+            });
+        }
 
-            if (toggleMasterGuideBtn && masterGuideContent && masterGuideArrow) {
-                toggleMasterGuideBtn.addEventListener('click', () => {
-                    masterGuideContent.classList.toggle('active');
-                    masterGuideArrow.style.transform = masterGuideContent.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
-                });
-            }
+        // Delete functionality
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to remove all API Keys from this device?')) {
+                    localStorage.removeItem('yt_api_key');
+                    if (ytInput) ytInput.value = '';
+                    alert('Keys removed from local storage.');
+                    settingsModal.classList.add('hidden');
+                }
+            });
+        }
 
-            if (toggleGoogleGuideBtn && googleGuideContent && googleGuideArrow) {
-                toggleGoogleGuideBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent closing master
-                    googleGuideContent.classList.toggle('active');
-                    googleGuideArrow.style.transform = googleGuideContent.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
-                });
-            }
+        // Diagnostics Copy
+        const internalCopyBtn = document.getElementById('internalCopyLogBtn');
+        const internalConfirm = document.getElementById('internalClipConfirm');
+        if (internalCopyBtn) {
+            internalCopyBtn.addEventListener('click', () => {
+                const diag = {
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    screen: window.innerWidth + 'x' + window.innerHeight,
+                    platform: typeof currentPlatform !== 'undefined' ? currentPlatform : 'unknown',
+                    hasDeviceID: !!localStorage.getItem('device_binding_id'),
+                    deviceID: localStorage.getItem('device_binding_id'),
+                    hasYTKey: !!localStorage.getItem('yt_api_key'),
+                    authCookie: document.cookie.includes('auth_token'),
+                    referrer: document.referrer
+                };
 
-            // Save functionality
-            if (saveBtn) {
-                saveBtn.addEventListener('click', () => {
-                    const key = ytInput ? ytInput.value.trim() : '';
-                    const googleKey = googleInput ? googleInput.value.trim() : '';
-                    const cx = cxInput ? cxInput.value.trim() : '';
-
-                    if (key) {
-                        localStorage.setItem('yt_api_key', key);
-
-                        if (googleKey) localStorage.setItem('google_search_key', googleKey);
-                        else localStorage.removeItem('google_search_key');
-
-                        if (cx) localStorage.setItem('yt_cx_id', cx);
-                        else localStorage.removeItem('yt_cx_id');
-
-                        settingsModal.classList.add('hidden');
-                        if (selectedTrack) fetchMetadata(selectedTrack);
-                    } else {
-                        alert('YouTube API Key is required at minimum.');
+                navigator.clipboard.writeText(JSON.stringify(diag, null, 2)).then(() => {
+                    if (internalConfirm) {
+                        internalConfirm.style.opacity = '1';
+                        setTimeout(() => internalConfirm.style.opacity = '0', 2000);
                     }
                 });
-            }
-
-            // Delete functionality
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', () => {
-                    if (confirm('Are you sure you want to remove all API Keys from this device?')) {
-                        localStorage.removeItem('yt_api_key');
-                        localStorage.removeItem('google_search_key');
-                        localStorage.removeItem('yt_cx_id');
-                        if (ytInput) ytInput.value = '';
-                        if (googleInput) googleInput.value = '';
-                        if (cxInput) cxInput.value = '';
-                        alert('Keys removed from local storage.');
-                        settingsModal.classList.add('hidden');
-                    }
-                });
-            }
-
-            // Diagnostics Copy
-            const internalCopyBtn = document.getElementById('internalCopyLogBtn');
-            const internalConfirm = document.getElementById('internalClipConfirm');
-            if (internalCopyBtn) {
-                internalCopyBtn.addEventListener('click', () => {
-                    const diag = {
-                        timestamp: new Date().toISOString(),
-                        userAgent: navigator.userAgent,
-                        screen: window.innerWidth + 'x' + window.innerHeight,
-                        platform: typeof currentPlatform !== 'undefined' ? currentPlatform : 'unknown',
-                        hasDeviceID: !!localStorage.getItem('device_binding_id'),
-                        deviceID: localStorage.getItem('device_binding_id'),
-                        hasYTKey: !!localStorage.getItem('yt_api_key'),
-                        authCookie: document.cookie.includes('auth_token'),
-                        referrer: document.referrer
-                    };
-
-                    navigator.clipboard.writeText(JSON.stringify(diag, null, 2)).then(() => {
-                        if (internalConfirm) {
-                            internalConfirm.style.opacity = '1';
-                            setTimeout(() => internalConfirm.style.opacity = '0', 2000);
-                        }
-                    });
-                });
-            }
+            });
+        }
         }
 
         // Official YouTube Search (Client-Side)
         async function searchYouTubeClient(query) {
             const apiKey = localStorage.getItem('yt_api_key');
-            const googleSearchKey = localStorage.getItem('google_search_key'); // Get Google Search API Key
-
-            if (!apiKey) return { error: 'missing_key' };
-
             const headers = { 'Content-Type': 'application/json' };
-            if (googleSearchKey) {
-                headers['x-google-key'] = googleSearchKey; // Add custom header
-            }
 
             try {
                 const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=1&key=${apiKey}`, { headers });
@@ -4797,6 +4752,7 @@
                     playerVars: {
                         'playsinline': 1,
                         'enablejsapi': 1,
+                        'autoplay': 1,
                         'origin': window.location.origin
                     },
                     events: {

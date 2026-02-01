@@ -130,17 +130,43 @@ async function handleYouTubeSearch(req, q, limit, res) {
         if (tracks && tracks.length > 0) {
             console.log(`[Cache Hit] Found ${tracks.length} tracks for "${q}"`);
 
-            const results = tracks.map(t => ({
-                id: t.id, // Internal UUID
-                name: t.title,
-                artist: t.artist,
-                image: t.playback_metadata?.thumbnail || '',
-                duration: t.playback_metadata?.duration || 0,
-                // Client handles playback using these IDs
-                youtubeId: t.playback_metadata?.youtube_id,
-                embedUrl: `https://www.youtube.com/embed/${t.playback_metadata?.youtube_id}`,
-                youtubeUrl: `https://www.youtube.com/watch?v=${t.playback_metadata?.youtube_id}`,
-                systemStatus: 'AVAILABLE'
+            const results = await Promise.all(tracks.map(async (t, index) => {
+                let metadata = {
+                    name: t.title,
+                    artist: t.artist,
+                    image: t.playback_metadata?.thumbnail || '',
+                    duration: t.playback_metadata?.duration || 0
+                };
+
+                // Enrichment: Search Apple Music for better metadata (only for top few results to keep it fast)
+                if (index < 3) {
+                    try {
+                        const term = `${t.title} ${t.artist}`;
+                        const appleRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=song&limit=1`);
+                        const appleData = await appleRes.json();
+                        if (appleData.results?.[0]) {
+                            const match = appleData.results[0];
+                            metadata.name = match.trackName;
+                            metadata.artist = match.artistName;
+                            metadata.image = match.artworkUrl100.replace('100x100', '600x600');
+                            metadata.duration = match.trackTimeMillis;
+                            metadata.appleUrl = match.trackViewUrl;
+                        }
+                    } catch (e) { console.error('Apple Enrichment failed', e); }
+                }
+
+                return {
+                    id: t.id,
+                    name: metadata.name,
+                    artist: metadata.artist,
+                    image: metadata.image,
+                    duration: metadata.duration,
+                    youtubeId: t.playback_metadata?.youtube_id,
+                    embedUrl: `https://www.youtube.com/embed/${t.playback_metadata?.youtube_id}`,
+                    youtubeUrl: `https://www.youtube.com/watch?v=${t.playback_metadata?.youtube_id}`,
+                    appleUrl: metadata.appleUrl,
+                    systemStatus: 'AVAILABLE'
+                };
             }));
 
             return res.status(200).json({ tracks: results });
