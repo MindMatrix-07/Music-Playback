@@ -3856,10 +3856,7 @@
                 document.getElementById('metaArtist').textContent = data.artist || track.artist || 'N/A';
                 document.getElementById('metaAlbum').textContent = data.album || 'N/A';
 
-                let dateStr = data.releaseDate || 'N/A';
-                if (data.year && data.releaseDate && !data.releaseDate.includes(data.year)) {
-                    dateStr += ` (${data.year})`;
-                }
+                let dateStr = data.releaseDate ? data.releaseDate.substring(0, 10) : 'N/A';
                 document.getElementById('metaReleased').textContent = dateStr;
 
                 document.getElementById('metaDuration').textContent = data.duration ? formatDuration(data.duration) : 'N/A';
