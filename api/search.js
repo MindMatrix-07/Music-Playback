@@ -46,9 +46,8 @@ export default async function handler(req, res) {
     }
 }
 
-// --- Spotify Logic ---
-async function handleSpotifySearch(q, type, limit, res) {
-    // Get Token
+// --- Spotify Auth Helper ---
+async function getSpotifyAccessToken() {
     const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
@@ -60,6 +59,13 @@ async function handleSpotifySearch(q, type, limit, res) {
 
     if (!tokenResponse.ok) throw new Error('Failed to get Spotify access token');
     const { access_token } = await tokenResponse.json();
+    return access_token;
+}
+
+// --- Spotify Logic ---
+async function handleSpotifySearch(q, type, limit, res) {
+    // Get Token
+    const access_token = await getSpotifyAccessToken();
 
     // Search
     const searchRes = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(q)}&type=${type}&limit=${limit}`, {
@@ -130,6 +136,14 @@ async function handleYouTubeSearch(req, q, limit, res) {
         if (tracks && tracks.length > 0) {
             console.log(`[Cache Hit] Found ${tracks.length} tracks for "${q}"`);
 
+            // Spotify Auth for Enrichment
+            let spotify_access_token = null;
+            try {
+                spotify_access_token = await getSpotifyAccessToken();
+            } catch (e) {
+                console.error('Spotify Auth (Enrichment) Failed:', e);
+            }
+
             const results = await Promise.all(tracks.map(async (t, index) => {
                 let metadata = {
                     name: t.title,
@@ -138,21 +152,23 @@ async function handleYouTubeSearch(req, q, limit, res) {
                     duration: t.playback_metadata?.duration || 0
                 };
 
-                // Enrichment: Search Apple Music for better metadata (only for top few results to keep it fast)
-                if (index < 3) {
+                // Enrichment: Search Spotify for better metadata (only for top few results to keep it fast)
+                if (index < 3 && spotify_access_token) {
                     try {
                         const term = `${t.title} ${t.artist}`;
-                        const appleRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=song&limit=1`);
-                        const appleData = await appleRes.json();
-                        if (appleData.results?.[0]) {
-                            const match = appleData.results[0];
-                            metadata.name = match.trackName;
-                            metadata.artist = match.artistName;
-                            metadata.image = match.artworkUrl100.replace('100x100', '600x600');
-                            metadata.duration = match.trackTimeMillis;
-                            metadata.appleUrl = match.trackViewUrl;
+                        const spotRes = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(term)}&type=track&limit=1`, {
+                            headers: { 'Authorization': `Bearer ${spotify_access_token}` }
+                        });
+                        const spotData = await spotRes.json();
+                        if (spotData.tracks?.items?.[0]) {
+                            const match = spotData.tracks.items[0];
+                            metadata.name = match.name;
+                            metadata.artist = match.artists.map(a => a.name).join(', ');
+                            metadata.image = match.album.images[0]?.url || metadata.image;
+                            metadata.duration = match.duration_ms;
+                            metadata.spotifyUrl = match.external_urls.spotify;
                         }
-                    } catch (e) { console.error('Apple Enrichment failed', e); }
+                    } catch (e) { console.error('Spotify Enrichment failed', e); }
                 }
 
                 return {
@@ -164,7 +180,7 @@ async function handleYouTubeSearch(req, q, limit, res) {
                     youtubeId: t.playback_metadata?.youtube_id,
                     embedUrl: `https://www.youtube.com/embed/${t.playback_metadata?.youtube_id}`,
                     youtubeUrl: `https://www.youtube.com/watch?v=${t.playback_metadata?.youtube_id}`,
-                    appleUrl: metadata.appleUrl,
+                    spotifyUrl: metadata.spotifyUrl,
                     systemStatus: 'AVAILABLE'
                 };
             }));

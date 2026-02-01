@@ -140,6 +140,7 @@ export default async function handler(req, res) {
 
                 searchQuery.title = track.title;
                 searchQuery.artist = track.artist;
+                searchQuery.isrc = track.playback_metadata?.isrc; // If we have it
             }
         }
 
@@ -174,13 +175,26 @@ export default async function handler(req, res) {
                     if (data.tracks?.items?.[0]) {
                         const match = data.tracks.items[0];
                         metadata.crossLinks.spotify = match.external_urls.spotify;
-                        if (!metadata.isrc) metadata.isrc = match.external_ids?.isrc;
-                        if (!metadata.album) metadata.album = match.album?.name;
-                        if (!metadata.duration) metadata.duration = match.duration_ms;
-                        if (!metadata.coverArt) metadata.coverArt = match.album?.images?.[0]?.url;
-                        if (!metadata.releaseDate) {
-                            metadata.releaseDate = match.album?.release_date;
-                            metadata.year = match.album?.release_date.split('-')[0];
+
+                        // If platform is YouTube, Spotify data is the primary metadata source
+                        if (platform === 'youtube') {
+                            metadata.title = match.name;
+                            metadata.artist = match.artists.map(a => a.name).join(', ');
+                            metadata.album = match.album.name;
+                            metadata.duration = match.duration_ms;
+                            metadata.coverArt = match.album.images[0]?.url;
+                            metadata.releaseDate = match.album.release_date;
+                            metadata.year = match.album.release_date.split('-')[0];
+                            metadata.isrc = match.external_ids?.isrc;
+                        } else {
+                            if (!metadata.isrc) metadata.isrc = match.external_ids?.isrc;
+                            if (!metadata.album) metadata.album = match.album?.name;
+                            if (!metadata.duration) metadata.duration = match.duration_ms;
+                            if (!metadata.coverArt) metadata.coverArt = match.album?.images?.[0]?.url;
+                            if (!metadata.releaseDate) {
+                                metadata.releaseDate = match.album?.release_date;
+                                metadata.year = match.album?.release_date.split('-')[0];
+                            }
                         }
                     }
                 }
