@@ -1,4 +1,5 @@
 // Metadata API - Fetches deep details and cross-platform links
+import { supabase } from './_utils/supabase.js';
 const SPOTIFY_CLIENT_ID = '1cc98da5d08742df809c8b0724725d0b';
 // SPOTIFY_CLIENT_SECRET is in process.env
 
@@ -122,10 +123,28 @@ export default async function handler(req, res) {
                 searchQuery.title = track.trackName;
                 searchQuery.artist = track.artistName;
             }
+        } else if (platform === 'youtube') {
+            // Fetch from System 2.0 Database
+            const { data: track, error } = await supabase
+                .from('tracks')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (track) {
+                metadata.title = track.title;
+                metadata.artist = track.artist;
+                metadata.duration = track.playback_metadata?.duration || 0;
+                metadata.coverArt = track.playback_metadata?.thumbnail;
+                metadata.crossLinks.youtube = track.playback_metadata?.youtube_id ? `https://www.youtube.com/watch?v=${track.playback_metadata.youtube_id}` : null;
+
+                searchQuery.title = track.title;
+                searchQuery.artist = track.artist;
+            }
         }
 
-        // 3. Cross-Reference (Spotify <-> Apple)
-        if (platform === 'spotify' && searchQuery.title) {
+        // 3. Cross-Reference (Spotify/YouTube <-> Apple)
+        if ((platform === 'spotify' || platform === 'youtube') && searchQuery.title) {
             try {
                 const term = `${searchQuery.title} ${searchQuery.artist}`;
                 const appleSearch = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=song&limit=1`);
@@ -139,11 +158,12 @@ export default async function handler(req, res) {
                         metadata.releaseDate = match.releaseDate;
                         metadata.year = new Date(match.releaseDate).getFullYear().toString();
                     }
+                    if (!metadata.album) metadata.album = match.collectionName;
                 }
             } catch (e) { console.error('Apple Search failed', e); }
         }
 
-        if (platform === 'apple' && access_token) {
+        if ((platform === 'apple' || platform === 'youtube') && access_token && searchQuery.title) {
             try {
                 const query = searchQuery.isrc ? `isrc:${searchQuery.isrc}` : `track:${searchQuery.title} artist:${searchQuery.artist}`;
                 const spotifySearch = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=1`, {

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #111;
+            color: #fff;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Auth Overlay */
+        #auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .card {
+            background: #222;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 0.8rem 1.2rem;
+            background: #1DB954;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1ed760;
+        }
+
+        button.danger {
+            background: #ff4444;
+        }
+
+        button.danger:hover {
+            background: #ff6666;
+        }
+
+        button.secondary {
+            background: #444;
+        }
+
+        /* Dashboard */
+        .hidden {
+            display: none !important;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #222;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1DB954;
+        }
+
+        .stat-label {
+            color: #aaa;
+            margin-top: 0.5rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #222;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        th {
+            background: #1a1a1a;
+            color: #888;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #2a2a2a;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .status-used {
+            background: #1DB95433;
+            color: #1DB954;
+        }
+
+        .status-blocked {
+            background: #ff444433;
+            color: #ff6666;
+        }
+
+        .discord-user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid #444;
+        }
+
+        .tab-btn.active {
+            background: #1DB954;
+            border-color: #1DB954;
+        }
+
+        .maintenance-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .maint-status {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .maint-status.active {
+            background: #ff4444;
+            color: white;
+            animation: pulse-red 2s infinite;
+        }
+
+        .maint-status.inactive {
+            background: #1DB954;
+            color: white;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+            }
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                width: 100%;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            header div {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+
+
+            /* Stack specific controls */
+            .maintenance-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            #maint-reason {
+                width: 100%;
+            }
+
+            /* Responsive Table */
+            .table-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table {
+                min-width: 600px;
+                /* Force scroll */
+            }
+
+            /* Adjust inputs/buttons */
+            #new-code {
+                max-width: none !important;
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- AUTH OVERLAY -->
+    <div id="auth-overlay">
+        <div class="card" style="width: 300px; text-align: center;">
+            <h2>Admin Login</h2>
+            <input type="password" id="login-pass" placeholder="Enter Admin Password">
+            <button onclick="login()">Enter Dashboard</button>
+            <p id="login-msg" style="color: #ff5555; margin-top: 1rem;"></p>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboard" class="container hidden">
+        <header>
+            <h1>Admin Panel</h1>
+            <div style="display: flex; gap: 10px;">
+                <button class="secondary" onclick="exportData()">⬇ Export Data (JSON)</button>
+                <button class="secondary" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <!-- CREATE SECTION -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3>Create Access Code</h3>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="new-code" placeholder="Code (e.g. VIP-2025)" style="max-width: 200px;">
+                <button class="secondary" onclick="generateRandom()">🎲</button>
+                <button onclick="createCode()">Create</button>
+            </div>
+            <div id="create-msg" style="margin-top: 10px;"></div>
+        </div>
+
+        <!-- MAINTENANCE SECTION -->
+        <div class="card" style="margin-bottom: 2rem; border: 1px solid #ff444455;">
+            <h3 style="color: #ff6666;">⚠️ Emergency Shutdown (Maintenance Mode)</h3>
+            <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 15px;">
+                Turning this ON will block ALL access to the main website.
+            </p>
+
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <div class="maintenance-controls">
+                    <div id="maint-status-indicator" class="maint-status inactive">NORMAL</div>
+
+                    <input type="text" id="maint-reason" placeholder="Reason (e.g. Server Upgrade)"
+                        style="flex: 1; min-width: 200px; margin: 0;">
+
+                    <div style="display: flex; gap: 5px;">
+                        <button class="danger" onclick="saveSettings(true)">Enable Shutdown</button>
+                        <button class="secondary" style="background:#444;" onclick="saveSettings(false)">Disable
+                            Shutdown</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('users')">User Management</button>
+            <button class="tab-btn" onclick="switchTab('spam')">Spam Reports</button>
+        </div>
+
+        <!-- STATS GRID -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-val" id="count-active">0</div>
+                <div class="stat-label">Active Users (24h)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="count-daily">0</div>
+                <div class="stat-label">Daily Visits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="count-total">0</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+        </div>
+
+        <!-- USERS TABLE -->
+        <div id="tab-users">
+            <input type="text" id="user-search" placeholder="Search by Code or Name..." onkeyup="renderUsers()"
+                style="margin-bottom: 1rem;">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>User (Discord)</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <!-- JS Populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SPAM TABLE -->
+        <div id="tab-spam" class="hidden">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="spam-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let GLOBAL_DATA = { users: [], spam: [] };
+        let PASSWORD = '';
+
+        // --- AUTH ---
+        async function login() {
+            const pass = document.getElementById('login-pass').value;
+            if (!pass) return;
+
+            // Test auth by fetching stats
+            try {
+                const res = await fetch('/api/admin/handler?action=stats', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pass })
+                });
+
+                if (res.ok) {
+                    PASSWORD = pass;
+                    document.getElementById('auth-overlay').classList.add('hidden');
+                    document.getElementById('dashboard').classList.remove('hidden');
+                    const data = await res.json();
+                    loadDashboard(data);
+                    startAutoRefresh();
+                } else {
+                    let data = {};
+                    try { data = await res.json(); } catch (e) { }
+                    document.getElementById('login-msg').textContent = data.error || 'Login Failed (Check Console)';
+                    console.error('Login Failed:', res.status, data);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function logout() {
+            localStorage.removeItem('admin_pass');
+            location.reload();
+        }
+
+        // Auto-login removed
+
+
+        // --- POLING ---
+        let refreshInterval;
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(async () => {
+                if (!PASSWORD || document.getElementById('dashboard').classList.contains('hidden')) return;
+
+                try {
+                    // Silent refetch
+                    const res = await fetch('/api/admin/handler?action=stats', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password: PASSWORD })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        loadDashboard(data);
+                    }
+                } catch (e) { console.error('Auto-refresh failed', e); }
+            }, 10000); // 10 seconds
+        }
+
+        // --- DASHBOARD ---
+        function loadDashboard(data) {
+            GLOBAL_DATA.users = data.users;
+            GLOBAL_DATA.spam = data.spamReports;
+
+            // Update Counters
+            document.getElementById('count-active').textContent = data.stats.activeUsers;
+            document.getElementById('count-daily').textContent = data.stats.dailyVisits;
+            document.getElementById('count-total').textContent = data.users.length;
+
+            renderUsers();
+            renderSpam();
+            loadSettings();
+        }
+
+        function renderUsers() {
+            const tbody = document.getElementById('user-table-body');
+            const search = document.getElementById('user-search').value.toLowerCase();
+            tbody.innerHTML = '';
+
+            GLOBAL_DATA.users.forEach(u => {
+                if (search && !u.code.toLowerCase().includes(search) && (!u.name || !u.name.toLowerCase().includes(search))) return;
+
+                const tr = document.createElement('tr');
+
+                // Copy Button
+                const copyBtn = `<button class="secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="navigator.clipboard.writeText('${u.code}').then(() => alert('Copied!'))">📋</button>`;
+
+                const statusBadge = u.isBlocked
+                    ? '<span class="status-badge status-blocked">BLOCKED</span>'
+                    : (u.status === 'USED' ? '<span class="status-badge status-used">ACTIVE</span>' : '<span style="color:#666">UNUSED</span>');
+
+                tr.innerHTML = `
+                    <td>${u.code} ${copyBtn}</td>
+                    <td><div class="discord-user">${u.name || '-'} <small style="color:#666">(${u.spotifyId || ''})</small></div></td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button class="${u.isBlocked ? 'secondary' : 'danger'}" onclick="toggleBlock('${u.code}', ${u.isBlocked})">
+                            ${u.isBlocked ? 'Unblock' : 'Block'}
+                        </button>
+                        <button class="danger" style="margin-left: 5px;" onclick="deleteUser('${u.code}')">
+                            Delete
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderSpam() {
+            const tbody = document.getElementById('spam-table-body');
+            tbody.innerHTML = '';
+            GLOBAL_DATA.spam.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${new Date(s.createdAt).toLocaleString()}</td>
+                    <td>${JSON.stringify(s.details)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- ACTIONS ---
+        async function createCode() {
+            const code = document.getElementById('new-code').value;
+            const msg = document.getElementById('create-msg');
+
+            try {
+                const res = await fetch('/api/admin/handler?action=create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, password: PASSWORD })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    msg.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:10px; color:#1DB954;">
+                            <span>${data.message}</span>
+                            <button class="secondary" style="padding: 4px 10px; font-size: 0.8rem;" 
+                                onclick="navigator.clipboard.writeText('${code}').then(() => alert('Code Copied!'))">
+                                Copy Code
+                            </button>
+                        </div>
+                    `;
+                    document.getElementById('new-code').value = '';
+                    // Refresh data
+                    login();
+                } else {
+                    msg.innerHTML = `<span style="color:#ff5555">${data.error}</span>`;
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function toggleBlock(code, isCurrentlyBlocked) {
+            if (!confirm(`Are you sure you want to ${isCurrentlyBlocked ? 'Unblock' : 'Block'} this user?`)) return;
+
+            try {
+                const res = await fetch('/api/admin/handler?action=action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        password: PASSWORD,
+                        code: code,
+                        type: isCurrentlyBlocked ? 'UNBLOCK' : 'BLOCK'
+                    })
+                });
+
+                if (res.ok) {
+                    // Update local state and re-render for instant feedback
+                    const user = GLOBAL_DATA.users.find(u => u.code === code);
+                    if (user) user.isBlocked = !isCurrentlyBlocked;
+                    renderUsers();
+                } else {
+                    alert('Action failed');
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function deleteUser(code) {
+            if (!confirm(`⚠️ DANGER ZONE ⚠️\n\nAre you sure you want to PERMANENTLY DELETE user '${code}'?\n\nThis action cannot be undone.`)) return;
+
+            // Double confirmation
+            const input = prompt(`To confirm deletion, please type "${code}" below:`);
+            if (input !== code) {
+                if (input !== null) alert("Code mismatch. Deletion cancelled.");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/handler?action=delete_user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        password: PASSWORD,
+                        code: code
+                    })
+                });
+
+                if (res.ok) {
+                    alert(`User '${code}' has been deleted.`);
+                    // Update local state
+                    GLOBAL_DATA.users = GLOBAL_DATA.users.filter(u => u.code !== code);
+                    renderUsers();
+                    // Refetch stats to update counters
+                    loadSettings();
+                } else {
+                    const data = await res.json();
+                    alert('Failed: ' + (data.error || 'Server Error'));
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Network Error');
+            }
+        }
+
+        async function exportData() {
+            try {
+                const res = await fetch('/api/admin/handler?action=export', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: PASSWORD })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `music-app-export-${new Date().toISOString().split('T')[0]}.json`;
+                    a.click();
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function generateRandom() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let result = '';
+            for (let i = 0; i < 5; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+            document.getElementById('new-code').value = result;
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+
+            document.getElementById('tab-users').classList.add('hidden');
+            document.getElementById('tab-spam').classList.add('hidden');
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+        }
+
+        // --- SETTINGS ---
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/admin/handler?action=get_settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: PASSWORD })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    const ind = document.getElementById('maint-status-indicator');
+
+                    if (data.active) {
+                        ind.textContent = 'ACTIVE';
+                        ind.className = 'maint-status active';
+                    } else {
+                        ind.textContent = 'NORMAL';
+                        ind.className = 'maint-status inactive';
+                    }
+
+                    if (document.activeElement !== document.getElementById('maint-reason')) {
+                        document.getElementById('maint-reason').value = data.reason || '';
+                    }
+                }
+            } catch (e) { console.error('Load settings failed', e); }
+        }
+
+        async function saveSettings(isActive) {
+            // FORCE PASSWORD PROMPT
+            const confirmPass = prompt(`⚠️ CONFIRM ACTION\nPlease re-enter ADMIN PASSWORD to ${isActive ? 'ENABLE' : 'DISABLE'} shutdown:`);
+            if (!confirmPass) return;
+
+            try {
+                const res = await fetch('/api/admin/handler?action=update_settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        password: confirmPass, // Use the FRESH password
+                        active: isActive,
+                        reason: document.getElementById('maint-reason').value
+                    })
+                });
+
+                if (res.ok) {
+                    alert('Settings Saved Successfully');
+                    // If password was correct, update local cache too just in case
+                    PASSWORD = confirmPass;
+                    loadSettings(); // Refresh UI
+                } else {
+                    const data = await res.json();
+                    alert('Failed: ' + (data.error || 'Server Error'));
+                }
+            } catch (e) { alert('Network Error'); }
+        }
+    </script>
+</body>
+
+</html>

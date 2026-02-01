@@ -274,19 +274,6 @@
             font-size: 1.1rem;
         }
 
-        .lyrics-player-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px 0;
-            margin-top: auto;
-            border-top: 1px solid var(--border-color);
-            position: relative;
-            z-index: 100;
-            /* Ensure above fluid background */
-        }
-
         /* User Profile */
         .user-profile {
             display: flex;
@@ -1312,261 +1299,246 @@
         }
 
 
-        /* Tablet / Mobile Optimization */
         @media (max-width: 768px) {
             .container {
-                padding: 15px 12px;
-                /* Tighter container */
+                padding: 20px 15px;
             }
 
             .header {
-                margin-bottom: 20px;
-                /* Reduced gap */
+                margin-bottom: 25px;
             }
 
             .header-title-wrapper {
                 flex-direction: row;
-                gap: 8px;
+                gap: 10px;
             }
 
             .site-logo {
-                height: 36px;
-                /* Slightly larger for brand presence */
-            }
-
-            .header h1 {
-                font-size: 1.8rem;
-                /* Scaled down */
+                height: 32px;
             }
 
             .header p {
-                font-size: 0.9rem;
-                margin-top: 5px;
+                font-size: 0.95rem;
             }
 
             /* Compact Platform Toggle */
             .platform-toggle {
-                gap: 8px;
-                margin-bottom: 20px;
-                display: flex;
-                overflow-x: auto;
-                /* Allow Scroll if needed on tiny screens */
-                padding-bottom: 5px;
-                /* Space for scrollbar if any */
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                /* Hide scrollbar */
-            }
-
-            .platform-toggle::-webkit-scrollbar {
-                display: none;
+                gap: 10px;
+                margin-bottom: 25px;
             }
 
             .platform-btn {
-                padding: 10px 14px;
-                border-radius: 14px;
+                padding: 10px 16px;
+                border-radius: 12px;
                 flex: 1;
-                /* Distribute evenly */
                 justify-content: center;
-                min-width: 100px;
-                /* Ensure clickability */
-                font-size: 0.9rem;
             }
 
             .platform-logo {
-                width: 22px;
-                height: 22px;
+                width: 24px;
+                height: 24px;
             }
 
             .platform-name {
-                font-size: 0.9rem;
+                font-size: 0.95rem;
             }
 
             /* Integrated Search Bar on Mobile */
             .search-container {
-                margin-bottom: 20px;
+                margin-bottom: 25px;
             }
 
             .search-wrapper {
                 border-radius: 50px;
-                padding: 2px;
+                padding: 3px;
+                /* slight border effect */
             }
 
             .search-inner {
-                padding: 4px 6px 4px 16px;
-                /* Tight padding */
+                padding: 4px;
+                padding-left: 15px;
                 border-radius: 48px;
+                display: flex;
+                align-items: center;
                 flex-wrap: nowrap;
                 gap: 8px;
+                position: relative;
             }
 
             .search-icon {
-                width: 18px;
-                height: 18px;
-                margin-right: 4px;
+                width: 20px;
+                height: 20px;
+                margin-right: 5px;
             }
 
             .search-input {
+                flex: 1;
                 font-size: 0.95rem;
-                padding: 8px 0;
+                padding: 10px 0;
+                min-width: 0;
+                /* allows text truncation if needed */
             }
 
             .search-btn {
-                padding: 8px 16px;
+                padding: 8px 18px;
                 font-size: 0.85rem;
-                border-radius: 40px;
+                border-radius: 50px;
+                flex-shrink: 0;
                 margin: 0;
-                font-weight: 600;
+                font-weight: 700;
+                /* Ensure it stands out as a button */
+                background: var(--spotify-green);
+                color: white;
+            }
+
+            /* Adjust button color dynamically via existing body classes if needed, 
+               but default inline style uses var(--spotify-active) etc. */
+            body.apple-active .search-btn {
+                background: var(--apple-gradient);
+            }
+
+            body.youtube-active .search-btn {
+                background: var(--youtube-gradient);
             }
 
             /* Compact Track Items */
             .track-list {
-                max-height: 45vh;
-                /* See more content */
+                max-height: 50vh;
             }
 
             .track-item {
-                padding: 8px 12px;
-                /* Slimmer rows */
+                padding: 10px;
                 gap: 12px;
-                border-radius: 10px;
             }
 
             .track-image {
-                width: 40px;
-                height: 40px;
-                border-radius: 6px;
+                width: 42px;
+                height: 42px;
             }
 
             .track-info {
-                gap: 1px;
+                gap: 2px;
             }
 
             .track-name {
-                font-size: 0.9rem;
+                font-size: 0.95rem;
             }
 
             .track-artist {
-                font-size: 0.8rem;
-            }
-
-            .track-duration {
-                font-size: 0.75rem;
+                font-size: 0.85rem;
             }
 
             /* Player & Embeds */
             .embed-container {
-                padding: 10px;
-                min-height: 120px;
+                padding: 15px;
+                min-height: 150px;
             }
 
             .open-buttons {
                 flex-direction: column;
-                gap: 8px;
+                gap: 10px;
             }
 
             .open-btn {
                 width: 100%;
                 justify-content: center;
-                padding: 10px 16px;
-                font-size: 0.9rem;
-                border-radius: 12px;
+                padding: 10px 20px;
+            }
+
+            /* Preview Player */
+            .preview-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 15px;
+            }
+
+            .preview-album-art {
+                width: 140px;
+                height: 140px;
+                margin-bottom: 10px;
+            }
+
+            .preview-track-name {
+                font-size: 1.2rem;
             }
 
             /* Metadata Stack */
-            .metadata-section {
-                padding: 20px;
-                /* Reduced padding */
-                margin-top: 20px;
-                border-radius: 16px;
-            }
-
             .metadata-grid {
                 grid-template-columns: 1fr;
-                gap: 25px;
+                gap: 30px;
             }
 
             .meta-info-col {
-                grid-template-columns: 1fr;
-                /* Single column for info */
+                grid-template-columns: 1fr 1fr;
                 gap: 15px;
+            }
+
+            .meta-item {
+                gap: 4px;
+            }
+
+            .meta-links-row {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
             }
 
             .meta-media-col {
                 order: -1;
-                /* Media (YouTube) on top */
-                gap: 15px;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
             }
 
-            .youtube-container {
-                max-width: 100%;
-                /* Full width */
-                border-radius: 12px;
+            /* Fix Artist Image Visibility */
+            .artist-images-area {
+                width: 100%;
+                max-height: none;
+                /* Let it flow */
+                overflow: visible;
+            }
+
+            .artist-image-container {
+                width: 100%;
+                /* Fixed width for better visibility control */
+                max-width: 250px;
+                margin: 0 auto;
+                /* Center it */
+                display: block;
+                /* Ensure block level */
+            }
+
+            .artist-card {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
 
             .youtube-container iframe {
                 height: 200px;
             }
+        }
 
-            /* Artist Images Scroll */
-            .artist-images-area {
-                flex-direction: row;
-                /* Horizontal scroll */
-                overflow-x: auto;
-                overflow-y: hidden;
-                justify-content: flex-start;
-                padding-bottom: 10px;
-                height: auto;
-                max-height: none;
-                gap: 12px;
+        /* Small Phones */
+        @media (max-width: 480px) {
+            .meta-info-col {
+                grid-template-columns: 1fr;
+            }
+
+            .platform-toggle {
+                flex-wrap: wrap;
+            }
+
+            /* Even tighter search on small screens */
+            .search-btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
             }
 
             .artist-image-container {
-                width: 140px;
-                /* Compact cards */
-                flex-shrink: 0;
-                margin: 0;
-                max-width: none;
-            }
-        }
-
-        /* Small Phones (Extra Compact) */
-        @media (max-width: 480px) {
-            .container {
-                padding: 15px 10px;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .access-card {
-                padding: 20px 15px !important;
-                border-radius: 20px !important;
-                width: 95% !important;
-            }
-
-            .access-header-logo img {
-                height: 28px !important;
-            }
-
-            .access-header-logo h1 {
-                font-size: 1.3rem !important;
-            }
-
-            .access-card h2 {
-                font-size: 1rem !important;
-                margin-bottom: 20px !important;
-            }
-
-            .access-field {
-                padding: 10px 12px !important;
-                font-size: 0.9rem !important;
-            }
-
-            .full-width-btn {
-                padding: 10px !important;
-                font-size: 1rem !important;
+                width: 160px;
+                /* Smaller image on very small screens */
             }
         }
 
@@ -1956,47 +1928,6 @@
             cursor: pointer;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
-            /* Center Content */
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            width: 100%;
-        }
-
-        .lyrics-view-area::-webkit-scrollbar {
-            display: none !important;
-            /* Force hide scrollbar */
-        }
-
-        /* Ensure no horizontal overflow */
-        .lyrics-view-area {
-            overflow-x: hidden;
-            scrollbar-width: none;
-            /* Firefox */
-        }
-
-        .lyrics-module.fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 9999;
-            border-radius: 0;
-            margin: 0;
-            max-width: none;
-            background: #000;
-            /* Deep black for fullscreen */
-        }
-
-        .lyrics-module.fullscreen .lyrics-view-area {
-            font-size: 1.5rem;
-            /* Larger text in fullscreen */
-        }
-
-        .lyrics-module.fullscreen .lyric-line {
-            padding: 15px 20px;
-            /* More spacing */
         }
 
         .lyric-line:hover {
@@ -2015,220 +1946,6 @@
             color: var(--text-primary);
             font-size: 1.05rem;
             line-height: 1.4;
-        }
-
-        /* Apple Music Style Fluid Blobs */
-        .fluid-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-            opacity: 0;
-            transition: opacity 1s ease;
-            pointer-events: none;
-            background: #000;
-            /* solid base */
-        }
-
-        /* Dark Overlay on top of blobs to ensure text readability */
-        .fluid-bg::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.45);
-            /* Increased dark tint */
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .fluid-blob {
-            position: absolute;
-            top: -20%;
-            left: -20%;
-            width: 140%;
-            height: 140%;
-            background-size: cover;
-            background-position: center;
-            filter: blur(80px) saturate(220%) brightness(0.9);
-            /* Slightly darker */
-            opacity: 0.9;
-            mix-blend-mode: hard-light;
-            /* Restored vibrant blending */
-            border-radius: 40%;
-            /* Organic shape */
-            animation-timing-function: ease-in-out;
-            animation-iteration-count: infinite;
-            animation-direction: alternate;
-        }
-
-        /* Blob 1: Rotate & Pulse */
-        .fluid-blob-1 {
-            animation-name: blobMove1;
-            animation-duration: 25s;
-        }
-
-        /* Blob 2: Drift & Spin */
-        .fluid-blob-2 {
-            animation-name: blobMove2;
-            animation-duration: 35s;
-            mix-blend-mode: screen;
-            /* Add brightness */
-        }
-
-        /* Blob 3: Counter-move */
-        .fluid-blob-3 {
-            animation-name: blobMove3;
-            animation-duration: 30s;
-            mix-blend-mode: overlay;
-            /* Deepen colors */
-        }
-
-        @keyframes blobMove1 {
-            0% {
-                transform: translate(0, 0) rotate(0deg) scale(1);
-            }
-
-            100% {
-                transform: translate(10%, 10%) rotate(90deg) scale(1.2);
-            }
-        }
-
-        @keyframes blobMove2 {
-            0% {
-                transform: translate(-10%, 10%) rotate(0deg) scale(1.1);
-            }
-
-            100% {
-                transform: translate(10%, -10%) rotate(-60deg) scale(1);
-            }
-        }
-
-        @keyframes blobMove3 {
-            0% {
-                transform: translate(10%, -10%) rotate(0deg) scale(0.9);
-            }
-
-            100% {
-                transform: translate(-10%, 10%) rotate(45deg) scale(1.1);
-            }
-        }
-
-        /* Restrict Sparkle/Star Buttons */
-        #btnSparkle,
-        #btnStar {
-            display: none !important;
-            /* Hidden by default */
-        }
-
-        /* Ensure Top Bar is visible above fluid bg but transparent */
-        .lyrics-top-bar {
-            position: relative;
-            z-index: 100;
-            background: transparent !important;
-            /* Remove gradient line */
-            padding: 20px;
-            margin: 0;
-            border: none !important;
-            /* Remove any borders */
-        }
-
-        /* Darken buttons in Fullscreen */
-        .lyrics-module.fullscreen .lyrics-top-bar .tab-btn,
-        .lyrics-module.fullscreen .lyrics-top-bar .copy-btn {
-            background: rgba(0, 0, 0, 0.6) !important;
-            backdrop-filter: blur(5px);
-            border: none !important;
-            /* Removed border as requested */
-        }
-
-        .lyrics-module.fullscreen .lyrics-top-bar .tab-btn.active {
-            background: var(--spotify-green) !important;
-            color: #fff !important;
-        }
-
-        .lyrics-module.fullscreen.sparkle-mode .fluid-bg,
-        .lyrics-module.fullscreen.star-mode .fluid-bg {
-            opacity: 1;
-        }
-
-        /* --- Desktop Large Text for Visual Modes (Apple Music TV Style) --- */
-        @media (min-width: 1024px) {
-
-            .lyrics-module.fullscreen.sparkle-mode .lyrics-view-area {
-                /* Center the active area */
-                mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
-                -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
-            }
-
-            /* Corrected Selector: Use .synced-line */
-            .lyrics-module.fullscreen.sparkle-mode .synced-line {
-                min-height: 7.15vh;
-                /* Force exactly 14 lines (100vh / 14 = 7.14) */
-                padding: 0 40px;
-                opacity: 0.5;
-                transform: scale(0.95);
-                transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-
-                /* Typography */
-                font-size: 1.8rem !important;
-                /* Adjusted for 14 lines */
-                font-weight: 700;
-                line-height: 1.1;
-                text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-                color: var(--text-primary);
-                text-align: center;
-            }
-
-            /* Remove old lyric-text rules in this context if they conflict */
-            .lyrics-module.fullscreen.sparkle-mode .synced-line .lyric-text {
-                font-size: inherit !important;
-                /* Inherit parent size */
-            }
-
-            /* Active State Pops */
-            .lyrics-module.fullscreen.sparkle-mode .synced-line.active {
-                opacity: 1;
-                transform: scale(1.1);
-                filter: none;
-            }
-
-            /* Removed specific text-shadow override as we use shared liquid filter now */
-        }
-
-        .lyrics-module.fullscreen #btnSparkle {
-            display: inline-flex !important;
-            /* Show only in Full Screen */
-        }
-
-        /* Sparkle Mode - Active Line Zoom Out & Glow */
-        .lyrics-module.sparkle-mode .synced-line.active,
-        .lyrics-module.sparkle-mode .synced-line.active .lyric-text {
-            color: #fff;
-            /* Solid white */
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.4);
-            /* Intense Glow */
-            opacity: 1 !important;
-            /* Zoom out animation: Start big, slowly shrink */
-            animation: zoomOutActive 8s ease-out forwards;
-        }
-
-        @keyframes zoomOutActive {
-            0% {
-                transform: scale(1.15);
-            }
-
-            100% {
-                transform: scale(1.05);
-            }
         }
 
         .lyrics-mode-toggle {
@@ -2688,7 +2405,7 @@
             <button id="settingsBtn" class="settings-icon-btn" title="Settings">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path
-                        d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73L12.22 2z">
+                        d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73v.44a2 2 0 0 1-.5 1.73l-.43.25a2 2 0 0 1-2 0l-.18-.08a2 2 0 0 0-2 0l-.45.26a2 2 0 0 0-1 1.73L12.22 2z">
                     </path>
                     <circle cx="12" cy="12" r="3"></circle>
                 </svg>
@@ -2884,10 +2601,10 @@
 
                     <!-- YouTube Embed Wrapper -->
                     <div class="embed-wrapper" id="youtubeWrapper">
-                        <div id="mainYoutubePlayer" class="youtube-embed"
-                            style="width:100%; height:200px; border-radius: 12px; overflow: hidden; background: #000; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                            <p id="ytLoadingText">Initializing YouTube Player...</p>
-                        </div>
+                        <iframe id="youtubeEmbed" class="youtube-embed" src="" width="100%" height="200" frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen style="border-radius: 12px; overflow: hidden; background: #000;">
+                        </iframe>
                         <div class="open-buttons">
                             <a href="#" class="open-btn youtube" id="openYoutubeBtn" target="_blank">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
@@ -2968,7 +2685,7 @@
                     <!-- YouTube Embed -->
                     <div class="youtube-container" id="youtubeContainer">
                         <div class="yt-label">Official Video</div>
-                        <iframe id="metaYoutubeEmbed" width="100%" height="150" src="" frameborder="0"
+                        <iframe id="youtubeEmbed" width="100%" height="150" src="" frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowfullscreen>
                         </iframe>
@@ -2983,206 +2700,15 @@
                     <button class="tab-btn active" id="tabPlain" onclick="switchLyricsTab('plain')">Plain</button>
                     <button class="tab-btn" id="tabSynced" onclick="switchLyricsTab('synced')">Synced</button>
                 </div>
-                <div style="display:flex; gap:10px;">
-                    <button class="mode-btn" id="btnSparkle" onclick="toggleSparkleMode()" title="Sparkle Mode">
-                        ✨
-                    </button>
-                    <button class="mode-btn" id="btnFullscreen" onclick="toggleLyricsFullScreen()" title="Full Screen">
-                        ⛶
-                    </button>
-                    <button class="copy-btn" id="copyLyricsBtn" onclick="copyCurrentLyrics()">Copy Lyrics</button>
-                </div>
-            </div>
-
-            <!-- Fluid Background Container -->
-            <div id="fluidBackground" class="fluid-bg">
-                <div id="fluidBlob1" class="fluid-blob fluid-blob-1"></div>
-                <div id="fluidBlob2" class="fluid-blob fluid-blob-2"></div>
-                <div id="fluidBlob3" class="fluid-blob fluid-blob-3"></div>
+                <button class="copy-btn" id="copyLyricsBtn" onclick="copyCurrentLyrics()">Copy Lyrics</button>
             </div>
 
             <div id="syncStatusBanner"
-                style="display: none; padding: 10px; text-align: center; background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); font-size: 0.85rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.5s ease;">
+                style="padding: 10px; text-align: center; background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); font-size: 0.85rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.5s ease;">
+                Tap a line below 👆 when you hear the vocals to sync lyrics
             </div>
             <div id="lyricsViewArea" class="lyrics-view-area">
             </div>
-
-            <!-- YouTube Player Controls (Only visible when YouTube is active) -->
-            <!-- Modern Player Bar -->
-            <div id="lyricsPlayerControls" class="lyrics-player-controls hidden">
-                <div class="player-bar-container">
-                    <!-- Progress Section -->
-                    <div class="player-progress-area">
-                        <span id="videoCurrentTime">0:00</span>
-                        <input type="range" id="lyricProgressBar" class="modern-slider" min="0" max="100" value="0"
-                            step="0.1" oninput="handleSeek(this.value)" onmousedown="isDraggingProgress = true"
-                            onmouseup="isDraggingProgress = false">
-                        <span id="videoDuration">0:00</span>
-                    </div>
-
-                    <!-- Controls Section -->
-                    <div class="player-controls-row">
-                        <button class="player-btn small" onclick="seekRelative(-10)" title="Rewind 10s">
-                            <svg viewBox="0 0 24 24">
-                                <path
-                                    d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" />
-                                <path d="M10.5 15h1.1v-3.5h-1.1V15zm2.5-3.5h1.1v1h-1.1v-1z" />
-                            </svg>
-                        </button>
-
-                        <button class="player-btn main play-pause" id="lyricPlayBtn" onclick="toggleLyricPlay()">
-                            <svg id="lyricPlayIcon" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                        </button>
-
-                        <button class="player-btn small" onclick="seekRelative(10)" title="Forward 10s">
-                            <svg viewBox="0 0 24 24">
-                                <path
-                                    d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z" />
-                                <path d="M10.5 15h1.1v-3.5h-1.1V15zm2.5-3.5h1.1v1h-1.1v-1z" />
-                            </svg>
-                        </button>
-
-                        <button class="player-btn mini" id="lyricRepeatBtn" onclick="toggleLyricRepeat()"
-                            title="Repeat">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v6z" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <style>
-                .lyrics-player-controls {
-                    position: relative;
-                    margin: 0 auto 20px;
-                    width: 95%;
-                    max-width: 600px;
-                    z-index: 10;
-                    background: rgba(20, 20, 20, 0.7);
-                    backdrop-filter: blur(20px);
-                    border-radius: 20px;
-                    padding: 15px 25px;
-                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                    flex-shrink: 0;
-                }
-
-                .player-bar-container {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 12px;
-                }
-
-                .player-progress-area {
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    width: 100%;
-                }
-
-                .player-progress-area span {
-                    font-size: 0.75rem;
-                    color: rgba(255, 255, 255, 0.6);
-                    font-weight: 500;
-                    min-width: 35px;
-                }
-
-                .modern-slider {
-                    flex: 1;
-                    height: 5px;
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 10px;
-                    outline: none;
-                    -webkit-appearance: none;
-                    appearance: none;
-                    cursor: pointer;
-                }
-
-                .modern-slider::-webkit-slider-thumb {
-                    -webkit-appearance: none;
-                    width: 14px;
-                    height: 14px;
-                    background: #fff;
-                    border-radius: 50%;
-                    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-                    cursor: pointer;
-                }
-
-                .player-controls-row {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    gap: 30px;
-                }
-
-                .player-btn {
-                    background: none;
-                    border: none;
-                    color: #fff;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: all 0.2s cubic-bezier(0.1, 0.7, 0.1, 1);
-                }
-
-                .player-btn svg {
-                    fill: currentColor;
-                }
-
-                .player-btn.main {
-                    width: 50px;
-                    height: 50px;
-                    background: #fff;
-                    color: #000;
-                    border-radius: 50%;
-                }
-
-                .player-btn.small svg {
-                    width: 28px;
-                    height: 28px;
-                }
-
-                .player-btn.main svg {
-                    width: 32px;
-                    height: 32px;
-                }
-
-                .player-btn.mini {
-                    opacity: 0.6;
-                }
-
-                .player-btn.mini svg {
-                    width: 20px;
-                    height: 20px;
-                }
-
-                .player-btn:hover {
-                    transform: scale(1.1);
-                }
-
-                .player-btn.mini.active {
-                    color: var(--youtube-red);
-                    opacity: 1;
-                }
-
-                body.youtube-active .player-btn.main {
-                    background: var(--youtube-red);
-                    color: white;
-                }
-
-                body.youtube-active .modern-slider::-webkit-slider-thumb {
-                    background: var(--youtube-red);
-                }
-
-                /* Hide player UI when not in use */
-                .lyrics-player-controls.hidden {
-                    display: none;
-                }
-            </style>
         </section>
         <!-- Footer -->
         <footer
@@ -3378,12 +2904,6 @@
         let spotifyUser = null;
         let previewAudio = null;
 
-        // YouTube Player Globals
-        let ytPlayer = null;
-        let ytPlayerState = -1; // -1:unstarted, 0:ended, 1:playing, 2:paused, 3:buffering, 5:cued
-        let lyricPollInterval = null;
-        let isRepeatEnabled = false;
-
         // DOM Cache for performance
         const ui = {
             searchInput: null,
@@ -3487,21 +3007,17 @@
 
             // Allow time for fade out effect before stopping playback
             if (platform === 'spotify') {
-                // Switching TO Spotify -> Stop Apple Music & YouTube
+                // Switching TO Spotify -> Stop Apple Music
                 const appleEmbed = document.getElementById('appleEmbed');
+                const youtubeEmbed = document.getElementById('youtubeEmbed');
                 if (appleEmbed) appleEmbed.src = '';
-
-                if (ytPlayer && typeof ytPlayer.stopVideo === 'function') {
-                    ytPlayer.stopVideo();
-                }
+                if (youtubeEmbed) youtubeEmbed.src = '';
             } else if (platform === 'apple') {
                 // Switching TO Apple Music -> Stop Spotify/YouTube
                 const spotifyEmbed = document.getElementById('spotifyEmbed');
+                const youtubeEmbed = document.getElementById('youtubeEmbed');
                 if (spotifyEmbed) spotifyEmbed.src = '';
-
-                if (ytPlayer && typeof ytPlayer.stopVideo === 'function') {
-                    ytPlayer.stopVideo();
-                }
+                if (youtubeEmbed) youtubeEmbed.src = '';
             } else {
                 // Switching TO YouTube -> Stop others
                 const spotifyEmbed = document.getElementById('spotifyEmbed');
@@ -3554,10 +3070,6 @@
             ui.loading?.classList.remove('active');
             document.getElementById('errorMessage').classList.remove('active');
             stopPreview();
-
-            // Hide Lyrics Player Controls
-            const ctrls = document.getElementById('lyricsPlayerControls');
-            if (ctrls) ctrls.classList.add('hidden');
         }
 
         function hideSearchResults() {
@@ -3787,40 +3299,13 @@
                 document.getElementById('appleWrapper').classList.add('active');
             } else {
                 // YouTube
-                // Keep the existing container/iframe but prepare for API takeover
-                const youtubeEmbed = document.getElementById('mainYoutubePlayer');
-                // Don't set src directly if we plan to use API, or set it to enable API
-                // But initYouTubePlayer will handle replacement/loading.
-
+                const youtubeEmbed = document.getElementById('youtubeEmbed');
+                youtubeEmbed.src = track.embedUrl;
                 document.getElementById('openYoutubeBtn').href = track.youtubeUrl;
                 document.getElementById('spotifyWrapper').classList.remove('active');
                 document.getElementById('appleWrapper').classList.remove('active');
                 document.getElementById('previewPlayer').classList.remove('active');
                 document.getElementById('youtubeWrapper').classList.add('active');
-
-                // Show Controls
-                const ctrls = document.getElementById('lyricsPlayerControls');
-                if (ctrls) ctrls.classList.remove('hidden');
-
-                // Init Player
-                loadYouTubeAPI(); // Ensure API is requested
-                // If API ready, this will load. If not, onYouTubeIframeAPIReady will trigger (we need to handle the pending track case)
-                // Actually, initYouTubePlayer handles the "if ready" logic usually, but we need to track if API is loaded.
-
-                let ytId = track.id; // Default fallback
-                // Try to extract real YouTube ID from URL
-                if (track.youtubeUrl) {
-                    const match = track.youtubeUrl.match(/(?:v=|youtu\.be\/|\/embed\/)([a-zA-Z0-9_-]{11})/);
-                    if (match && match[1]) ytId = match[1];
-                }
-
-                ytLog(`Selected YouTube ID: ${ytId} (extracted from ${track.youtubeUrl || 'no-url'})`);
-
-                if (typeof YT !== 'undefined' && YT.Player) {
-                    initYouTubePlayer(ytId);
-                } else {
-                    window.pendingYoutubeVideoId = ytId;
-                }
             }
             // Fetch and show metadata
             fetchMetadata(track);
@@ -3830,12 +3315,6 @@
 
             // Update Dynamic Background
             updateBgImage();
-
-            // Update Fluid Background for Sparkle/Star modes
-            const artImg = document.getElementById('metaArtistImage');
-            if (artImg) updateFluidBackground(artImg); // Try existing image
-            // Also listener for when it loads effectively
-
         }
 
         async function fetchMetadata(track) {
@@ -3925,8 +3404,6 @@
 
                 // Artist Images (Wikidata Multi-Artist)
                 const artistContainer = document.getElementById('artistImagesContainer');
-                const metaImg = document.getElementById('metaArtistImage'); // Use local var to be sure
-
                 if (artistContainer) {
                     artistContainer.innerHTML = ''; // Clear previous
 
@@ -3938,21 +3415,12 @@
                             artistContainer.classList.remove('multi-grid');
                         }
 
-                        // Set primary image for metadata section AND fluid background
-                        // Note: We removed the original element, so we must rely on rebuilding it in the loop below.
-                        // We will re-assign the ID 'metaArtistImage' to the first item.
-
-                        data.artistImages.forEach((artist, index) => {
+                        data.artistImages.forEach(artist => {
                             const card = document.createElement('div');
                             card.className = 'artist-card';
-
-                            // Assign the ID to the first image so other functions can find it
-                            const idAttr = (index === 0) ? 'id="metaArtistImage"' : '';
-
                             card.innerHTML = `
                                 <div class="artist-image-container">
                                     <img class="artist-image protected-img" src="${artist.url}" 
-                                        ${idAttr}
                                         alt="${escapeHtml(artist.name)}" 
                                         onerror="this.src='data:image/svg+xml;base64,...'"
                                         draggable="false"
@@ -3961,37 +3429,14 @@
                                 <div class="artist-label">${escapeHtml(artist.name)}</div>
                             `;
                             artistContainer.appendChild(card);
-
-                            // If this was the first one, ensure we update the BG now that it's in DOM
-                            if (index === 0) {
-                                const newImg = document.getElementById('metaArtistImage');
-                                if (newImg) {
-                                    newImg.onload = () => updateFluidBackground(newImg);
-                                    if (newImg.complete) updateFluidBackground(newImg);
-                                }
-                            }
                         });
                     } else {
                         artistContainer.classList.remove('multi-grid');
                         // Fallback placeholder
                         artistContainer.innerHTML = `
-                             <div class="artist-image-container">
-                                <img id="metaArtistImage" class="artist-image protected-img" 
-                                    src="${track.albumArt || track.image || ''}" 
-                                    alt="Album Art"
-                                    onerror="this.style.display='none'"
-                                    draggable="false"
-                                    oncontextmenu="return false;">
-                             </div>
-                             <div class="artist-label">No Artist Image</div>
+                             <div class="artist-image-container"></div>
+                             <div class="artist-label">No Image</div>
                          `;
-
-                        // Update fluid background with this fallback immediately
-                        const fallbackImg = document.getElementById('metaArtistImage');
-                        if (fallbackImg && fallbackImg.src) {
-                            fallbackImg.onload = () => updateFluidBackground(fallbackImg);
-                            if (fallbackImg.complete) updateFluidBackground(fallbackImg);
-                        }
                     }
                 }
 
@@ -4033,7 +3478,7 @@
                     } else if (ytResult.id) {
                         ytContainer.innerHTML = `
                             <div class="yt-label">Official Video</div>
-                            <iframe id="metaYoutubeEmbed" width="100%" height="150" src="https://www.youtube.com/embed/${ytResult.id}" frameborder="0"
+                            <iframe id="youtubeEmbed" width="100%" height="150" src="https://www.youtube.com/embed/${ytResult.id}" frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowfullscreen></iframe>
                         `;
@@ -4103,7 +3548,6 @@
         let lastActiveIndex = -1;
         let autoScrollEnabled = true;
         let scrollTimeout = null;
-        let isDraggingProgress = false;
 
         async function fetchLyrics(track) {
             console.log("Fetching lyrics with manual sync module for:", track.name);
@@ -4190,8 +3634,13 @@
 
             if (tPlain) tPlain.classList.toggle("active", tab === "plain");
             if (tSynced) tSynced.classList.toggle("active", tab === "synced");
-            // Banner managed dynamically by events now, not default visibility
-            if (banner) banner.style.display = 'none';
+            if (banner) {
+                if (tab === "synced" && lyricsData.synced.length > 0) {
+                    banner.style.display = "block";
+                } else {
+                    banner.style.display = "none";
+                }
+            }
 
             renderLyrics();
         }
@@ -4230,7 +3679,7 @@
                         // If we are scrolling, and it's not from our auto-scroll logic
                         if (lyricsArea.classList.contains('is-scrolling-auto')) return;
 
-                        // Disable auto-scroll for 3 seconds upon user interaction
+                        // Disable auto-scroll for 2 seconds upon user interaction
                         autoScrollEnabled = false;
                         clearTimeout(scrollTimeout);
                         scrollTimeout = setTimeout(() => {
@@ -4240,30 +3689,19 @@
                                 const activeLine = document.getElementById(`line-${lastActiveIndex}`);
                                 if (activeLine) {
                                     lyricsArea.classList.add('is-scrolling-auto');
-                                    // Manual Scroll Calculation to prevent full page jump
-                                    const offset = activeLine.offsetTop - lyricsArea.clientHeight / 2 + activeLine.clientHeight / 2;
-                                    lyricsArea.scrollTo({ top: offset, behavior: 'smooth' });
+                                    activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                     setTimeout(() => lyricsArea.classList.remove('is-scrolling-auto'), 1000);
                                 }
                             }
-                        }, 3000);
+                        }, 2000);
                     });
                 }
             }
         }
 
         function seekTo(time) {
-            if (currentPlatform === 'youtube' && ytPlayer && typeof ytPlayer.seekTo === 'function') {
-                ytPlayer.seekTo(time, true);
-                // Instant Feedback
-                syncLyrics(time);
-                updateLyricProgressUI(time, ytPlayer.getDuration());
-                return;
-            }
-
             if (previewAudio && previewAudio.src && !previewAudio.paused) {
                 previewAudio.currentTime = time;
-                syncLyrics(time);
                 return;
             }
 
@@ -4282,21 +3720,31 @@
                     virtualSyncAnchored = false;
                 }
             }, 200);
-        }
 
-        function handleSeek(value) {
-            if (ytPlayer && typeof ytPlayer.seekTo === 'function') {
-                const targetTime = parseFloat(value);
-                ytPlayer.seekTo(targetTime, true);
-                syncLyrics(targetTime);
+            // UI Update: Green Rectangular Box Dialogue
+            let banner = document.getElementById("syncStatusBanner");
+            if (banner) {
+                banner.textContent = "Lyrics synced! Tracking music internally...";
+                banner.style.color = "#fff";
+                banner.style.background = "#1db954";
+                banner.style.padding = "12px";
+                banner.style.borderRadius = "8px";
+                banner.style.fontWeight = "600";
+                banner.style.margin = "10px";
+                banner.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+                banner.style.display = "block";
 
-                // Update fill visual immediately
-                const duration = ytPlayer.getDuration();
-                const bar = document.getElementById('lyricProgressBar');
-                if (bar && duration > 0) {
-                    const pct = (targetTime / duration) * 100;
-                    bar.style.background = `linear-gradient(to right, var(--youtube-red) ${pct}%, rgba(255,255,255,0.1) ${pct}%)`;
-                }
+                // Disappear after 3 seconds
+                setTimeout(() => {
+                    banner.style.opacity = "0";
+                    banner.style.transform = "translateY(-10px)";
+                    setTimeout(() => {
+                        banner.style.display = "none";
+                        // Reset styles for next music fetch/instruction
+                        banner.style.opacity = "1";
+                        banner.style.transform = "translateY(0)";
+                    }, 500);
+                }, 3000);
             }
         }
 
@@ -4325,19 +3773,9 @@
                         const viewArea = document.getElementById('lyricsViewArea');
                         if (viewArea) {
                             viewArea.classList.add('is-scrolling-auto');
-                            // Manual Scroll Calculation to prevent full page jump
-                            // Use getBoundingClientRect for robust relative positioning
-                            const viewRect = viewArea.getBoundingClientRect();
-                            const lineRect = activeLine.getBoundingClientRect();
-
-                            // Calculate the scroll amount needed to center the line
-                            // Current Scroll + Line Top relative to View - View Height/2 + Line Height/2
-                            // lineRect.top - viewRect.top gives distance from view top border
-                            const relativeTop = lineRect.top - viewRect.top;
-                            const offset = viewArea.scrollTop + relativeTop - (viewArea.clientHeight / 2) + (activeLine.clientHeight / 2);
-
-                            viewArea.scrollTo({ top: offset, behavior: 'smooth' });
-
+                            // Use scrollIntoView with block:center but ensure it doesn't affect page scroll
+                            // Alternatively, calculate top manually if scrollIntoView still causes jumps
+                            activeLine.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
                             // Remove helper class after animation
                             setTimeout(() => viewArea.classList.remove('is-scrolling-auto'), 1000);
                         }
@@ -4357,81 +3795,6 @@
                 setTimeout(() => btn.textContent = old, 2000);
             } catch (e) { }
         }
-
-        // --- Sparkle Mode Logic ---
-        let isSparkleMode = false;
-
-        function toggleSparkleMode() {
-            const mod = document.getElementById('lyricsModule');
-            const btnSparkle = document.getElementById('btnSparkle');
-
-            isSparkleMode = !isSparkleMode;
-            if (isSparkleMode) {
-                mod.classList.add('sparkle-mode');
-                btnSparkle.classList.add('active');
-                initFluidBackground();
-            } else {
-                mod.classList.remove('sparkle-mode');
-                btnSparkle.classList.remove('active');
-            }
-        }
-
-        function initFluidBackground() {
-            // Trigger color update if not already done
-            const img = document.getElementById('metaArtistImage');
-            if (img && img.src) {
-                updateFluidBackground(img);
-            }
-        }
-
-        function updateFluidBackground(imgElement) {
-            if (!imgElement.src) return;
-            const b1 = document.getElementById('fluidBlob1');
-            const b2 = document.getElementById('fluidBlob2');
-            const b3 = document.getElementById('fluidBlob3');
-
-            const url = `url('${imgElement.src}')`;
-            if (b1) b1.style.backgroundImage = url;
-            if (b2) b2.style.backgroundImage = url;
-            if (b3) b3.style.backgroundImage = url;
-        }
-
-
-        function toggleLyricsFullScreen() {
-            const mod = document.getElementById('lyricsModule');
-            if (!mod) return;
-
-            // Use Element.requestFullscreen() for true "Cover Everything" mode
-            if (!document.fullscreenElement) {
-                mod.requestFullscreen().catch(err => {
-                    console.error(`Error enabling full-screen mode: ${err.message}`);
-                });
-                mod.classList.add('fullscreen');
-            } else {
-                document.exitFullscreen().catch(err => console.error(err));
-                mod.classList.remove('fullscreen');
-            }
-        }
-
-        // Listener to sync class when user exits via Esc
-        document.addEventListener('fullscreenchange', () => {
-            const mod = document.getElementById('lyricsModule');
-            if (!document.fullscreenElement && mod) {
-                mod.classList.remove('fullscreen');
-
-                // Exit Sparkle mode automatically
-                mod.classList.remove('sparkle-mode');
-                isSparkleMode = false;
-                const bs = document.getElementById('btnSparkle');
-                if (bs) bs.classList.remove('active');
-
-                // Ensure scroll is restored just in case
-                document.body.style.overflow = '';
-            } else if (document.fullscreenElement && mod) {
-                // When entering fullscreen, lock body scroll? 
-                // Not strictly needed if element is fullscreen, but good practice
-            }
-        });
 
         // Settings Logic
         function initSettings() {
@@ -4702,229 +4065,7 @@
 
             // Check for external search query
             checkUrlParams();
-
-            // Add listener for progress bar
-            const pBar = document.getElementById('lyricProgressBar');
-            if (pBar) {
-                pBar.addEventListener('input', (e) => {
-                    const val = e.target.value;
-                    if (ytPlayer && typeof ytPlayer.seekTo === 'function') {
-                        ytPlayer.seekTo(val, true);
-                    }
-                });
-            }
         });
-
-        // --- YouTube API Functions ---
-        function loadYouTubeAPI() {
-            if (!document.getElementById('yt-iframe-api')) {
-                const tag = document.createElement('script');
-                tag.id = 'yt-iframe-api';
-                tag.src = "https://www.youtube.com/iframe_api";
-                const firstScriptTag = document.getElementsByTagName('script')[0];
-                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-                // Safety Timeout
-                setTimeout(() => {
-                    if (typeof YT === 'undefined') {
-                        const el = document.getElementById('mainYoutubePlayer');
-                        if (el && el.tagName === 'DIV') {
-                            el.innerHTML = '<p style="color:#ff6b6b; text-align:center; padding:20px;">YouTube API Connection Failed.<br>Please check internet/adblocker.</p>';
-                        }
-                    }
-                }, 5000);
-            }
-        }
-
-        // Debug Helper
-        function ytLog(msg) {
-            console.log('[YT-Debug]', msg);
-            const el = document.getElementById('ytDebugLog');
-            if (el) {
-                el.innerHTML += `<div>${msg}</div>`;
-                el.scrollTop = el.scrollHeight;
-            }
-        }
-
-        window.onYouTubeIframeAPIReady = function () {
-            ytLog("API Ready Callback Fired");
-            if (window.pendingYoutubeVideoId) {
-                ytLog(`Found pending ID: ${window.pendingYoutubeVideoId}`);
-                initYouTubePlayer(window.pendingYoutubeVideoId);
-                window.pendingYoutubeVideoId = null;
-            } else {
-                ytLog("No pending ID waiting");
-            }
-        };
-
-        window.forceInitPlayer = function () {
-            ytLog("Force Init Clicked");
-            if (selectedTrack && selectedTrack.id) {
-                initYouTubePlayer(selectedTrack.id);
-            } else {
-                ytLog("No selected track");
-            }
-        }
-
-        function initYouTubePlayer(videoId) {
-            if (ytPlayer) {
-                try {
-                    ytPlayer.loadVideoById(videoId);
-                } catch (e) {
-                    // If player crashed or lost, re-init
-                    console.error("YT Player Error, recreating...", e);
-                    new YT.Player('mainYoutubePlayer', {
-                        height: '200',
-                        width: '100%',
-                        videoId: videoId,
-                        playerVars: { 'playsinline': 1, 'enablejsapi': 1, 'origin': window.location.origin },
-                        events: {
-                            'onReady': onYtPlayerReady,
-                            'onStateChange': onYtPlayerStateChange,
-                            'onError': onYtPlayerError
-                        }
-                    });
-                }
-                return;
-            }
-
-            ytLog(`Creating Player for ID: ${videoId}`);
-            try {
-                ytPlayer = new YT.Player('mainYoutubePlayer', {
-                    height: '200',
-                    width: '100%',
-                    videoId: videoId,
-                    playerVars: {
-                        'playsinline': 1,
-                        'enablejsapi': 1,
-                        'origin': window.location.origin
-                    },
-                    events: {
-                        'onReady': onYtPlayerReady,
-                        'onStateChange': onYtPlayerStateChange,
-                        'onError': onYtPlayerError
-                    }
-                });
-                ytLog("Player Constructor Called");
-            } catch (e) {
-                ytLog("Constructor Error: " + e.message);
-                console.error(e);
-            }
-        }
-
-        function onYtPlayerReady(event) {
-            // Remove Loading Text if it exists (by ensuring player is visible)
-            // Actually, iframe replaces div, so text is gone.
-            event.target.playVideo();
-            startLyricPolling();
-        }
-
-        function onYtPlayerError(event) {
-            console.error('YT Player Error:', event.data);
-            let msg = 'Error playing video';
-            if (event.data === 101 || event.data === 150) {
-                msg = 'This video cannot be played in an embedded player (Restricted by Owner).';
-            } else if (event.data === 100) {
-                msg = 'Video not found or removed.';
-            } else if (event.data === 2) {
-                msg = 'Invalid video ID.';
-            } else if (event.data === 5) {
-                msg = 'HTML5 Player Error.';
-            }
-
-            // Show error in the wrapper
-            const wrapper = document.getElementById('youtubeWrapper');
-            if (wrapper) {
-                wrapper.innerHTML = `
-                    <div style="width:100%; height:200px; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#ff6b6b; padding:20px; text-align:center;">
-                        <p style="margin-bottom:10px; font-weight:bold;">${msg}</p>
-                        <p style="font-size:0.8rem; color:#888;">Try opening in YouTube directly.</p>
-                    </div>
-                    <div class="open-buttons">
-                        <a href="https://www.youtube.com/watch?v=${event.target.getVideoData().video_id}" class="open-btn youtube" target="_blank">
-                            Open in YouTube
-                        </a>
-                    </div>
-                `;
-            }
-        }
-
-        function onYtPlayerStateChange(event) {
-            ytPlayerState = event.data;
-            const btn = document.getElementById('lyricPlayBtn');
-            const icon = document.getElementById('lyricPlayIcon');
-
-            if (event.data == YT.PlayerState.PLAYING) {
-                if (btn && icon) icon.innerHTML = '<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>';
-                startLyricPolling();
-            } else if (event.data == YT.PlayerState.ENDED) {
-                if (isRepeatEnabled) {
-                    ytPlayer.seekTo(0);
-                    ytPlayer.playVideo();
-                } else {
-                    if (btn && icon) icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-                    stopLyricPolling();
-                }
-            } else {
-                if (btn && icon) icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-                if (event.data != YT.PlayerState.BUFFERING) {
-                    stopLyricPolling();
-                }
-            }
-        }
-
-        function startLyricPolling() {
-            if (lyricPollInterval) clearInterval(lyricPollInterval);
-            lyricPollInterval = setInterval(() => {
-                if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
-                    const time = ytPlayer.getCurrentTime();
-                    const duration = ytPlayer.getDuration();
-                    updateLyricProgressUI(time, duration);
-                    syncLyrics(time);
-                }
-            }, 500);
-        }
-
-        function stopLyricPolling() {
-            if (lyricPollInterval) clearInterval(lyricPollInterval);
-        }
-
-        function updateLyricProgressUI(currentTime, duration) {
-            const bar = document.getElementById('lyricProgressBar');
-            const curEl = document.getElementById('videoCurrentTime');
-            const durEl = document.getElementById('videoDuration');
-
-            if (bar && !isDraggingProgress && duration > 0) {
-                bar.max = duration;
-                bar.value = currentTime;
-                const pct = (currentTime / duration) * 100;
-                bar.style.background = `linear-gradient(to right, var(--youtube-red) ${pct}%, rgba(255,255,255,0.1) ${pct}%)`;
-            }
-            if (curEl) curEl.textContent = formatDuration(currentTime * 1000);
-            if (durEl) durEl.textContent = formatDuration(duration * 1000);
-        }
-
-        function toggleLyricPlay() {
-            if (!ytPlayer || typeof ytPlayer.getPlayerState !== 'function') return;
-            const state = ytPlayer.getPlayerState();
-            if (state == YT.PlayerState.PLAYING) {
-                ytPlayer.pauseVideo();
-            } else {
-                ytPlayer.playVideo();
-            }
-        }
-
-        function seekRelative(seconds) {
-            if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
-            const cur = ytPlayer.getCurrentTime();
-            ytPlayer.seekTo(cur + seconds, true);
-        }
-
-        function toggleLyricRepeat() {
-            isRepeatEnabled = !isRepeatEnabled;
-            const btn = document.getElementById('lyricRepeatBtn');
-            if (btn) btn.classList.toggle('active', isRepeatEnabled);
-        }
     </script>
     <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
     <script>
@@ -5018,9 +4159,6 @@
                 </div>
 
                 <button id="accessSubmitBtn" class="full-width-btn">Unlock Access</button>
-
-                <!-- Turnstile Invisible Widget -->
-                <div id="turnstile-access-widget" style="display: none;"></div>
             </div>
 
             <div class="error-wrapper" style="margin-top: 15px;">
@@ -5262,22 +4400,6 @@
                 localStorage.setItem('device_binding_id', deviceId);
             }
 
-            // --- TURNSTILE (Invisible) ---
-            let ACCESS_TURNSTILE_ID = null;
-
-            window.onloadTurnstileCallback = function () {
-                // Render Invisible Widget
-                // Note: We use the 'turnstile-access-widget' div we just added
-                ACCESS_TURNSTILE_ID = turnstile.render('#turnstile-access-widget', {
-                    sitekey: '0x4AAAAAACWB9F4nekxBbFPV', // PUBLIC INVISIBLE KEY
-                    callback: function (token) {
-                        // If Turnstile solves automatically (or after challenge), complete the login
-                        completeAccessLogin(token);
-                    },
-                    'refresh-expired': 'auto' // Auto regenerate
-                });
-            };
-
             // Skip handler
             if (skipBtn) {
                 skipBtn.addEventListener('click', () => {
@@ -5296,17 +4418,12 @@
 
                 // Sanitize details to REMOVE API Keys
                 let safeDetails = details;
-                try {
-                    if (details && typeof details === 'object') {
-                        safeDetails = JSON.parse(JSON.stringify(details)); // Deep copy
-                        // Explicitly remove sensitive keys
-                        if (safeDetails.yt_api_key) safeDetails.yt_api_key = '[REDACTED]';
-                        if (safeDetails.apiKey) safeDetails.apiKey = '[REDACTED]';
-                        if (safeDetails.headers) delete safeDetails.headers; // Remove headers incase of tokens
-                    }
-                } catch (e) {
-                    console.warn("Error sanitizing error details:", e);
-                    safeDetails = { originalDetails: details, sanitizationError: e.message };
+                if (details && typeof details === 'object') {
+                    safeDetails = JSON.parse(JSON.stringify(details)); // Deep copy
+                    // Explicitly remove sensitive keys
+                    if (safeDetails.yt_api_key) safeDetails.yt_api_key = '[REDACTED]';
+                    if (safeDetails.apiKey) safeDetails.apiKey = '[REDACTED]';
+                    if (safeDetails.headers) delete safeDetails.headers; // Remove headers incase of tokens
                 }
 
                 lastErrorLog = { timestamp: new Date().toISOString(), error: msg, details: safeDetails };
@@ -5316,84 +4433,6 @@
                 navigator.clipboard.writeText(JSON.stringify(lastErrorLog, null, 2));
                 clipConfirm.style.opacity = '1';
                 setTimeout(() => clipConfirm.style.opacity = '0', 2000);
-            });
-
-            // Core Login Function
-            async function attemptLogin() {
-                // Trigger Turnstile Execution
-                errorMsg.textContent = 'Verifying security...';
-
-                // If invisible widget is ready, "execute" it (or get response if already valid)
-                if (ACCESS_TURNSTILE_ID !== null) {
-                    // Check if we already have a response (rare for invisible unless auto-run)
-                    const token = turnstile.getResponse(ACCESS_TURNSTILE_ID);
-                    if (token) {
-                        completeAccessLogin(token);
-                    } else {
-                        // Force execution (this might pop up a challenge)
-                        turnstile.execute(ACCESS_TURNSTILE_ID);
-                    }
-                } else {
-                    // If Turnstile didn't load for some reason, try to proceed (backend might reject)
-                    completeAccessLogin(null);
-                }
-            }
-
-            async function completeAccessLogin(captchaToken) {
-                const code = codeInput.value.trim().toUpperCase();
-                if (!code) {
-                    showError('Please enter code');
-                    return;
-                }
-
-                btn.disabled = true;
-                btn.style.opacity = '0.5';
-                errorMsg.textContent = 'Linking Account...';
-                copyBtn.classList.add('hidden');
-
-                try {
-                    const res = await fetch('/api/verify-access', {
-                        method: 'POST',
-                        credentials: 'include', // Force sending cookies
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            code: code,
-                            name: '', // Empty name will trigger backend fallback
-                            deviceId: deviceId, // Send logic for fallback
-                            token: captchaToken // SEND CAPTCHA
-                        })
-                    });
-
-                    // ... existing response handling ...
-                    let data;
-                    try {
-                        data = await res.json();
-                    } catch (jsonErr) {
-                        throw new Error('Server returned invalid JSON. Status: ' + res.status);
-                    }
-
-                    if (res.ok) {
-                        // Success -> Fade out overlay
-                        overlay.classList.add('hidden');
-                        document.getElementById('appContent').style.display = 'block';
-                    } else {
-                        // Error
-                        showError(data.error || 'Invalid code', data.debug || data);
-                        if (ACCESS_TURNSTILE_ID !== null) turnstile.reset(ACCESS_TURNSTILE_ID);
-                    }
-                } catch (e) {
-                    showError('Connection Error: ' + (e.message || 'Unknown'), { stack: e.stack });
-                } finally {
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                }
-            }
-
-            btn.addEventListener('click', attemptLogin);
-
-            // Allow Enter key on input
-            codeInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') attemptLogin();
             });
 
             // 1. Check Auth Status
@@ -5445,8 +4484,69 @@
                 console.error('Auth Check Failed', e);
                 // On error, better to show login than get stuck
                 if (document.getElementById('loadingStep')) document.getElementById('loadingStep').classList.add('hidden');
-                if (document.getElementById('discordLoginStep')) document.getElementById('discordLoginStep').classList.remove('hidden');
+                discordStep.classList.remove('hidden');
             }
+
+            // 2. Login Flow (Code Submission only)
+            async function attemptLogin() {
+                const code = codeInput.value.trim();
+                // Name is now handled by backend (Discord Name or Anonymous)
+
+                if (!code) {
+                    errorMsg.textContent = 'Please enter the code.';
+                    codeInput.focus();
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                errorMsg.textContent = 'Linking Account...';
+                copyBtn.classList.add('hidden');
+
+                try {
+                    const res = await fetch('/api/verify-access', {
+                        method: 'POST',
+                        credentials: 'include', // Force sending cookies
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            code: code,
+                            name: '', // Empty name will trigger backend fallback
+                            deviceId: deviceId // Send logic for fallback
+                        })
+                    });
+
+                    let data;
+                    try {
+                        data = await res.json();
+                    } catch (jsonErr) {
+                        throw new Error('Server returned invalid JSON (Crash/500). Response Status: ' + res.status);
+                    }
+
+                    if (res.ok) {
+                        // Success -> Fade out overlay
+                        overlay.classList.add('hidden');
+                        document.getElementById('appContent').style.display = 'block'; // Reveal App
+                    } else {
+                        // Error
+                        showError(data.error || 'Invalid code', data.debug || data);
+                        // Keep values so they can fix typose
+                    }
+                } catch (e) {
+                    console.error(e);
+                    // Network or JSON error
+                    showError('Connection Error: ' + (e.message || 'Unknown'), { stack: e.stack });
+                } finally {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }
+            }
+
+            btn.addEventListener('click', attemptLogin);
+
+            // Allow Enter key on input
+            codeInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') attemptLogin();
+            });
 
             // Focus input specifically when overlay is visible
             if (!overlay.classList.contains('hidden')) {

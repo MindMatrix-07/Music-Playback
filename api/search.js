@@ -153,7 +153,7 @@ async function handleYouTubeSearch(req, q, limit, res) {
         const { data: existing } = await supabase
             .from('request_queue')
             .select('id')
-            .eq('query', q)
+            .ilike('query', q) // Case-insensitive check
             .maybeSingle();
 
         if (!existing) {
