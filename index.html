@@ -1541,6 +1541,99 @@
             color: var(--text-secondary);
         }
 
+        /* Mobile Layout Flow (Vertical & Big) */
+
+        /* 1. Upscale Controls (Fit Screen) */
+        .platform-toggle {
+            width: 100% !important;
+            margin-bottom: 30px !important;
+            transform: none !important;
+            position: static !important;
+        }
+
+        .platform-btn {
+            flex: 1 !important;
+            padding: 16px 10px !important;
+            font-size: 1.1rem !important;
+            justify-content: center !important;
+        }
+
+        .preview-card {
+            width: 100% !important;
+            padding: 30px 20px !important;
+            margin-top: 20px !important;
+        }
+
+        .preview-album-art {
+            width: 200px !important;
+            height: 200px !important;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        /* 2. Vertical Scroll Flow (Reorder) */
+        .metadata-section {
+            margin-top: 40px !important;
+            padding-bottom: 100px !important;
+            /* Spacing for scroll */
+        }
+
+        .metadata-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 50px !important;
+        }
+
+        /* Order: Info -> buttons -> Images -> Video */
+        .meta-info-col {
+            order: 1 !important;
+        }
+
+        .meta-links-row {
+            order: 2 !important;
+            margin-top: 10px !important;
+        }
+
+        .meta-image-col {
+            order: 3 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+            margin-top: 20px !important;
+        }
+
+        /* Ensure Artist Images look good in vertical flow */
+        .artist-images-area {
+            width: 100% !important;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px !important;
+            max-height: none !important;
+        }
+
+        /* Mobile Artist Image Polish */
+        .artist-image-container {
+            aspect-ratio: 1 !important;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* YouTube Container (Video) - Moved to bottom */
+        .youtube-container {
+            order: 4 !important;
+            width: 100% !important;
+            margin-top: 30px !important;
+            aspect-ratio: 16/9 !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6) !important;
+        }
+
+        /* Ensure video error is handled */
+        .video-error-container {
+            order: 4 !important;
+            width: 100% !important;
+            margin-top: 30px !important;
+        }
+
+
+
         /* Mobile Rescue: Transparency & Airiness */
         .preview-card,
         .metadata-section,
