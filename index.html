@@ -3282,6 +3282,28 @@
                 <p class="setting-hint">Smoothly blurred album art that moves gently in the background.</p>
             </div>
 
+            <div class="setting-item"
+                style="margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                <label>Spotify Account</label>
+                <div id="settingsSpotifyAuth"
+                    style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
+                    <div id="settingsSpotifyInfo" style="display: flex; align-items: center; gap: 10px;">
+                        <img id="settingsSpotifyAvatar" src=""
+                            style="width: 32px; height: 32px; border-radius: 50%; display: none; border: 1px solid var(--border-color);">
+                        <span id="settingsSpotifyName" style="font-size: 0.9rem; color: var(--text-secondary);">Not
+                            Logged
+                            In</span>
+                    </div>
+                    <div>
+                        <a id="settingsSpotifyLoginBtn" href="/api/spotify-login" class="primary-btn"
+                            style="text-decoration: none; padding: 8px 16px; font-size: 0.85rem; display: inline-flex; align-items: center;">Login</a>
+                        <button id="settingsSpotifyLogoutBtn" class="secondary-btn"
+                            style="padding: 8px 16px; font-size: 0.85rem; display: none;">Logout</button>
+                    </div>
+                </div>
+                <p class="setting-hint">Login to enable playback of full tracks and sync your library.</p>
+            </div>
+
             <!-- Help Section -->
             <div class="setting-item"
                 style="margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 15px;">
@@ -3442,9 +3464,37 @@
             const loginSection = document.getElementById('loginSection');
             const userProfile = document.getElementById('userProfile');
 
-            // Only show login/profile for Spotify
+            // Settings Modal Elements
+            const settingsName = document.getElementById('settingsSpotifyName');
+            const settingsAvatar = document.getElementById('settingsSpotifyAvatar');
+            const settingsLoginBtn = document.getElementById('settingsSpotifyLoginBtn');
+            const settingsLogoutBtn = document.getElementById('settingsSpotifyLogoutBtn');
+
+            const hasUser = !!spotifyUser;
+
+            // Update Settings Modal state
+            if (settingsName && settingsLoginBtn && settingsLogoutBtn) {
+                if (hasUser) {
+                    settingsName.textContent = spotifyUser.name;
+                    settingsName.style.color = 'var(--text-primary)';
+                    if (settingsAvatar) {
+                        settingsAvatar.src = spotifyUser.image || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666"><circle cx="12" cy="8" r="4"/><path d="M12 14c-6 0-8 3-8 6v2h16v-2c0-3-2-6-8-6z"/></svg>';
+                        settingsAvatar.style.display = 'block';
+                    }
+                    settingsLoginBtn.style.display = 'none';
+                    settingsLogoutBtn.style.display = 'inline-block';
+                } else {
+                    settingsName.textContent = 'Not Logged In';
+                    settingsName.style.color = 'var(--text-secondary)';
+                    if (settingsAvatar) settingsAvatar.style.display = 'none';
+                    settingsLoginBtn.style.display = 'inline-flex';
+                    settingsLogoutBtn.style.display = 'none';
+                }
+            }
+
+            // Only show login/profile for Spotify tab
             if (currentPlatform === 'spotify') {
-                if (spotifyUser) {
+                if (hasUser) {
                     loginSection.classList.add('hidden');
                     userProfile.classList.remove('hidden');
                     document.getElementById('userName').textContent = spotifyUser.name;
@@ -3454,9 +3504,7 @@
                     loginSection.classList.remove('hidden');
                     userProfile.classList.add('hidden');
                 }
-                loginSection.classList.add('hidden');
-                userProfile.classList.add('hidden');
-            } else if (currentPlatform === 'youtube') {
+            } else {
                 loginSection.classList.add('hidden');
                 userProfile.classList.add('hidden');
             }
@@ -4519,6 +4567,15 @@
                         if (ytInput) ytInput.value = '';
                         alert('Keys removed from local storage.');
                         settingsModal.classList.add('hidden');
+                    }
+                });
+            }
+
+            const settingsLogoutBtn = document.getElementById('settingsSpotifyLogoutBtn');
+            if (settingsLogoutBtn) {
+                settingsLogoutBtn.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to logout from Spotify?')) {
+                        logout();
                     }
                 });
             }
