@@ -1355,6 +1355,7 @@
                 margin-left: auto;
                 margin-right: auto;
                 border: 1px solid rgba(255, 255, 255, 0.1);
+                will-change: transform, opacity;
             }
 
             .platform-btn {
@@ -1406,6 +1407,8 @@
             .search-inner {
                 padding: 6px 6px 6px 14px;
                 border-radius: 40px;
+                contain: paint;
+                /* Layout isolation for performance */
             }
 
             .search-icon {
@@ -1427,6 +1430,10 @@
             .track-list {
                 max-height: 40vh;
                 gap: 8px;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                /* Smooth iOS scroll */
+                contain: content;
             }
 
             .track-item {
@@ -1636,6 +1643,51 @@
             .meta-links-row {
                 flex-direction: column !important;
                 gap: 20px !important;
+            }
+
+            /* Performance: Reduce blur radius on mobile for smoothness */
+            .bg-blob {
+                filter: blur(50px) !important;
+                transform: translateZ(0);
+                /* Force GPU */
+                animation-duration: 30s !important;
+                /* Slow down for less CPU work */
+            }
+
+            #dynamic-bg {
+                animation: none !important;
+                /* Disable breath on mobile for smoothness */
+                transform: translateZ(0);
+            }
+
+            /* Settings & Overlays Mobile Polish */
+            .settings-card {
+                padding: 20px !important;
+                width: 94% !important;
+                max-height: 90vh !important;
+            }
+
+            .settings-actions {
+                justify-content: center !important;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .settings-actions .primary-btn,
+            .settings-actions .secondary-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            /* Fullscreen Lyrics Mobile Refinement */
+            .lyrics-module.fullscreen .synced-line {
+                padding: 0 15px !important;
+                font-size: 1.3rem !important;
+                /* Slightly smaller for mobile phones */
+            }
+
+            .lyrics-module.fullscreen .lyrics-top-bar {
+                padding: 10px !important;
             }
         }
 
