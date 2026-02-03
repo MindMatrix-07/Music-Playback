@@ -54,3 +54,8 @@ Comprehensive update to the Music Playback tool focusing on mobile optimization,
 
 ## Summary
 The application is now optimized for mobile with a beautiful new UI, free of ORB image errors, and legally/technically compliant. Desktop users regain the premium gradient animation and get a new Full Screen mode, while mobile users get a legible solid-color fallback and a modern "app-like" interface.
+
+## 8. UI Refinements (Mobile)
+- **Header**: Removed redundant text titles to focus purely on the search interface.
+- **Search Bar**: Redesigned as a floating "glass pill" with focus animations.
+- **Now Playing**: Expanded the bottom control bar to a full-width sheet for better accessibility and cleaner look.

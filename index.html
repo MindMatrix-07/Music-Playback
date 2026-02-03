@@ -2241,7 +2241,7 @@
             }
 
             .container {
-                padding: 15px 15px 160px 15px; /* Extra bottom padding for floating controls */
+                padding: 15px 15px 180px 15px; /* Extra bottom padding for full-width sheet */
                 max-width: 100%;
                 width: 100%;
                 margin: 0;
@@ -2252,57 +2252,76 @@
                 position: sticky;
                 top: 0;
                 z-index: 900;
-                margin-bottom: 25px;
-                padding-top: 10px;
-                pointer-events: none; /* Let clicks pass through empty space */
+                margin-bottom: 20px;
+                padding: 10px 0;
+                pointer-events: none;
             }
 
+            /* Hide "Boring" Title - focus on Search */
             .header-title-wrapper {
-                background: rgba(18, 18, 18, 0.85);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                padding: 8px 16px;
-                border-radius: 50px;
-                border: 1px solid rgba(255,255,255,0.08);
-                box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-                display: inline-flex;
-                margin-bottom: 10px;
+                display: none !important;
+            }
+
+            .header h1,
+            .header p {
+                display: none !important;
+            }
+
+            /* Search Bar - Modern App Style (Glass Pill) */
+            .search-container {
+                margin: 0;
+                padding: 0;
+            }
+
+            .search-wrapper {
                 pointer-events: auto;
-            }
-
-            .header h1 {
-                font-size: 1.4rem;
-                letter-spacing: -0.5px;
-            }
-
-            .site-logo {
-                height: 28px;
-            }
-
-            /* Search Bar - Modern App Style */
-            .search-section {
-                pointer-events: auto;
-                background: rgba(30, 30, 30, 0.95);
-                backdrop-filter: blur(15px);
-                border-radius: 18px;
-                padding: 6px 6px 6px 20px;
+                background: rgba(255, 255, 255, 0.08); /* Lighter, cleaner glass */
+                backdrop-filter: blur(30px) saturate(180%);
+                -webkit-backdrop-filter: blur(30px) saturate(180%);
+                border-radius: 20px;
+                padding: 8px 15px;
                 display: flex;
                 align-items: center;
-                border: 1px solid rgba(255,255,255,0.1);
-                box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-                margin: 0 5px; /* Slight inset */
+                border: 1px solid rgba(255,255,255,0.12);
+                box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+                margin: 0 12px; /* Slight inset for floating look */
+                transition: all 0.3s ease;
+            }
+
+            .search-inner {
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                width: 100%;
+                border-radius: 0;
+            }
+
+            .search-wrapper:focus-within {
+                background: rgba(255, 255, 255, 0.12);
+                border-color: rgba(255,255,255,0.3);
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+                transform: translateY(-2px);
             }
             
             .search-input {
-                font-size: 1rem;
-                padding: 12px 0;
+                font-size: 1.1rem;
+                padding: 12px 10px;
+                font-weight: 500;
+                color: #fff;
+            }
+            
+            .search-input::placeholder {
+                color: rgba(255,255,255,0.5);
             }
             
             .search-btn {
                 padding: 10px 20px;
-                border-radius: 14px;
-                font-size: 0.9rem;
-                box-shadow: none; /* Cleaner look */
+                border-radius: 12px;
+                font-size: 0.95rem;
+                background: rgba(255,255,255,0.15);
+                color: #fff;
+                box-shadow: none;
             }
 
             /* 3. Hero Metadata Section */
@@ -2413,22 +2432,25 @@
                 opacity: 1 !important;
             }
 
-            /* 6. Floating Bottom Controls */
+            /* 6. Floating Bottom Controls -> Full Width Sheet */
             .lyrics-controls {
                 position: fixed;
-                bottom: 24px;
-                left: 16px;
-                right: 16px;
-                background: rgba(22, 22, 22, 0.85);
-                backdrop-filter: blur(25px);
-                -webkit-backdrop-filter: blur(25px);
-                padding: 20px 24px;
-                border-radius: 32px;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(18, 18, 18, 0.92); /* Slightly more opaque for sheet */
+                backdrop-filter: blur(40px) saturate(150%);
+                -webkit-backdrop-filter: blur(40px) saturate(150%);
+                padding: 24px 24px 35px 24px; /* increased bottom padding for safe area */
+                border-radius: 28px 28px 0 0;
                 z-index: 1000;
-                border: 1px solid rgba(255,255,255,0.08);
-                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+                border-top: 1px solid rgba(255,255,255,0.1);
+                border-left: none;
+                border-right: none;
+                border-bottom: none;
+                box-shadow: 0 -10px 60px rgba(0,0,0,0.6);
                 margin-top: 0;
-                gap: 15px;
+                gap: 20px;
             }
 
             .progress-row {
