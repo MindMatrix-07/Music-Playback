@@ -57,5 +57,7 @@ The application is now optimized for mobile with a beautiful new UI, free of ORB
 
 ## 8. UI Refinements (Mobile)
 - **Header**: Removed redundant text titles to focus purely on the search interface.
+- **Platform Toggles**: Redesigned as compact, horizontally scrollable pills.
 - **Search Bar**: Redesigned as a floating "glass pill" with focus animations.
-- **Now Playing**: Expanded the bottom control bar to a full-width sheet for better accessibility and cleaner look.
+- **Full Width Player**: The "Now Playing" card now stretches edge-to-edge (removing side margins) for a true immersive mobile experience.
+- **Controls**: Expanded the bottom control bar to a full-width sheet.

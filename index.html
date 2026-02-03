@@ -2375,7 +2375,60 @@
                 margin-top: 20px;
             }
 
-            /* 4. Lyrics Sheet */
+            /* 3. Modernized Platform Toggles (Compact Pills) */
+            .platform-toggle {
+                display: flex;
+                gap: 8px;
+                margin-bottom: 20px;
+                overflow-x: auto;
+                padding-bottom: 5px;
+                justify-content: space-between; /* Distribute evenly */
+            }
+
+            .platform-btn {
+                flex: 1;
+                padding: 10px 8px;
+                border-radius: 12px;
+                font-size: 0.85rem;
+                gap: 6px;
+                white-space: nowrap;
+                border-width: 1px;
+            }
+
+            .platform-logo {
+                width: 20px;
+                height: 20px;
+            }
+
+            .platform-name {
+                font-size: 0.85rem;
+            }
+
+            /* 4. Full Width Player (Edge-to-Edge) */
+            .player-section {
+                margin-left: -15px; /* Counteract container padding */
+                margin-right: -15px;
+                width: calc(100% + 30px);
+                margin-top: 10px;
+            }
+
+            .player-title {
+                padding-left: 20px; /* Add padding back for title */
+                margin-bottom: 10px;
+                font-size: 1.1rem;
+                opacity: 0.8;
+            }
+
+            .embed-container {
+                border-radius: 0 !important;
+                border-left: none !important;
+                border-right: none !important;
+                background: #121212 !important; /* Slightly lighter than pure black for contrast */
+                padding: 20px 15px;
+                min-height: auto;
+            }
+
+            /* 5. Lyrics Sheet */
             .lyrics-module {
                 background: transparent;
                 box-shadow: none;
