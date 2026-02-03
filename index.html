@@ -2257,14 +2257,22 @@
                 pointer-events: none;
             }
 
-            /* Hide "Boring" Title - focus on Search */
+            /* Restore Title per user request */
             .header-title-wrapper {
-                display: none !important;
+                display: flex !important; /* Force display */
+                justify-content: center;
+                margin-bottom: 10px;
             }
 
-            .header h1,
+            .header h1 {
+                display: block !important;
+                font-size: 1.5rem !important; /* Smaller for mobile */
+                text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+                pointer-events: auto;
+            }
+            
             .header p {
-                display: none !important;
+                display: none !important; /* Keep subtitle hidden to save space */
             }
 
             /* Search Bar - Modern App Style (Glass Pill) */
@@ -2406,10 +2414,11 @@
 
             /* 4. Full Width Player (Edge-to-Edge) */
             .player-section {
-                margin-left: -15px; /* Counteract container padding */
-                margin-right: -15px;
-                width: calc(100% + 30px);
+                margin-left: -15px !important; /* Force override */
+                margin-right: -15px !important;
+                width: calc(100% + 30px) !important;
                 margin-top: 10px;
+                padding: 0 !important;
             }
 
             .player-title {
@@ -2421,11 +2430,13 @@
 
             .embed-container {
                 border-radius: 0 !important;
-                border-left: none !important;
-                border-right: none !important;
+                border: none !important;
                 background: #121212 !important; /* Slightly lighter than pure black for contrast */
-                padding: 20px 15px;
+                padding: 20px 15px !important;
                 min-height: auto;
+                width: 100% !important;
+                box-shadow: none !important;
+                margin: 0 !important;
             }
 
             /* 5. Lyrics Sheet */
