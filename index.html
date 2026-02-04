@@ -2781,6 +2781,7 @@
                 border-radius: var(--m-radius-lg) !important;
                 padding: 20px !important;
                 box-shadow: var(--m-shadow);
+                overflow: hidden;
             }
 
             .lyrics-top-bar {
@@ -2815,9 +2816,37 @@
                 color: var(--text-primary) !important;
             }
 
+            .lyrics-view-area {
+                max-height: 55vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding: 0 8px;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+                scroll-behavior: smooth;
+            }
+
+            .lyrics-content,
+            .plain-lyrics,
+            .lyric-text,
+            .lyric-line,
             .synced-line {
-                font-size: 1.2rem !important;
+                max-width: 100%;
+                word-break: break-word;
+                overflow-wrap: anywhere;
+                white-space: normal;
+            }
+
+            .synced-lyrics-container {
+                padding: 40px 0;
+                gap: 16px;
+            }
+
+            .synced-line {
+                font-size: 1.15rem !important;
+                line-height: 1.5;
                 filter: none !important;
+                transition: color 0.25s ease, transform 0.25s ease;
             }
 
             .lyrics-player-controls {
@@ -2826,6 +2855,29 @@
                 border-radius: 999px !important;
                 width: 96% !important;
                 margin: 0 auto 10px !important;
+            }
+
+            .lyrics-module.fullscreen {
+                padding: 16px !important;
+                background: #0b0b0b !important;
+                overflow-x: hidden;
+            }
+
+            .lyrics-module.fullscreen .lyrics-view-area {
+                max-height: calc(100svh - 180px);
+                padding: 0 10px;
+            }
+
+            .lyrics-module.fullscreen .synced-line {
+                font-size: clamp(1.05rem, 4vw, 1.4rem) !important;
+                line-height: 1.55;
+            }
+
+            .lyrics-module.fullscreen .lyrics-content,
+            .lyrics-module.fullscreen .plain-lyrics,
+            .lyrics-module.fullscreen .lyric-text {
+                max-width: 100%;
+                overflow-wrap: anywhere;
             }
 
             @keyframes mobile-rise {
