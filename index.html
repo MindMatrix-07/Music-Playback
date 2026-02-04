@@ -2484,25 +2484,25 @@
                 letter-spacing: 0.16em;
             }
 
+            .search-container {
+                width: 100%;
+                margin: 0;
+            }
+
             .search-wrapper {
                 width: 100%;
                 border-radius: var(--m-radius-lg) !important;
                 background: var(--m-card) !important;
                 border: 1px solid var(--m-border) !important;
                 box-shadow: var(--m-shadow-soft);
-                min-height: 64px;
-            }
-
-            .search-container {
-                width: 100vw;
-                margin-left: calc(50% - 50vw);
-                margin-right: calc(50% - 50vw);
+                min-height: 78px;
             }
 
             .search-inner {
-                padding: 10px 12px !important;
+                padding: 12px 14px !important;
                 gap: 10px;
                 width: 100%;
+                align-items: center;
             }
 
             .search-input {
@@ -2858,14 +2858,54 @@
             }
 
             .lyrics-module.fullscreen {
-                padding: 16px !important;
+                padding: 12px 12px 18px !important;
                 background: #0b0b0b !important;
                 overflow-x: hidden;
+                border: none !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
             }
 
             .lyrics-module.fullscreen .lyrics-view-area {
                 max-height: calc(100svh - 180px);
-                padding: 0 10px;
+                padding: 0 6px;
+            }
+
+            .lyrics-module.fullscreen .lyrics-top-bar {
+                border: none !important;
+                padding: 6px 0 8px !important;
+                align-items: center !important;
+            }
+
+            .lyrics-module.fullscreen .lyrics-top-bar > div {
+                justify-content: center !important;
+                width: 100%;
+            }
+
+            .lyrics-module.fullscreen .lyrics-top-bar > div:last-child {
+                opacity: 0.65;
+                gap: 8px !important;
+            }
+
+            .lyrics-module.fullscreen .lyrics-tabs {
+                border: none !important;
+                background: transparent !important;
+                justify-content: center !important;
+                gap: 10px;
+            }
+
+            .lyrics-module.fullscreen .tab-btn,
+            .lyrics-module.fullscreen .mode-btn,
+            .lyrics-module.fullscreen .copy-btn {
+                border: none !important;
+                background: rgba(255, 255, 255, 0.06) !important;
+                color: rgba(255, 255, 255, 0.75) !important;
+                box-shadow: none !important;
+            }
+
+            .lyrics-module.fullscreen .tab-btn.active {
+                background: rgba(255, 255, 255, 0.14) !important;
+                color: #ffffff !important;
             }
 
             .lyrics-module.fullscreen .synced-line {
