@@ -3,7 +3,11 @@
   "rewrites": [
     {
       "source": "/callback",
-      "destination": "/api/spotify-callback"
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
     }
   ]
 }

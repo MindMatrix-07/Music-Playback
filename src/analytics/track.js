@@ -1,5 +1,5 @@
 
-import { connectToDatabase, Analytics } from '../../_utils/mongodb.js';
+import { connectToDatabase, Analytics } from '../_utils/mongodb.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).end();
