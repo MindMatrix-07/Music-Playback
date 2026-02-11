@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1DB954">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -1623,7 +1625,7 @@
             }
         }
 
-        
+
 
 
 
@@ -1797,7 +1799,12 @@
             height: 140%;
             background-size: cover;
             background-position: center;
-            filter: blur(80px) saturate(220%) brightness(0.9);
+            background-size: cover;
+            background-position: center;
+            /* performance: remove real-time blur, use pre-blurred image */
+            /* filter: blur(80px) saturate(220%) brightness(0.9); */
+            /* We will apply saturation/brightness in canvas or assume image is good enough */
+            opacity: 0.9;
             /* Slightly darker */
             opacity: 0.9;
             mix-blend-mode: hard-light;
@@ -2877,12 +2884,12 @@
                 align-items: center !important;
             }
 
-            .lyrics-module.fullscreen .lyrics-top-bar > div {
+            .lyrics-module.fullscreen .lyrics-top-bar>div {
                 justify-content: center !important;
                 width: 100%;
             }
 
-            .lyrics-module.fullscreen .lyrics-top-bar > div:last-child {
+            .lyrics-module.fullscreen .lyrics-top-bar>div:last-child {
                 opacity: 0.65;
                 gap: 8px !important;
             }
@@ -2925,6 +2932,7 @@
                     opacity: 0;
                     transform: translateY(14px);
                 }
+
                 to {
                     opacity: 1;
                     transform: translateY(0);
@@ -2981,6 +2989,7 @@
         }
 
         @media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+
             .header,
             .platform-toggle,
             .search-container,
@@ -2990,7 +2999,8 @@
             .search-results {
                 animation: none !important;
             }
-        }</style>
+        }
+    </style>
 </head>
 
 <body class="spotify-active">
@@ -4780,14 +4790,42 @@
 
         function updateFluidBackground(imgElement) {
             if (!imgElement.src) return;
-            const b1 = document.getElementById('fluidBlob1');
-            const b2 = document.getElementById('fluidBlob2');
-            const b3 = document.getElementById('fluidBlob3');
 
-            const url = `url('${imgElement.src}')`;
-            if (b1) b1.style.backgroundImage = url;
-            if (b2) b2.style.backgroundImage = url;
-            if (b3) b3.style.backgroundImage = url;
+            // Optimization: Create a tiny blurred version on canvas to avoid huge CSS blur cost
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Small size for performance + natural blur
+                canvas.width = 40;
+                canvas.height = 40;
+
+                ctx.filter = 'blur(10px) saturate(220%) brightness(0.9)';
+                ctx.drawImage(imgElement, -10, -10, 60, 60); // Draw slightly larger to avoid edges
+
+                const dataUrl = canvas.toDataURL();
+                const url = `url('${dataUrl}')`;
+
+                const b1 = document.getElementById('fluidBlob1');
+                const b2 = document.getElementById('fluidBlob2');
+                const b3 = document.getElementById('fluidBlob3');
+
+                if (b1) b1.style.backgroundImage = url;
+                if (b2) b2.style.backgroundImage = url;
+                if (b3) b3.style.backgroundImage = url;
+            } catch (e) {
+                // Fallback to high-res logic if canvas fails (CORS, etc)
+                // Note if accessing cross-origin image on canvas without CORS it might fail (tainted)
+                // For local development it might be fine, or if using proxy.
+                console.warn("Canvas blur failed, falling back to CSS blur logic (or raw image)", e);
+                const url = `url('${imgElement.src}')`;
+                const b1 = document.getElementById('fluidBlob1');
+                const b2 = document.getElementById('fluidBlob2');
+                const b3 = document.getElementById('fluidBlob3');
+                if (b1) { b1.style.backgroundImage = url; b1.style.filter = 'blur(80px) saturate(200%)'; }
+                if (b2) { b2.style.backgroundImage = url; b2.style.filter = 'blur(80px) saturate(200%)'; }
+                if (b3) { b3.style.backgroundImage = url; b3.style.filter = 'blur(80px) saturate(200%)'; }
+            }
         }
 
 
@@ -5901,11 +5939,17 @@
         });
 
         // Hook into existing track play logic (you'll need to call updateBgImage() where tracks are played)
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('SW registered!', reg))
+                    .catch(err => console.log('SW failed', err));
+            });
+        }
     </script>
 
 </body>
 
 </html>
-
-
-

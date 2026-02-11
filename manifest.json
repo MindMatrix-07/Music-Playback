@@ -1,0 +1,15 @@
+{
+    "name": "Music Playback Tool",
+    "short_name": "Music Tool",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0a0a",
+    "theme_color": "#1DB954",
+    "icons": [
+        {
+            "src": "https://open.spotifycdn.com/cdn/images/favicon.0f31d2ea.ico",
+            "sizes": "64x64",
+            "type": "image/x-icon"
+        }
+    ]
+}
