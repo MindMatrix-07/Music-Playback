@@ -30,14 +30,19 @@ export default async function handler(req, res) {
         const cleanTitle = (t) => {
             return t
                 .split(' - ')[0] // Remove " - Remastered", " - Live", etc.
-                .replace(/[\(\[](feat|ft|with|prod|remix|version|deluxe|edition|live|mono|stereo|remaster).*?[\)\]]/gi, '')
+                .replace(/[\(\[](feat|ft|with|prod|remix|version|deluxe|edition|live|mono|stereo|remaster|from).*?[\)\]]/gi, '')
                 .trim();
         };
+
+        // Fallback: Remove ALL text in brackets (e.g. "Song Name (Movie Name)") -> "Song Name"
+        const superCleanTitle = (t) => t.replace(/[\(\[].*?[\)\]]/g, '').trim();
+
         const cleanArtist = (a) => a.split(',')[0].trim(); // Take first artist only
 
         let searchQueries = [
             `${title} ${artist}`,
-            `${cleanTitle(title)} ${cleanArtist(artist)}`
+            `${cleanTitle(title)} ${cleanArtist(artist)}`,
+            `${superCleanTitle(title)} ${cleanArtist(artist)}`
         ];
 
         // Remove duplicates
