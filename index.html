@@ -1799,21 +1799,23 @@
             height: 140%;
             background-size: cover;
             background-position: center;
-            background-size: cover;
-            background-position: center;
             /* performance: remove real-time blur, use pre-blurred image */
             /* filter: blur(80px) saturate(220%) brightness(0.9); */
             /* We will apply saturation/brightness in canvas or assume image is good enough */
             opacity: 0.9;
-            /* Slightly darker */
-            opacity: 0.9;
             mix-blend-mode: hard-light;
-            /* Restored vibrant blending */
             border-radius: 40%;
             /* Organic shape */
             animation-timing-function: ease-in-out;
             animation-iteration-count: infinite;
             animation-direction: alternate;
+
+            /* Performance Optimizations */
+            will-change: transform, opacity;
+            transform: translateZ(0);
+            /* Force GPU Layer */
+            contain: layout style paint;
+            /* Limit repaint scope */
         }
 
         /* Blob 1: Rotate & Pulse */
@@ -4788,8 +4790,11 @@
             }
         }
 
+        let lastFluidBgSrc = '';
+
         function updateFluidBackground(imgElement) {
-            if (!imgElement.src) return;
+            if (!imgElement.src || imgElement.src === lastFluidBgSrc) return;
+            lastFluidBgSrc = imgElement.src;
 
             // Optimization: Create a tiny blurred version on canvas to avoid huge CSS blur cost
             try {
