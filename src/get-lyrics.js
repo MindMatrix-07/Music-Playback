@@ -29,13 +29,13 @@ export default async function handler(req, res) {
         // Improved Sanitize Function
         const cleanTitle = (t) => {
             return t
-                .split(' - ')[0] // Remove " - Remastered", " - Live", etc.
+                .split(/ - | \| /)[0] // Remove " - Remastered" OR " | Movie Name"
                 .replace(/[\(\[](feat|ft|with|prod|remix|version|deluxe|edition|live|mono|stereo|remaster|from).*?[\)\]]/gi, '')
                 .trim();
         };
 
-        // Fallback: Remove ALL text in brackets (e.g. "Song Name (Movie Name)") -> "Song Name"
-        const superCleanTitle = (t) => t.replace(/[\(\[].*?[\)\]]/g, '').trim();
+        // Fallback: Remove ALL text in brackets AND after separators
+        const superCleanTitle = (t) => t.split(/ - | \| /)[0].replace(/[\(\[].*?[\)\]]/g, '').trim();
 
         const cleanArtist = (a) => a.split(',')[0].trim(); // Take first artist only
 
