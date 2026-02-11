@@ -21,29 +21,50 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Strategy: Search for the track on LRCLIB
-        const searchUrl = `https://lrclib.net/api/search?q=${encodeURIComponent(title + ' ' + artist)}`;
+        // Strategy: 
+        // 1. Try exact search (Title + Artist)
+        // 2. If that fails, try sanitizing title (remove (feat. X), [Remix], etc)
+        // 3. Fallback to just Title if Artist search is too specific (risky but useful)
 
-        const searchResp = await fetch(searchUrl, {
-            headers: { 'User-Agent': 'MusicPlaybackApp/1.0 (Educational Project)' }
-        });
+        const cleanTitle = (t) => t.replace(/[\(\[](feat|ft|with|prod|remix|version|deluxe|edition).*?[\)\]]/gi, '').trim();
+        const cleanArtist = (a) => a.split(',')[0].trim(); // Take first artist only
 
-        if (!searchResp.ok) {
-            throw new Error('LRCLIB Search failed');
-        }
+        let searchQueries = [
+            `${title} ${artist}`,
+            `${cleanTitle(title)} ${cleanArtist(artist)}`
+        ];
 
-        const data = await searchResp.json();
+        // Remove duplicates
+        searchQueries = [...new Set(searchQueries)];
 
-        // Find best match
         let match = null;
-        if (Array.isArray(data) && data.length > 0) {
-            // Pick first match by default as search is ranked
-            // Optional: refine by duration if needed
-            if (duration) {
-                const durSec = parseInt(duration) / 1000;
-                match = data.find(item => Math.abs(item.duration - durSec) < 10); // 10s tolerance
+
+        for (const q of searchQueries) {
+            if (match) break; // Found? Stop.
+
+            try {
+                const searchUrl = `https://lrclib.net/api/search?q=${encodeURIComponent(q)}`;
+                const searchResp = await fetch(searchUrl, {
+                    headers: { 'User-Agent': 'MusicPlaybackApp/1.0 (Educational Project)' }
+                });
+
+                if (searchResp.ok) {
+                    const data = await searchResp.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        // Duration Check (if provided)
+                        if (duration) {
+                            const durSec = parseInt(duration) / 1000;
+                            // Tolerance: 15 seconds (some radio edits differ)
+                            match = data.find(item => Math.abs(item.duration - durSec) < 15);
+                        }
+
+                        // If no duration match (or no duration provided), take the first result
+                        if (!match) match = data[0];
+                    }
+                }
+            } catch (e) {
+                console.warn(`Lyrics search failed for query: ${q}`, e);
             }
-            if (!match) match = data[0];
         }
 
         if (match) {
