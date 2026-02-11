@@ -1,208 +1,136 @@
+import dynamo from './client-dynamo.js';
+import { GetCommand, PutCommand, UpdateCommand, DeleteCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 
-import { connectToDatabase, AccessCode } from './mongodb.js';
-import { getGoogleSheetClient, findCodeRow, findUserRow, markCodeAsUsed } from './google-sheet.js';
+const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || 'AccessCodes';
 
-const GOOGLE_SHEET_ID = process.env.GOOGLE_SHEET_ID;
-
+// 1. Create Code
 export async function createCodeCommon(code) {
     const cleanCode = code.trim().toLowerCase();
 
-    // 1. Check if exists
-    const existing = await findCodeCommon(cleanCode);
-    if (existing && !existing.error) {
-        throw new Error('Code already exists');
-    }
+    // Check if exists first? Or just put with condition?
+    // DynamoDB put overwrites by default. We want to ensure uniqueness?
+    // Verify-Access checks existence usually.
+    // But let's check basic "Get" first to be safe, or use condition expression.
 
-    try {
-        await connectToDatabase();
-        // 2. Create in MongoDB
-        const newCode = await AccessCode.create({
+    // Using ConditionExpression to ensure we don't overwrite if it exists
+    const params = {
+        TableName: TABLE_NAME,
+        Item: {
             code: cleanCode,
-            status: '', // Unused
-            spotifyId: null,
-            name: null
-        });
-        console.log(`[DB] Created in Mongo: ${cleanCode}`);
+            status: 'UNUSED', // Initial status
+            createdAt: new Date().toISOString()
+        },
+        ConditionExpression: 'attribute_not_exists(code)'
+    };
 
-        // 3. Append to Google Sheets (if configured)
-        if (GOOGLE_SHEET_ID) {
-            try {
-                const sheets = await getGoogleSheetClient();
-                await sheets.spreadsheets.values.append({
-                    spreadsheetId: GOOGLE_SHEET_ID,
-                    range: 'Sheet1!A:A',
-                    valueInputOption: 'USER_ENTERED',
-                    requestBody: {
-                        values: [[cleanCode]]
-                    }
-                });
-                console.log(`[DB] Appended to Sheets: ${cleanCode}`);
-            } catch (e) {
-                console.error('[DB] Sheets Append Failed:', e);
-                // We don't throw here because Mongo creation succeeded.
-                // It's better to have it in Mongo than nowhere.
-            }
-        }
-
-        return { success: true, code: cleanCode };
-    } catch (e) {
-        console.error('[DB] Create Code Failed:', e);
-        throw e;
-    }
-}
-
-export async function findCodeCommon(code) {
     try {
-        await connectToDatabase();
-
-        // 1. Try MongoDB First
-        const cleanCode = code.trim().toLowerCase();
-        let mongoRecord = await AccessCode.findOne({ code: cleanCode });
-
-        if (mongoRecord) {
-            console.log(`[DB] Cache Hit (Mongo): ${cleanCode}`);
-            return {
-                code: mongoRecord.code,
-                status: mongoRecord.status,
-                spotifyId: mongoRecord.spotifyId,
-                name: mongoRecord.name,
-                // Add index if we have it, mostly for backward compatibility logic
-                index: mongoRecord.rowIndex,
-                isBlocked: mongoRecord.isBlocked
-            };
-        }
-
-        // 2. Fallback to Google Sheets
-        console.log(`[DB] Cache Miss (Mongo): ${cleanCode}. Checking Sheets...`);
-        const sheets = await getGoogleSheetClient();
-        const sheetRow = await findCodeRow(sheets, GOOGLE_SHEET_ID, cleanCode);
-
-        if (sheetRow && !sheetRow.error) {
-            // 3. Read-Through: Sync to MongoDB
-            console.log(`[DB] Syncing Code to Mongo: ${cleanCode}`);
-            try {
-                await AccessCode.create({
-                    code: sheetRow.code.toLowerCase(), // Ensure lowercase storage
-                    status: sheetRow.status,
-                    spotifyId: sheetRow.spotifyId,
-                    name: sheetRow.name,
-                    rowIndex: sheetRow.index
-                });
-            } catch (createError) {
-                // If it was created in race condition, ignore
-                if (createError.code !== 11000) {
-                    console.error('[DB] Sync Create Error:', createError);
-                }
-            }
-            return sheetRow;
-        }
-
-        return sheetRow; // Return the error/empty result from sheets
+        await dynamo.send(new PutCommand(params));
+        console.log(`[DynamoDB] Created: ${cleanCode}`);
+        return { success: true, code: cleanCode };
     } catch (error) {
-        console.error('[DB] findCodeService Error:', error);
-        // Fallback completely to sheets if Mongo fails hard
-        try {
-            const sheets = await getGoogleSheetClient();
-            return await findCodeRow(sheets, GOOGLE_SHEET_ID, code);
-        } catch (sheetError) {
-            return { error: true, msg: 'Database Unavailable' };
+        if (error.name === 'ConditionalCheckFailedException') {
+            throw new Error('Code already exists');
         }
+        console.error('[DynamoDB] Create Failed:', error);
+        throw error;
     }
 }
+
+// 2. Find Code
+export async function findCodeCommon(code) {
+    const cleanCode = code.trim().toLowerCase();
+
+    const params = {
+        TableName: TABLE_NAME,
+        Key: {
+            code: cleanCode
+        }
+    };
+
+    try {
+        const { Item } = await dynamo.send(new GetCommand(params));
+
+        if (!Item) return null; // Not found
+
+        return {
+            code: Item.code,
+            status: Item.status,
+            spotifyId: Item.spotifyId, // Might be undefined if unused
+            name: Item.name,
+            isBlocked: Item.isBlocked // Optional
+        };
+    } catch (error) {
+        console.error('[DynamoDB] Find Failed:', error);
+        return { error: true, msg: 'Database Error' };
+    }
+}
+
+// 3. Mark as Used / Bind to User
+export async function markCodeAsUsedCommon(codeInfo, userId, name) {
+    // codeInfo is the object returned from findCodeCommon
+    const cleanCode = codeInfo.code.toLowerCase();
+
+    const params = {
+        TableName: TABLE_NAME,
+        Key: { code: cleanCode },
+        UpdateExpression: 'set #status = :s, spotifyId = :u, #name = :n, usedAt = :t',
+        ExpressionAttributeNames: {
+            '#status': 'status',
+            '#name': 'name' // 'name' is reserved in DynamoDB
+        },
+        ExpressionAttributeValues: {
+            ':s': 'USED',
+            ':u': userId,
+            ':n': name,
+            ':t': new Date().toISOString()
+        }
+    };
+
+    try {
+        await dynamo.send(new UpdateCommand(params));
+        console.log(`[DynamoDB] Marked as USED: ${cleanCode} by ${userId}`);
+        return true;
+    } catch (error) {
+        console.error('[DynamoDB] Update Failed:', error);
+        throw error;
+    }
+}
+
+// 4. Find User (Reverse Lookup)
+// Note: This requires a Scan or GSI (Global Secondary Index) on spotifyId.
+// Since user instructions didn't specify GSI, we might have to Scan (expensive) or warn user.
+// However, the `verify-access.js` logic uses `findCodeCommon` (by code) primarily.
+// `findUserCommon` was used in `verify-access.js`?
+// Let's check `verify-access.js` content in step 514.
+// It imports `findCodeCommon` and `markCodeAsUsedCommon`.
+// It does NOT import `findUserCommon`!
+// So we might not need `findUserCommon` for `verify-access.js`.
+// But `auth.js` or others might use it?
+// I'll implement `findUserCommon` using Scan for now (assuming small table) or comment it out if not needed.
+// previous `db-service.js` had it.
+// I'll keep it but use Scan as fallback.
 
 export async function findUserCommon(userId) {
+    // Scan for spotifyId = userId
+    const params = {
+        TableName: TABLE_NAME,
+        FilterExpression: 'spotifyId = :uid',
+        ExpressionAttributeValues: {
+            ':uid': userId
+        }
+    };
+
     try {
-        await connectToDatabase();
-
-        // 1. Try MongoDB First
-        // Note: We search by spotifyId (which stores our userId/deviceId)
-        const mongoRecord = await AccessCode.findOne({ spotifyId: userId });
-
-        if (mongoRecord) {
-            console.log(`[DB] User Hit (Mongo): ${userId}`);
-            return {
-                code: mongoRecord.code,
-                status: mongoRecord.status,
-                spotifyId: mongoRecord.spotifyId,
-                name: mongoRecord.name,
-                index: mongoRecord.rowIndex,
-                isBlocked: mongoRecord.isBlocked
-            };
+        // Note: Scan is inefficient for large tables. Recommend GSI 'SpotifyIdIndex'
+        const { Items } = await dynamo.send(new ScanCommand(params)); // Need to import ScanCommand
+        if (Items && Items.length > 0) {
+            return Items[0];
         }
-
-        // 2. Fallback to Google Sheets
-        console.log(`[DB] User Miss (Mongo): ${userId}. Checking Sheets...`);
-        if (!GOOGLE_SHEET_ID) return null;
-
-        const sheets = await getGoogleSheetClient();
-        const sheetRow = await findUserRow(sheets, GOOGLE_SHEET_ID, userId);
-
-        if (sheetRow) {
-            // 3. Read-Through: Sync to MongoDB
-            console.log(`[DB] Syncing User to Mongo: ${userId}`);
-            try {
-                const cleanCode = sheetRow.code.toLowerCase();
-                // Check if code exists first to avoid duplicate key error
-                // (It might exist but not have the user ID bound yet in Mongo, or completely missing)
-                await AccessCode.findOneAndUpdate(
-                    { code: cleanCode },
-                    {
-                        code: cleanCode,
-                        status: sheetRow.status,
-                        spotifyId: sheetRow.spotifyId,
-                        name: sheetRow.name,
-                        rowIndex: sheetRow.index
-                    },
-                    { upsert: true, new: true }
-                );
-            } catch (syncError) {
-                console.error('[DB] User Sync Error:', syncError);
-            }
-            return sheetRow;
-        }
-
         return null;
     } catch (error) {
-        console.error('[DB] findUserService Error:', error);
+        console.error('[DynamoDB] Find User Failed:', error);
         return null;
     }
 }
 
-export async function markCodeAsUsedCommon(codeInfo, userId, name) {
-    // codeInfo is the object returned from findCodeService (containing index, code, etc)
-    const { code, index } = codeInfo;
-    const cleanCode = code.toLowerCase();
 
-    // 1. Update MongoDB
-    try {
-        await connectToDatabase();
-        await AccessCode.findOneAndUpdate(
-            { code: cleanCode },
-            {
-                status: 'USED',
-                spotifyId: userId,
-                name: name,
-                rowIndex: index // Ensure index is saved if available
-            },
-            { upsert: true } // Create if somehow missing
-        );
-        console.log(`[DB] Updated Mongo: ${cleanCode} -> USED`);
-    } catch (e) {
-        console.error('[DB] Mongo Update Failed:', e);
-        // Continue to Sheets, don't block
-    }
-
-    // 2. Update Google Sheets (Write-Back)
-    if (GOOGLE_SHEET_ID && index) {
-        try {
-            const sheets = await getGoogleSheetClient();
-            await markCodeAsUsed(sheets, GOOGLE_SHEET_ID, index, userId, name);
-            console.log(`[DB] Updated Sheets: Row ${index}`);
-        } catch (e) {
-            console.error('[DB] Sheets Update Failed:', e);
-            throw e; // If Sheets fails, we might want to alert the user, but Mongo is already saved.
-            // Strategically: If Sheets is our "Primary backup", maybe we should throw.
-            // But for reliability, if Mongo saved, we are good.
-        }
-    }
-}
