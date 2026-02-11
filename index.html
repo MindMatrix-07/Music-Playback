@@ -2387,7 +2387,25 @@
                 width: 260px !important;
                 height: 260px !important;
                 filter: blur(60px) !important;
-                opacity: 0.2 !important;
+                opacity: 0.6 !important;
+                /* Increased opacity for better visibility */
+                background-image: none !important;
+                /* Remove album art */
+            }
+
+            /* Spotify Blobs */
+            body.spotify-active .bg-blob {
+                background: radial-gradient(circle, var(--spotify-green) 0%, transparent 70%);
+            }
+
+            /* Apple Blobs */
+            body.apple-active .bg-blob {
+                background: radial-gradient(circle, var(--apple-pink) 0%, transparent 70%);
+            }
+
+            /* YouTube Blobs */
+            body.youtube-active .bg-blob {
+                background: radial-gradient(circle, var(--youtube-red) 0%, transparent 70%);
             }
 
             .container {
