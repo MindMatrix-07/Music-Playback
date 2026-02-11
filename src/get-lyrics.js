@@ -29,13 +29,13 @@ export default async function handler(req, res) {
         // Improved Sanitize Function
         const cleanTitle = (t) => {
             return t
-                .split(/ - | \| /)[0] // Remove " - Remastered" OR " | Movie Name"
+                .split(/\s*[-|]\s*/)[0] // Remove " - " or " | " or similar
                 .replace(/[\(\[](feat|ft|with|prod|remix|version|deluxe|edition|live|mono|stereo|remaster|from).*?[\)\]]/gi, '')
                 .trim();
         };
 
         // Fallback: Remove ALL text in brackets AND after separators
-        const superCleanTitle = (t) => t.split(/ - | \| /)[0].replace(/[\(\[].*?[\)\]]/g, '').trim();
+        const superCleanTitle = (t) => t.split(/\s*[-|]\s*/)[0].replace(/[\(\[].*?[\)\]]/g, '').trim();
 
         const cleanArtist = (a) => a.split(',')[0].trim(); // Take first artist only
 
@@ -62,15 +62,8 @@ export default async function handler(req, res) {
                 if (searchResp.ok) {
                     const data = await searchResp.json();
                     if (Array.isArray(data) && data.length > 0) {
-                        // Duration Check (if provided)
-                        if (duration) {
-                            const durSec = parseInt(duration) / 1000;
-                            // Tolerance: 15 seconds (some radio edits differ)
-                            match = data.find(item => Math.abs(item.duration - durSec) < 15);
-                        }
-
-                        // If no duration match (or no duration provided), take the first result
-                        if (!match) match = data[0];
+                        // User Request: Always select first result (ignore duration matching)
+                        match = data[0];
                     }
                 }
             } catch (e) {
