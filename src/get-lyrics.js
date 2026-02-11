@@ -26,7 +26,13 @@ export default async function handler(req, res) {
         // 2. If that fails, try sanitizing title (remove (feat. X), [Remix], etc)
         // 3. Fallback to just Title if Artist search is too specific (risky but useful)
 
-        const cleanTitle = (t) => t.replace(/[\(\[](feat|ft|with|prod|remix|version|deluxe|edition).*?[\)\]]/gi, '').trim();
+        // Improved Sanitize Function
+        const cleanTitle = (t) => {
+            return t
+                .split(' - ')[0] // Remove " - Remastered", " - Live", etc.
+                .replace(/[\(\[](feat|ft|with|prod|remix|version|deluxe|edition|live|mono|stereo|remaster).*?[\)\]]/gi, '')
+                .trim();
+        };
         const cleanArtist = (a) => a.split(',')[0].trim(); // Take first artist only
 
         let searchQueries = [
