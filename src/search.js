@@ -1,12 +1,39 @@
-
-// Consolidated Search API (Spotify + Apple Music)
-// Consolidated Search API (Spotify + Apple Music)
-import { google } from 'googleapis';
-import fs from 'fs';
-import path from 'path';
-
 // Consolidated Search API (Spotify + Apple Music + YouTube)
 const SPOTIFY_CLIENT_ID = '1cc98da5d08742df809c8b0724725d0b';
+
+// --- Utility: Intelligent Similarity ---
+function calculateSimilarity(str1, str2) {
+    if (!str1 || !str2) return 0;
+    str1 = str1.toLowerCase().trim();
+    str2 = str2.toLowerCase().trim();
+
+    if (str1 === str2) return 1;
+
+    // Normalize: remove special chars
+    const norm1 = str1.replace(/[^a-z0-9]/g, '');
+    const norm2 = str2.replace(/[^a-z0-9]/g, '');
+
+    if (norm1 === norm2) return 0.95;
+    if (norm1.includes(norm2) || norm2.includes(norm1)) return 0.8;
+
+    // Phonetic or character overlap
+    const words1 = str1.split(/\s+/);
+    const words2 = str2.split(/\s+/);
+
+    let matches = 0;
+    for (const w1 of words1) {
+        if (w1.length < 3) continue;
+        for (const w2 of words2) {
+            if (w2.includes(w1) || w1.includes(w2)) {
+                matches++;
+                break;
+            }
+        }
+    }
+
+    if (matches > 0) return 0.5 + (matches / Math.max(words1.length, words2.length)) * 0.4;
+    return 0;
+}
 
 export default async function handler(req, res) {
     // Enable CORS
@@ -118,23 +145,30 @@ async function handleAppleSearch(q, limit, country, res) {
 import { supabase } from './_utils/supabase.js';
 
 async function handleYouTubeSearch(req, q, limit, res) {
-    console.log(`[System 2.0] Search: "${q}"`);
-
     try {
-        // 1. Check if track exists in DB
-        // Using textSearch for basic fuzzy matching, or ilike
+        // 1. Fetch potential matches (intelligent search)
+        // We fetch a list of latest/available tracks and filter them in memory
+        // This is efficient for libraries under a few thousand tracks
         const { data: tracks, error } = await supabase
             .from('tracks')
             .select('*')
-            .ilike('title', `%${q}%`)
             .eq('status', 'AVAILABLE')
-            .limit(limit);
+            .limit(200); // Fetch a healthy window
 
         if (error) throw error;
 
-        // 2. If results found, return them
-        if (tracks && tracks.length > 0) {
-            console.log(`[Cache Hit] Found ${tracks.length} tracks for "${q}"`);
+        // 2. Apply Fuzzy Similarity
+        const fuzzyResults = tracks.map(t => {
+            const titleSim = calculateSimilarity(q, t.title);
+            const artistSim = calculateSimilarity(q, t.artist || '');
+            return { ...t, similarity: Math.max(titleSim, artistSim) };
+        })
+            .filter(t => t.similarity > 0.45) // Threshold for "intelligent" match
+            .sort((a, b) => b.similarity - a.similarity);
+
+        // 3. If results found, return them
+        if (fuzzyResults.length > 0) {
+            console.log(`[Intelligent Match] Found ${fuzzyResults.length} tracks for "${q}"`);
 
             // Spotify Auth for Enrichment
             let spotify_access_token = null;
@@ -144,7 +178,7 @@ async function handleYouTubeSearch(req, q, limit, res) {
                 console.error('Spotify Auth (Enrichment) Failed:', e);
             }
 
-            const results = await Promise.all(tracks.map(async (t, index) => {
+            const results = await Promise.all(fuzzyResults.slice(0, limit).map(async (t, index) => {
                 let metadata = {
                     name: t.title,
                     artist: t.artist,

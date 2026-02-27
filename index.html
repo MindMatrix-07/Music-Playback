@@ -1724,13 +1724,18 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: 100vh;
+            /* Fallback */
+            height: 100svh;
+            /* More robust for mobile WebViews */
             z-index: 9999;
             border-radius: 0;
             margin: 0;
             max-width: none;
             background: #000;
             /* Deep black for fullscreen */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .lyrics-module.fullscreen .lyrics-view-area {
@@ -2159,6 +2164,17 @@
             font-size: 0.8rem;
         }
 
+        /* Mobile-only Close Button Style */
+        .mobile-only-btn {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-only-btn {
+                display: inline-flex !important;
+            }
+        }
+
 
         .setting-item {
             margin-bottom: 25px;
@@ -2434,6 +2450,7 @@
                 line-height: 1.1;
                 background: linear-gradient(135deg, #ffffff 0%, #b5b5b5 100%);
                 -webkit-background-clip: text;
+                background-clip: text;
                 -webkit-text-fill-color: transparent;
                 text-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
             }
@@ -3416,6 +3433,13 @@
                     <button class="tab-btn" id="tabSynced" onclick="switchLyricsTab('synced')">Synced</button>
                 </div>
                 <div style="display:flex; gap:10px;">
+                    <button class="mode-btn mobile-only-btn" id="btnCloseLyrics" onclick="closeLyrics()"
+                        title="Close Lyrics">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
                     <button class="mode-btn" id="btnSparkle" onclick="toggleSparkleMode()" title="Sparkle Mode">
                         ✨
                     </button>
@@ -4797,6 +4821,28 @@
                 btn.textContent = 'Copied!';
                 setTimeout(() => btn.textContent = old, 2000);
             } catch (e) { }
+        }
+
+        function closeLyrics() {
+            const mod = document.getElementById('lyricsModule');
+            if (!mod) return;
+
+            mod.classList.add('hidden');
+
+            // Exit fullscreen if active
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(err => console.error(err));
+            }
+
+            // Re-show placeholder/metadata if needed, or simply let the app flow back
+            // Since it was 'hidden' initially, adding 'hidden' back restores state.
+
+            // Reset state
+            lastActiveIndex = -1;
+            if (virtualTimerId) {
+                clearInterval(virtualTimerId);
+                virtualSyncAnchored = false;
+            }
         }
 
         // --- Sparkle Mode Logic ---
