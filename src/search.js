@@ -1,39 +1,12 @@
+
+// Consolidated Search API (Spotify + Apple Music)
+// Consolidated Search API (Spotify + Apple Music)
+import { google } from 'googleapis';
+import fs from 'fs';
+import path from 'path';
+
 // Consolidated Search API (Spotify + Apple Music + YouTube)
 const SPOTIFY_CLIENT_ID = '1cc98da5d08742df809c8b0724725d0b';
-
-// --- Utility: Intelligent Similarity ---
-function calculateSimilarity(str1, str2) {
-    if (!str1 || !str2) return 0;
-    str1 = str1.toLowerCase().trim();
-    str2 = str2.toLowerCase().trim();
-
-    if (str1 === str2) return 1;
-
-    // Normalize: remove special chars
-    const norm1 = str1.replace(/[^a-z0-9]/g, '');
-    const norm2 = str2.replace(/[^a-z0-9]/g, '');
-
-    if (norm1 === norm2) return 0.95;
-    if (norm1.includes(norm2) || norm2.includes(norm1)) return 0.8;
-
-    // Phonetic or character overlap
-    const words1 = str1.split(/\s+/);
-    const words2 = str2.split(/\s+/);
-
-    let matches = 0;
-    for (const w1 of words1) {
-        if (w1.length < 3) continue;
-        for (const w2 of words2) {
-            if (w2.includes(w1) || w1.includes(w2)) {
-                matches++;
-                break;
-            }
-        }
-    }
-
-    if (matches > 0) return 0.5 + (matches / Math.max(words1.length, words2.length)) * 0.4;
-    return 0;
-}
 
 export default async function handler(req, res) {
     // Enable CORS
@@ -145,30 +118,37 @@ async function handleAppleSearch(q, limit, country, res) {
 import { supabase } from './_utils/supabase.js';
 
 async function handleYouTubeSearch(req, q, limit, res) {
+    console.log(`[System 2.0] Intelligent Search: "${q}"`);
+
     try {
-        // 1. Fetch potential matches (intelligent search)
-        // We fetch a list of latest/available tracks and filter them in memory
-        // This is efficient for libraries under a few thousand tracks
-        const { data: tracks, error } = await supabase
+        // --- Phase 1: Direct Full-Text Search (Handles some variations/roots) ---
+        const { data: ftsTracks, error: ftsError } = await supabase
             .from('tracks')
             .select('*')
+            .textSearch('title', q, { config: 'english', type: 'websearch' })
             .eq('status', 'AVAILABLE')
-            .limit(200); // Fetch a healthy window
+            .limit(limit);
 
-        if (error) throw error;
+        if (ftsError) console.error('[Search] FTS Error:', ftsError);
 
-        // 2. Apply Fuzzy Similarity
-        const fuzzyResults = tracks.map(t => {
-            const titleSim = calculateSimilarity(q, t.title);
-            const artistSim = calculateSimilarity(q, t.artist || '');
-            return { ...t, similarity: Math.max(titleSim, artistSim) };
-        })
-            .filter(t => t.similarity > 0.45) // Threshold for "intelligent" match
-            .sort((a, b) => b.similarity - a.similarity);
+        // --- Phase 2: Flexible ILIKE (Title OR Artist) ---
+        // We use .or() to search both columns and capture entries where the query might be an artist
+        const { data: fuzzyTracks, error: fuzzyError } = await supabase
+            .from('tracks')
+            .select('*')
+            .or(`title.ilike.%${q}%,artist.ilike.%${q}%`)
+            .eq('status', 'AVAILABLE')
+            .limit(limit);
 
-        // 3. If results found, return them
-        if (fuzzyResults.length > 0) {
-            console.log(`[Intelligent Match] Found ${fuzzyResults.length} tracks for "${q}"`);
+        if (fuzzyError) console.error('[Search] Fuzzy Error:', fuzzyError);
+
+        // Combine results and remove duplicates by ID
+        const combined = [...(ftsTracks || []), ...(fuzzyTracks || [])];
+        const uniqueTracks = Array.from(new Map(combined.map(t => [t.id, t])).values());
+
+        // --- Phase 3: return results if found ---
+        if (uniqueTracks.length > 0) {
+            console.log(`[Cache Hit] Found ${uniqueTracks.length} unique tracks for "${q}"`);
 
             // Spotify Auth for Enrichment
             let spotify_access_token = null;
@@ -178,7 +158,7 @@ async function handleYouTubeSearch(req, q, limit, res) {
                 console.error('Spotify Auth (Enrichment) Failed:', e);
             }
 
-            const results = await Promise.all(fuzzyResults.slice(0, limit).map(async (t, index) => {
+            const results = await Promise.all(uniqueTracks.map(async (t, index) => {
                 let metadata = {
                     name: t.title,
                     artist: t.artist,
@@ -186,7 +166,7 @@ async function handleYouTubeSearch(req, q, limit, res) {
                     duration: t.playback_metadata?.duration || 0
                 };
 
-                // Enrichment: Search Spotify for better metadata (only for top few results to keep it fast)
+                // Enrichment: Search Spotify for better metadata (top 3 only)
                 if (index < 3 && spotify_access_token) {
                     try {
                         const term = `${t.title} ${t.artist}`;
@@ -222,14 +202,13 @@ async function handleYouTubeSearch(req, q, limit, res) {
             return res.status(200).json({ tracks: results });
         }
 
-        // 3. If NOT found, Queue it
+        // --- Phase 4: Queue if still NOT found ---
         console.log(`[Cache Miss] Queuing "${q}"`);
 
-        // Check if already queued to avoid duplicates
         const { data: existing } = await supabase
             .from('request_queue')
             .select('id')
-            .ilike('query', q) // Case-insensitive check
+            .ilike('query', q)
             .maybeSingle();
 
         if (!existing) {
@@ -238,7 +217,6 @@ async function handleYouTubeSearch(req, q, limit, res) {
                 .insert([{ query: q, priority: 1 }]);
         }
 
-        // Return a "Pending" response so UI can show "Collecting..."
         return res.status(200).json({
             tracks: [],
             systemStatus: 'QUEUED',
@@ -247,6 +225,6 @@ async function handleYouTubeSearch(req, q, limit, res) {
 
     } catch (err) {
         console.error('System 2.0 Error:', err);
-        return res.status(500).json({ error: 'Database connection failed' });
+        return res.status(500).json({ error: 'Database intelligence failure' });
     }
 }
