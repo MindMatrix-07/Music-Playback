@@ -1,6 +1,6 @@
 // Metadata API - Fetches deep details and cross-platform links
 import { supabase } from './_utils/supabase.js';
-const SPOTIFY_CLIENT_ID = '1cc98da5d08742df809c8b0724725d0b';
+const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 // SPOTIFY_CLIENT_SECRET is in process.env
 
 export default async function handler(req, res) {

@@ -1,5 +1,5 @@
 // Spotify OAuth Callback - Handles the authorization code exchange
-const CLIENT_ID = '1cc98da5d08742df809c8b0724725d0b';
+const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 
 export default async function handler(req, res) {
     const { code, error } = req.query;

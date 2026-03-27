@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 
 // Consolidated Search API (Spotify + Apple Music + YouTube)
-const SPOTIFY_CLIENT_ID = '1cc98da5d08742df809c8b0724725d0b';
+const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 
 export default async function handler(req, res) {
     // Enable CORS
